@@ -47,7 +47,7 @@ class MainViewModel(application: Application,
 
 
     /****************************************************HomeScreen**********************************************/
-    //val kategori = datasource1.getAllKategori()
+    val kategori = datasource1.getAllKategori()
 
     var budget_rn = transactions.map { it.nominal }.sum().toString()
     var budget_tm = (transactions[2].nominal/2).toString()
@@ -58,7 +58,7 @@ class MainViewModel(application: Application,
     var _kategori_Position = MutableLiveData<Int>()
     //Spinner entries
     val tipe_list = listOf<String>(tipe.PENGELUARAN.toString(),tipe.PEMASUKAN.toString())
-    //val nama_kategori = datasource1.getAllKategoriName()
+    val nama_kategori = datasource1.getAllKategoriName()
     //selected item spinner
     val selected_kategori = MutableLiveData<String>()
     val selected_tipe = MutableLiveData<String>()

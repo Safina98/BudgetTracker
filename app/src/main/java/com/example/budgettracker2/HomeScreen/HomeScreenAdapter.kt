@@ -22,7 +22,7 @@ class HomeScreenAdapter(
         fun bind( context: Context,item: KategoriModel,position: Int) {
 
             binding.kategori = item
-            when(item.color_){
+            when(item.category_color_){
                 "BLUE"->binding.btnItemKategori.setBackground(ContextCompat.getDrawable(context,R.drawable.btn_kategori_list))
                 "GREEN"->binding.btnItemKategori.setBackground(ContextCompat.getDrawable(context,R.drawable.btn_kategori_list2))
                 "YELLOW"->binding.btnItemKategori.setBackground(ContextCompat.getDrawable(context,R.drawable.btn_kategori_list3))

@@ -5,8 +5,8 @@ import com.example.budgettracker2.warna
 
 data class KategoriModel (
     var id_: Int,
-    var cath_name_: String,
-    var tipe_: String,
-    var color_:String
+    var category_name_: String,
+    var category_type_: String,
+    var category_color_:String
     //var color:warna
         )

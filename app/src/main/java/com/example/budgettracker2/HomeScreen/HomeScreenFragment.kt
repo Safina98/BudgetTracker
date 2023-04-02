@@ -53,14 +53,14 @@ class HomeScreenFragment : Fragment() {
             }
         })
         binding.listKategori.adapter = adapter
-/*
+
         viewModel.kategori.observe(viewLifecycleOwner, Observer {
             it?.let {
                 adapter.submitList(it)
                 adapter.notifyDataSetChanged()
             }
         })
-*/
+
 
         //adapter.submitList(viewModel.categories)
 

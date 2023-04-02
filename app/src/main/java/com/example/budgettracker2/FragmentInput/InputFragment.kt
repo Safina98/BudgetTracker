@@ -58,14 +58,14 @@ class InputFragment : Fragment() {
 
          */
 
-/*
+
         viewModel.nama_kategori?.observe(viewLifecycleOwner, Observer {
             if (it!=null) {
                // Toast.makeText(context,it.toString(),Toast.LENGTH_LONG).show()
             }
         })
 
- */
+
         viewModel.is_date_picker_clicked.observe(viewLifecycleOwner, Observer { if(it==true){
             showDatePickerDialog()
             viewModel.onDatePickerClicked()

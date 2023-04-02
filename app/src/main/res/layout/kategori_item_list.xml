@@ -21,7 +21,7 @@
             <TextView
                 android:id="@+id/txt_item_nama_kategori"
                 android:layout_width="wrap_content"
-                android:text="@{kategori.cath_name_}"
+                android:text="@{kategori.category_name_}"
                 android:layout_height="wrap_content"
                 />
             <TextView

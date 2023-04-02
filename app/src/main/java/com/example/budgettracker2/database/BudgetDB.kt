@@ -28,9 +28,8 @@ abstract class BudgetDB : RoomDatabase() {
                         db.execSQL("INSERT INTO category_table (category_id,category_name,category_type,category_color) VALUES( 0,'BEAUTY','PENGELUARAN','BLUE');")
                         db.execSQL("INSERT INTO category_table (category_id,category_name,category_type,category_color) VALUES( 1,'FOOD','PENGELUARAN','PURPLE');")
                         db.execSQL("INSERT INTO category_table (category_id,category_name,category_type,category_color) VALUES( 2,'TRANSPORTATION','PENGELUARAN','YELLOW');")
-                        db.execSQL("INSERT INTO category_table (category_id,category_name,tipe,category_category_color) VALUES( 3,'FASHION','PENGELUARAN','BLUE');")
+                        db.execSQL("INSERT INTO category_table (category_id,category_name,category_type,category_color) VALUES( 3,'FASHION','PENGELUARAN','BLUE');")
                         db.execSQL("INSERT INTO category_table (category_id,category_name,category_type,category_color) VALUES( 4,'SALARY','PEMASUKAN','GREEN');")
-
                     }
 
                     override fun onOpen(db: SupportSQLiteDatabase) {

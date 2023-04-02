@@ -48,6 +48,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/margin_medium"
                 android:selectedItemPosition="@={i_vmodel._kategori_Position}"
+                android:entries="@{i_vmodel.nama_kategori}"
                 />
             <!-- android:entries="@{i_vmodel.nama_kategori}"-->
            <com.google.android.material.textfield.TextInputLayout
