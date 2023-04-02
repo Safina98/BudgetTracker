@@ -10,6 +10,7 @@ import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import com.example.budgettracker2.R
 import com.example.budgettracker2.databinding.FragmentInputBinding
 import com.example.budgettracker2.viewModels.MainViewModel
@@ -56,7 +57,11 @@ class InputFragment : Fragment() {
 
         })
 
-         
+         viewModel.navigate_to_toHomeScreen.observe(viewLifecycleOwner, Observer {if(it==true){
+             this.findNavController().navigate(InputFragmentDirections.actionInputFragmentToHomeScreenFragment())
+             viewModel.onNavigatedToHomeScreen()
+         }
+         })
 
 
         viewModel.nama_kategori.observe(viewLifecycleOwner, Observer {

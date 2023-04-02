@@ -8,6 +8,6 @@ import java.util.*
 @BindingAdapter("rupiahFormat")
 fun TextView.setRupiahFormat(nominal: Int) {
     val formatter = NumberFormat.getCurrencyInstance(Locale("in", "ID"))
-    val formattedNominal = formatter.format(nominal)
+    val formattedNominal = formatter.format(Math.abs(nominal))
     text = formattedNominal
 }

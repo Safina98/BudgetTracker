@@ -16,8 +16,9 @@ interface CategoryDao{
     @Update
     fun update(category:CategoryTable)
 
-     @Query("SELECT category_id as id_,category_name as category_name_,category_type as category_type_,category_color as category_color_ FROM category_table")
-     fun getAllKategori(): LiveData<List<KategoriModel>>
+    @Query("SELECT category_table.category_id as id_, category_table.category_name as category_name_, category_table.category_type as category_type_, category_table.category_color as category_color_, SUM(transaction_table.nominal) as sum FROM category_table LEFT JOIN transaction_table ON category_table.category_id = transaction_table.category_id GROUP BY category_table.category_id")
+    fun getAllKategori(): LiveData<List<KategoriModel>>
+
     @Query("SELECT * FROM category_table")
     fun getAllKategoriCoba():LiveData<List<CategoryTable>>
 

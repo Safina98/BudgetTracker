@@ -18,6 +18,7 @@ interface TransactionDao{
     // // SELECT :brand_name_ as brand_name, (SELECT category_id FROM category_table WHERE category_name = :caht_name_ limit 1) as cath_code FROM brand_table WHERE NOT EXISTS(SELECT brand_name,cath_code FROM brand_table WHERE brand_name =:brand_name_ AND cath_code = (SELECT category_id FROM category_table WHERE category_name = :caht_name_ limit 1)) LIMIT 1 ")
     @Query("SELECT transaction_table.transaction_id as id, category_table.category_name as category_name_model_, transaction_table.note as ket, transaction_table.date, transaction_table.nominal FROM transaction_table JOIN category_table ON transaction_table.category_id = category_table.category_id")
     fun getAllTransactionsWithCategoryName(): LiveData<List<TransaksiModel>>
-
+    @Query("SELECT SUM(nominal) from transaction_table")
+    fun getBuget():LiveData<Int>
 
 }

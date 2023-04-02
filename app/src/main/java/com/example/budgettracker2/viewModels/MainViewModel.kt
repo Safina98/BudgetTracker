@@ -33,6 +33,9 @@ class MainViewModel(application: Application,
     private var _navigate_to_input = MutableLiveData<Boolean>()
     val navigate_to_input :LiveData<Boolean>get() = _navigate_to_input
 
+    private var _navigate_to_homeScreen = MutableLiveData<Boolean>()
+    val navigate_to_toHomeScreen :LiveData<Boolean>get() = _navigate_to_homeScreen
+
 /*************************************************Transaction***********************************************/
     val a = listOf<String>("a","b","c")
     val transactions = listOf<TransaksiModel>(
@@ -49,7 +52,7 @@ class MainViewModel(application: Application,
     /****************************************************HomeScreen**********************************************/
     val kategori = datasource1.getAllKategori()
 
-    var budget_rn = transactions.map { it.nominal }.sum().toString()
+    var budget_rn = datasource2.getBuget()
     var budget_tm = (transactions[2].nominal/2).toString()
 
 /************************************************Input****************************************************/
@@ -95,19 +98,24 @@ class MainViewModel(application: Application,
     //Input Fragment
     fun saveTransaction(){
         viewModelScope.launch {
-
             val transaction = TransactionTable()
             val selected_kategori = kategori.value!![_kategori_Position.value!!].category_name_
             transaction.category_id= kategori.value!!.filter { it.category_name_ == selected_kategori}.map {
                 it.id_
             }.first()
+
             transaction.date = selectedDate.value!!
             transaction.note = note.value!!
             transaction.nominal = jumlah.value!!.toInt()
+           if (_tipe_position.value==0){
+               transaction.nominal= transaction.nominal*-1
+           }
             insert(transaction)
 
 
+
         }
+    onNavigateToHomeScreen()
     }
     private suspend fun insert(transaksi: TransactionTable){ withContext(Dispatchers.IO){datasource2.insert(transaksi)} }
 
@@ -122,6 +130,11 @@ class MainViewModel(application: Application,
     fun onNavigateToInput(){ _navigate_to_input.value = true }
     @SuppressLint("NullSafeMutableLiveData")
     fun onNavigatedToInout(){ _navigate_to_input.value = null }
+
+    //Navigate to HomeScreen
+    fun onNavigateToHomeScreen(){ _navigate_to_homeScreen.value = true }
+    @SuppressLint("NullSafeMutableLiveData")
+    fun onNavigatedToHomeScreen(){_navigate_to_homeScreen.value=null}
     fun onFabHSLongClick(v: View): Boolean { return true }
 
 
