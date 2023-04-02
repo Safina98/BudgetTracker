@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="i_vmodel"
+            type="com.example.budgettracker2.viewModels.MainViewModel" />
+    </data>
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_marginTop="100dp"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            tools:context=".FragmentInput.InputFragment">
+
+            <!-- TODO: Update blank fragment layout -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="@{()-> i_vmodel.onDatePickerClick()}"
+                >
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/text_date"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Date"
+                    android:onClick="@{()-> i_vmodel.onDatePickerClick()}"
+                    android:text="@{i_vmodel.selectedDate}"/>
+            </com.google.android.material.textfield.TextInputLayout>
+            <Spinner
+                android:id="@+id/spinner_tipe"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_medium"
+                android:selectedItemPosition="@={i_vmodel._tipe_position}"
+                android:entries="@{i_vmodel.tipe_list}"
+
+                />
+            <Spinner
+                android:id="@+id/spinner_kategori"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_medium"
+                android:selectedItemPosition="@={i_vmodel._kategori_Position}"
+                />
+            <!-- android:entries="@{i_vmodel.nama_kategori}"-->
+           <com.google.android.material.textfield.TextInputLayout
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content">
+               <com.google.android.material.textfield.TextInputEditText
+                   android:id="@+id/text_keterangan"
+                   android:hint="Note"
+                   android:text="@={i_vmodel.note}"
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content"
+                   />
+           </com.google.android.material.textfield.TextInputLayout>
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/text_jumlah"
+                    android:hint="Jumlah"
+                    android:text="@={i_vmodel.jumlah}"
+                    android:inputType="number"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <Button
+                android:id="@+id/btn_save"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Save"
+                android:onClick="@{()-> i_vmodel.saveTransaction()}"
+                />
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+</layout>

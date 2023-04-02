@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="hs_vmodel"
+            type="com.example.budgettracker2.viewModels.MainViewModel" />
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".HomeScreen.HomeScreenFragment">
+
+        <Button
+            android:id="@+id/btn_budget_tm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_medium"
+            android:layout_marginTop="@dimen/margin_big"
+            android:background="@drawable/budget_tm"
+
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+        <!--    android:text="@{hs_vmodel.budget_tm}" -->
+
+        <Button
+            android:id="@+id/btn_budget_rn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_medium"
+            android:layout_marginTop="@dimen/margin_medium"
+            android:background="@drawable/buget_rn_shape"
+
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/btn_budget_tm" />
+        <!-- android:text="@{hs_vmodel.budget_rn}"-->
+
+        <TextView
+            android:id="@+id/text_k"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="32dp"
+            android:fontFamily="@font/alegreya_sc"
+            android:text="KATEGORI"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toStartOf="@+id/button"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/btn_budget_rn" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/list_kategori"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="32dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/text_k" />
+
+        <Button
+            android:id="@+id/button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/ic_baseline_arrow_forward_ios_24"
+            app:layout_constraintBottom_toTopOf="@+id/list_kategori"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:onClick="@{() -> hs_vmodel.onClick()}"
+            app:layout_constraintTop_toBottomOf="@+id/btn_budget_rn" />
+
+        <com.example.budgettracker2.DraggableFloatingActionButton
+            android:id="@+id/hsfab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:onLongClick="@{(view) -> hs_vmodel.onFabHSLongClick(view)}"
+            android:src="@drawable/fab"
+            app:fabCustomSize="72dp"
+            app:maxImageSize="72dp"
+            android:scaleType="center"
+            android:onClick="@{()->hs_vmodel.onNavigateToInput()}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="margin_big">32dp</dimen>
+    <dimen name="margin_medium">16dp</dimen>
+    <dimen name="big_btn_height">120dp</dimen>
+    <dimen name="big_btn_width">300dp</dimen>
+    <dimen name="medium_btn_height">60dp</dimen>
+    <dimen name="kategori_item_list_heigt">150dp</dimen>
+</resources>
