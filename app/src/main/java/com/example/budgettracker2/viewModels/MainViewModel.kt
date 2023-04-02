@@ -39,11 +39,11 @@ class MainViewModel(application: Application,
         TransaksiModel(1,"1","Beli Erha","28/04/922",-1500000),
         TransaksiModel(1,"2","Beli snack","28/07/22",-1500000),
         TransaksiModel(1,"5","Beli snack","30/07/22",2000000),)
-    //val semuatabeltransaksi = datasource2.getAllTabelTransaksiCoba()
+    val semuatabeltransaksi = datasource2.getAllTransactionTableCoba()
 
 
 
-    //val transaction_with_cath = datasource2.getTransactionsWithCategory()
+    val transaction = datasource2.getAllTransactionsWithCategoryName()
 
 
     /****************************************************HomeScreen**********************************************/
@@ -95,21 +95,21 @@ class MainViewModel(application: Application,
     //Input Fragment
     fun saveTransaction(){
         viewModelScope.launch {
-           /*
-            val transaction = TabelTransaksi()
-            val selected_kategori = kategori.value!![_kategori_Position.value!!].cath_name_
-            transaction.cath_id= kategori.value!!.filter { it.cath_name_ == selected_kategori}.map {
+
+            val transaction = TransactionTable()
+            val selected_kategori = kategori.value!![_kategori_Position.value!!].category_name_
+            transaction.category_id= kategori.value!!.filter { it.category_name_ == selected_kategori}.map {
                 it.id_
             }.first()
             transaction.date = selectedDate.value!!
-            transaction.ket = note.value!!
+            transaction.note = note.value!!
             transaction.nominal = jumlah.value!!.toInt()
             insert(transaction)
 
-            */
+
         }
     }
-    //private suspend fun insert(transaksi: TabelTransaksi){ withContext(Dispatchers.IO){datasource2.insert(transaksi)} }
+    private suspend fun insert(transaksi: TransactionTable){ withContext(Dispatchers.IO){datasource2.insert(transaksi)} }
 
     /********************************************Navigation***********************************************/
     //Navigating to transaction

@@ -37,12 +37,9 @@ class TransactionFragment : Fragment() {
                 viewModel.onNavigateToTransaction(it)
             }
         )
-        /*
-        viewModel.transaction_with_cath.observe(viewLifecycleOwner, Observer { it?.let {
-            Toast.makeText(context,it.toString(),Toast.LENGTH_SHORT).show()
+        viewModel.transaction.observe(viewLifecycleOwner, Observer { it?.let {
+            adapter.submitList(it)
         } })
-
-         */
         binding.listTransaksi.adapter = adapter
         //adapter.submitList(viewModel.transactions)
 

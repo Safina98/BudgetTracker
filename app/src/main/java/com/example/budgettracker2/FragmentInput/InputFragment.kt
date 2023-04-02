@@ -49,17 +49,17 @@ class InputFragment : Fragment() {
         viewModel._kategori_Position.observe(viewLifecycleOwner, Observer{
 
         })
-        /*
+
         viewModel.semuatabeltransaksi.observe(viewLifecycleOwner, Observer{it?.let {
             Toast.makeText(context,it.toString(),Toast.LENGTH_LONG).show()
         }
 
         })
 
-         */
+         
 
 
-        viewModel.nama_kategori?.observe(viewLifecycleOwner, Observer {
+        viewModel.nama_kategori.observe(viewLifecycleOwner, Observer {
             if (it!=null) {
                // Toast.makeText(context,it.toString(),Toast.LENGTH_LONG).show()
             }
@@ -88,13 +88,13 @@ class InputFragment : Fragment() {
 
  */
 
-        /*viewModel.kategori.observe(viewLifecycleOwner, Observer {
+        viewModel.kategori.observe(viewLifecycleOwner, Observer {
             it?.let {
 
             }
         })
 
-         */
+
         //viewModel.getCathegoryName(0)
 
         return binding.root
