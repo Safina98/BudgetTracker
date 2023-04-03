@@ -1,31 +1,33 @@
-package com.example.budgettracker2.HomeScreen
+package com.example.budgettracker2.transactions
+
 
 import android.content.Context
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.budgettracker2.R
-import com.example.budgettracker2.database.KategoriModel
 import com.example.budgettracker2.database.TransaksiModel
-import com.example.budgettracker2.databinding.KategoriItemListBinding
 import com.example.budgettracker2.databinding.TransactionItemListBinding
-import com.example.budgettracker2.warna
-import kotlin.random.Random
 
 class TransactionAdapter(
     val context: Context,
-    val clickListener: TransaksiListener
+    val clickListener: TransaksiClickListener,
+    val longListener: TransaksiLongClickListener
 ) : ListAdapter<TransaksiModel,
         TransactionAdapter.ViewHolder>(TransaksiDiffCallback()) {
     class ViewHolder private constructor(val binding: TransactionItemListBinding)
         : RecyclerView.ViewHolder(binding.root) {
 
-        fun bind( context: Context,item: TransaksiModel,position: Int) {
+        fun bind( context: Context,item: TransaksiModel,position: Int,clickListener: TransaksiClickListener,longListener: TransaksiLongClickListener) {
 
             binding.transaksi = item
+            binding.clickListener = clickListener
+            binding.longC = longListener
+            binding.cv.setBackground(ContextCompat.getDrawable(context, R.drawable.bg_1))
             
             /*
            if (position%5==0|| position%5==4){
@@ -59,7 +61,7 @@ class TransactionAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = getItem(position)
-        holder.bind(context,item,position)
+        holder.bind(context,item,position,clickListener,longListener)
     }
 }
 class TransaksiDiffCallback : DiffUtil.ItemCallback<TransaksiModel>() {
@@ -70,8 +72,14 @@ class TransaksiDiffCallback : DiffUtil.ItemCallback<TransaksiModel>() {
         return oldItem == newItem
     }
 }
-class TransaksiListener(val clickListener: (transId: Int) -> Unit) {
-    fun onClick(trans:TransaksiModel) {
-        clickListener(trans.id)
+class TransaksiClickListener(val clickListener: (transId: Int) -> Unit) {
+    fun onClick(id:Int) {
+        clickListener(id)
     }
+}
+class TransaksiLongClickListener(val longListener:(transId:Int)->Unit){
+    fun onLongClick(v: View, id:Int): Boolean {
+        longListener(id)
+        return true}
+
 }

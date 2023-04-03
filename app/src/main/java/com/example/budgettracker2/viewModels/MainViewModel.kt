@@ -95,29 +95,43 @@ class MainViewModel(application: Application,
     fun onDatePickerClick(){ _is_date_picker_clicked.value = true }
     fun onDatePickerClicked(){ _is_date_picker_clicked.value = false }
 /******************************************************CRUD***********************************************/
+    //Getter
+    fun getSelectedCategory():String{
+        return kategori.value!![_kategori_Position.value!!].category_name_
+    }
+    fun getCategory_id():Int{
+       return kategori.value!!.filter { it.category_name_ == getSelectedCategory()}.map {
+            it.id_ }.first()
+    }
+    fun getNominal():Int{
+       return if(_tipe_position.value==0){
+           jumlah.value?.toInt()!! *-1
+       }else{
+           jumlah.value!!.toInt()
+       }
+    }
+
     //Input Fragment
     fun saveTransaction(){
         viewModelScope.launch {
             val transaction = TransactionTable()
-            val selected_kategori = kategori.value!![_kategori_Position.value!!].category_name_
-            transaction.category_id= kategori.value!!.filter { it.category_name_ == selected_kategori}.map {
-                it.id_
-            }.first()
-
+            val selected_kategori = getSelectedCategory()
+            transaction.category_id= getCategory_id()
             transaction.date = selectedDate.value!!
             transaction.note = note.value!!
-            transaction.nominal = jumlah.value!!.toInt()
-           if (_tipe_position.value==0){
-               transaction.nominal= transaction.nominal*-1
-           }
+            transaction.nominal = getNominal()
             insert(transaction)
-
-
-
         }
     onNavigateToHomeScreen()
     }
+    fun deleteTransaction(trans_id:Int){
+        viewModelScope.launch {
+
+            delete_trans(trans_id)
+        }
+    }
     private suspend fun insert(transaksi: TransactionTable){ withContext(Dispatchers.IO){datasource2.insert(transaksi)} }
+    private suspend fun delete_trans(trans_id:Int){ withContext(Dispatchers.IO){datasource2.delete(trans_id)} }
 
     /********************************************Navigation***********************************************/
     //Navigating to transaction

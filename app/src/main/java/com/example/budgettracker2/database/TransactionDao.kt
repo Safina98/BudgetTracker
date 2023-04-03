@@ -13,6 +13,9 @@ interface TransactionDao{
     @Update
     fun update(TransactionTable: TransactionTable)
 
+    @Query("DELETE FROM transaction_table WHERE transaction_id =:trans_id")
+    fun delete(trans_id:Int)
+
     @Query("SELECT * FROM transaction_table")
     fun getAllTransactionTableCoba(): LiveData<List<TransactionTable>>
     // // SELECT :brand_name_ as brand_name, (SELECT category_id FROM category_table WHERE category_name = :caht_name_ limit 1) as cath_code FROM brand_table WHERE NOT EXISTS(SELECT brand_name,cath_code FROM brand_table WHERE brand_name =:brand_name_ AND cath_code = (SELECT category_id FROM category_table WHERE category_name = :caht_name_ limit 1)) LIMIT 1 ")

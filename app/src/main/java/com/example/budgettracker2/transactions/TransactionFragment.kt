@@ -1,4 +1,4 @@
-package com.example.budgettracker2.Transactions
+package com.example.budgettracker2.transactions
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -9,10 +9,7 @@ import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import com.example.budgettracker2.HomeScreen.HomeScreenAdapter
-import com.example.budgettracker2.HomeScreen.KategoriListener
-import com.example.budgettracker2.HomeScreen.TransactionAdapter
-import com.example.budgettracker2.HomeScreen.TransaksiListener
+import com.example.budgettracker2.HomeScreen.*
 import com.example.budgettracker2.R
 import com.example.budgettracker2.databinding.FragmentTransactionBinding
 import com.example.budgettracker2.viewModels.MainViewModel
@@ -33,8 +30,12 @@ class TransactionFragment : Fragment() {
         binding.lifecycleOwner = this
         val adapter = TransactionAdapter(
             this.requireContext(),
-            TransaksiListener {
-                viewModel.onNavigateToTransaction(it)
+            TransaksiClickListener {
+                //viewModel.onNavigateToTransaction(it)
+                Toast.makeText(context,"clicked",Toast.LENGTH_SHORT).show()
+            },
+            TransaksiLongClickListener {
+                viewModel.deleteTransaction(it)
             }
         )
         viewModel.transaction.observe(viewLifecycleOwner, Observer { it?.let {
