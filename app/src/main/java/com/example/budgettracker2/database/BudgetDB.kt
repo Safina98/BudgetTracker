@@ -8,7 +8,7 @@ import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
 import java.util.concurrent.Executors
 
-@Database(entities = [CategoryTable::class,TransactionTable::class], version = 1, exportSchema = false)
+@Database(entities = [CategoryTable::class,TransactionTable::class], version = 2, exportSchema = false)
 abstract class BudgetDB : RoomDatabase() {
 
     abstract val category_dao: CategoryDao

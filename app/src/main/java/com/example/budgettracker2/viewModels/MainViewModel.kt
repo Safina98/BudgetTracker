@@ -17,6 +17,8 @@ import com.example.budgettracker2.database.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.text.SimpleDateFormat
+import java.util.*
 
 class MainViewModel(application: Application,
                     val datasource1:CategoryDao,
@@ -79,6 +81,10 @@ class MainViewModel(application: Application,
     val selectedDate: LiveData<String> = _selectedDate
     private var _is_date_picker_clicked = MutableLiveData<Boolean>()
     val is_date_picker_clicked :LiveData<Boolean>get() = _is_date_picker_clicked
+    init {
+        val currentDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+        _selectedDate.value = currentDate
+    }
 
 
 
@@ -89,7 +95,7 @@ class MainViewModel(application: Application,
  // DatePicker Input Fragment
  //DatePicker
      fun setSelectedDate(year: Int, month: Int, day: Int) {
-         val selectedDate = "$year-${month+1}-$day"
+     val selectedDate = "${year}-${(month+1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}"
          _selectedDate.value = selectedDate
      }
     fun onDatePickerClick(){ _is_date_picker_clicked.value = true }
@@ -110,14 +116,27 @@ class MainViewModel(application: Application,
            jumlah.value!!.toInt()
        }
     }
+    fun getTodaysDate():String{
+        val calendar = Calendar.getInstance()
+        val year = calendar.get(Calendar.YEAR)
+        val month = calendar.get(Calendar.MONTH)
+        val day = calendar.get(Calendar.DAY_OF_MONTH)
+        return  "${year}-${(month+1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}"
+    }
+    fun getDate():Date{
+        val dateString = selectedDate.value
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        return dateFormat.parse(dateString)
+    }
 
     //Input Fragment
+
     fun saveTransaction(){
         viewModelScope.launch {
             val transaction = TransactionTable()
             val selected_kategori = getSelectedCategory()
             transaction.category_id= getCategory_id()
-            transaction.date = selectedDate.value!!
+            transaction.date = getDate()
             transaction.note = note.value!!
             transaction.nominal = getNominal()
             insert(transaction)
