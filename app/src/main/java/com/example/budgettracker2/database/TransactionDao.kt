@@ -22,7 +22,14 @@ interface TransactionDao{
     @Query("SELECT transaction_table.transaction_id as id, category_table.category_name as category_name_model_, transaction_table.note as ket, strftime('%Y-%m-%d', transaction_table.date) as date, transaction_table.nominal FROM transaction_table JOIN category_table ON transaction_table.category_id = category_table.category_id")
     fun getAllTransactionsWithCategoryName(): LiveData<List<TransaksiModel>>
 
-    @Query("SELECT SUM(nominal) from transaction_table")
+    @Query("SELECT ifnull(SUM(nominal),0) from transaction_table")
     fun getBuget():LiveData<Int>
+
+    @Query("SELECT ifnull(SUM(nominal),0)  from transaction_table WHERE nominal < 0")
+    fun getBugetTM():LiveData<Int>
+
+    @Query("SELECT SUM(nominal) FROM transaction_table t JOIN category_table c ON t.category_id = c.category_id WHERE c.category_type = :categoryType")
+    fun getSumByCategoryType(categoryType: String): LiveData<Int>
+
 
 }

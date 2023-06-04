@@ -22,7 +22,7 @@
             android:layout_marginStart="@dimen/margin_medium"
             android:layout_marginTop="@dimen/margin_big"
             android:background="@drawable/budget_tm"
-
+            android:text="@{hs_vmodel.budget_tmm.toString()}"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
         <!--    android:text="@{hs_vmodel.budget_tm}" -->
@@ -34,10 +34,10 @@
             android:layout_marginStart="@dimen/margin_medium"
             android:layout_marginTop="@dimen/margin_medium"
             android:background="@drawable/buget_rn_shape"
-
+            app:rupiahFormatN="@{hs_vmodel.budget_rn}"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/btn_budget_tm" />
-        <!-- android:text="@{hs_vmodel.budget_rn}"-->
+        <!--  app:rupiahFormatN="@{hs_vmodel.budget_rn}"-->
 
         <TextView
             android:id="@+id/text_k"

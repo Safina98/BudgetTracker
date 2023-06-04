@@ -54,8 +54,10 @@ class MainViewModel(application: Application,
     /****************************************************HomeScreen**********************************************/
     val kategori = datasource1.getAllKategori()
 
-    var budget_rn = datasource2.getBuget()
-    var budget_tm = (transactions[2].nominal/2).toString()
+    val budget_rn = datasource2.getBuget()
+    val tm_spend = datasource2.getSumByCategoryType("PENGELUARAN")
+    val tm_income = datasource2.getSumByCategoryType("PEMASUKAN")
+    var budget_tmm = datasource2.getBugetTM()
 
 /************************************************Input****************************************************/
     //Spinner Position
@@ -101,6 +103,8 @@ class MainViewModel(application: Application,
     fun onDatePickerClick(){ _is_date_picker_clicked.value = true }
     fun onDatePickerClicked(){ _is_date_picker_clicked.value = false }
 /******************************************************CRUD***********************************************/
+
+
     //Getter
     fun getSelectedCategory():String{
         return kategori.value!![_kategori_Position.value!!].category_name_
@@ -110,7 +114,7 @@ class MainViewModel(application: Application,
             it.id_ }.first()
     }
     fun getNominal():Int{
-       return if(_tipe_position.value==0){
+       return if(_tipe_position.value!=1){
            jumlah.value?.toInt()!! *-1
        }else{
            jumlah.value!!.toInt()
@@ -184,16 +188,12 @@ class MainViewModel(application: Application,
                 val application = checkNotNull(extras[APPLICATION_KEY])
                 // Create a SavedStateHandle for this ViewModel from extras
                 val savedStateHandle = extras.createSavedStateHandle()
-
                 val dataSource = BudgetDB.getInstance(application).category_dao
                 val dataSource2 = BudgetDB.getInstance(application).transaction_dao
 
                 return MainViewModel(
                     application,dataSource,dataSource2
                 ) as T
-
-
-
             }
         }
     }

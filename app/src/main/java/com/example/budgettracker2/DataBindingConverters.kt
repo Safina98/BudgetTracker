@@ -14,17 +14,12 @@ fun TextView.setRupiahFormat(nominal: Int) {
     val formattedNominal = formatter.format(Math.abs(nominal))
     text = formattedNominal
 }
-@BindingAdapter("lddatetostring")
-fun TextView.setStringDate(date: Date?) {
-    val dateFormat = "yyyy-MM-dd"
-    val formatter = SimpleDateFormat(dateFormat, Locale.getDefault())
-    val formatteddate = date?.let { formatter.format(it) }
-    text = formatteddate ?: "0000-00-00"
+@BindingAdapter("rupiahFormatN")
+fun TextView.setRupiahFormatN(nominal: Int) {
+    val formatter = NumberFormat.getCurrencyInstance(Locale("in", "ID"))
+    val formattedNominal = formatter.format(nominal)
+    text = formattedNominal
 }
-
-
-
-
 
 class DateTypeConverter {
     companion object {
