@@ -1,6 +1,7 @@
 package com.example.budgettracker2.database
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
@@ -24,7 +25,15 @@ interface CategoryDao{
 
     @Query("SELECT category_name FROM category_table WHERE category_type = :tipe")
     fun getKategoriName(tipe:String):LiveData<List<String>>
+
+    @Query("SELECT category_name FROM category_table WHERE category_type = :tipe")
+    fun getKategoriNameD(tipe:String):List<String>
+
+
     @Query("SELECT category_name FROM category_table")
     fun getAllKategoriName():LiveData<List<String>>
+
+    @Query("SELECT category_name FROM category_table")
+    fun getAllKategoriNameD():List<String>
 
 }

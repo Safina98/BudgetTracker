@@ -22,6 +22,28 @@ interface TransactionDao{
     @Query("SELECT transaction_table.transaction_id as id, category_table.category_name as category_name_model_, transaction_table.note as ket, strftime('%Y-%m-%d', transaction_table.date) as date, transaction_table.nominal FROM transaction_table JOIN category_table ON transaction_table.category_id = category_table.category_id")
     fun getAllTransactionsWithCategoryName(): LiveData<List<TransaksiModel>>
 
+    @Query("SELECT transaction_table.transaction_id as id, category_table.category_name as category_name_model_, transaction_table.note as ket, strftime('%Y-%m-%d', transaction_table.date) as date, transaction_table.nominal FROM transaction_table JOIN category_table ON transaction_table.category_id = category_table.category_id")
+    fun getAllTransactionsWithCategoryList(): List<TransaksiModel>
+
+   // @Query("SELECT * FROM transaction_table WHERE category_id IN (SELECT category_id FROM category_table WHERE category_type = :tipe)")
+   @Query("SELECT transaction_id as id, category_name as category_name_model_, note as ket, date, nominal FROM transaction_table INNER JOIN category_table ON transaction_table.category_id = category_table.category_id WHERE category_table.category_type = :tipe")
+    fun getAllTransactionWithCategoriNameTipe(tipe:String): List<TransaksiModel>
+
+    @Query("SELECT transaction_table.transaction_id as id, category_table.category_name as category_name_model_, transaction_table.note as ket, strftime('%Y-%m-%d', transaction_table.date) as date, transaction_table.nominal FROM transaction_table JOIN category_table ON transaction_table.category_id = category_table.category_id WHERE category_name =:kategori")
+    fun getAllTransactionsWithCategoryNameKategori(kategori:String): List<TransaksiModel>
+
+
+    //@Query("SELECT transaction_id as id, category_name as category_name_model_, note as ket, strftime('%Y-%m-%d', transaction_table.date) as date, nominal FROM transaction_table INNER JOIN category_table ON transaction_table.category_id = category_table.category_id WHERE category_table.category_type = :tipe and strftime('%m', date) = :bulan")
+    @Query("SELECT transaction_table.transaction_id as id, category_table.category_name as category_name_model_, transaction_table.note as ket, strftime('%Y-%m-%d', transaction_table.date) as date, transaction_table.nominal FROM transaction_table JOIN category_table ON transaction_table.category_id = category_table.category_id WHERE category_type =:tipe and strftime('%m', date) = :bulan")
+    fun getAllTransactionsWithCategoryNameTipeDate(tipe:String,bulan:String): List<TransaksiModel>
+
+    @Query("SELECT transaction_table.transaction_id as id, category_table.category_name as category_name_model_, transaction_table.note as ket, strftime('%Y-%m-%d', transaction_table.date) as date, transaction_table.nominal FROM transaction_table JOIN category_table ON transaction_table.category_id = category_table.category_id WHERE strftime('%m', date) = :bulan")
+    fun getAllTransactionsWithCategoryNameDate(bulan:String): List<TransaksiModel>
+    @Query("SELECT transaction_table.transaction_id as id, category_table.category_name as category_name_model_, transaction_table.note as ket, strftime('%Y-%m-%d', transaction_table.date) as date, transaction_table.nominal FROM transaction_table JOIN category_table ON transaction_table.category_id = category_table.category_id WHERE category_name =:kategori and strftime('%m', date) = :bulan")
+    fun getAllTransactionsWithCategoryNameKategoriDate(kategori:String,bulan:String): List<TransaksiModel>
+
+
+
     @Query("SELECT ifnull(SUM(nominal),0) from transaction_table")
     fun getBuget():LiveData<Int>
 

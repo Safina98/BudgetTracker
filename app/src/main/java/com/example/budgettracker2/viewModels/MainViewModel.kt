@@ -4,13 +4,10 @@ import android.annotation.SuppressLint
 import android.app.Application
 import android.view.View
 import android.widget.Toast
-import androidx.annotation.Nullable
 import androidx.lifecycle.*
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewmodel.CreationExtras
-import androidx.savedstate.SavedStateRegistryOwner
 import com.example.budgettracker2.tipe
-import com.example.budgettracker2.warna
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.budgettracker2.database.*
@@ -39,13 +36,30 @@ class MainViewModel(application: Application,
     val navigate_to_toHomeScreen :LiveData<Boolean>get() = _navigate_to_homeScreen
 
 /*************************************************Transaction***********************************************/
-    val a = listOf<String>("a","b","c")
-    val transactions = listOf<TransaksiModel>(
-        TransaksiModel(1,"1","Beli Erha","28/04/922",-1500000),
-        TransaksiModel(1,"2","Beli snack","28/07/22",-1500000),
-        TransaksiModel(1,"5","Beli snack","30/07/22",2000000),)
+    //Spinner entries
+    val tipe_entries = listOf<String>("ALL","PEMASUKAN","PENGELUARAN")
+    private val _selectedTipeSpinner = MutableLiveData<String>()
+    val selectedTipeSpinner: LiveData<String> get() = _selectedTipeSpinner
+
+
+    var _kategori_entries = MutableLiveData<List<String>>()
+    val kategori_entries :LiveData<List<String>> get() = _kategori_entries
+    private val _selectedKategoriSpinner = MutableLiveData<String>()
+    val selectedKategoriSpinner: LiveData<String> get() = _selectedKategoriSpinner
+
+
+
+    //val bulan = listOf<String>("ALL","Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","Oktober","November","Desember")
+    val bulan = listOf<String>("ALL","01","02","03","04","05","06")
+    private val _selectedBulanSpinner = MutableLiveData<String>()
+    val selectedBulanSpinner: LiveData<String> get() = _selectedBulanSpinner
+
+
     val semuatabeltransaksi = datasource2.getAllTransactionTableCoba()
 
+    private val _recyclerViewData = MutableLiveData<List<TransaksiModel>>()
+    val recyclerViewData: LiveData<List<TransaksiModel>>
+        get() = _recyclerViewData
 
 
     val transaction = datasource2.getAllTransactionsWithCategoryName()
@@ -86,6 +100,10 @@ class MainViewModel(application: Application,
     init {
         val currentDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
         _selectedDate.value = currentDate
+        _selectedTipeSpinner.value = "ALL"
+        _selectedKategoriSpinner.value = "ALL"
+        _selectedBulanSpinner.value  = "ALL"
+        _selectedKategoriSpinner.value= "ALL"
     }
 
 
@@ -103,7 +121,6 @@ class MainViewModel(application: Application,
     fun onDatePickerClick(){ _is_date_picker_clicked.value = true }
     fun onDatePickerClicked(){ _is_date_picker_clicked.value = false }
 /******************************************************CRUD***********************************************/
-
 
     //Getter
     fun getSelectedCategory():String{
@@ -132,6 +149,85 @@ class MainViewModel(application: Application,
         val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         return dateFormat.parse(dateString)
     }
+    // Method to update the selected value
+
+    fun setSelectedKategoriValue(value: String) {
+        _selectedKategoriSpinner.value = value
+    }
+    fun setSelectedTipeValue(value: String) {
+        _selectedTipeSpinner.value = value
+    }
+    fun setSelectedBulanValue(value: String) {
+        _selectedBulanSpinner.value = value
+    }
+
+  fun updateRecyclerViewData(value:String) {
+       // val selectedValue = _selected_kategori_entri.value
+     // Toast.makeText(getApplication(),value+" rv",Toast.LENGTH_SHORT).show()
+        viewModelScope.launch {
+            val newData = withContext(Dispatchers.IO) {
+                datasource2.getAllTransactionsWithCategoryNameKategori(value)
+            }
+                _recyclerViewData.value = newData
+            }
+        }
+    fun updateRecyclerViewData2(value:String) {
+        Toast.makeText(getApplication(),value+" rv",Toast.LENGTH_SHORT).show()
+        viewModelScope.launch {
+            val newData = withContext(Dispatchers.IO) {
+                datasource2.getAllTransactionsWithCategoryNameDate(value)
+            }
+            _recyclerViewData.value = newData
+        }
+    }
+    fun updateRecyclerViewData3() {
+        //Toast.makeText(getApplication(),value+" rv",Toast.LENGTH_SHORT).show()
+        viewModelScope.launch {
+            val newData = withContext(Dispatchers.IO) {
+            if ( selectedTipeSpinner.value=="ALL" && selectedBulanSpinner.value=="ALL"){
+                datasource2.getAllTransactionsWithCategoryList()
+
+            }else if(selectedTipeSpinner.value !="ALL"&& selectedBulanSpinner.value=="ALL" && selectedKategoriSpinner.value == "ALL"){
+                datasource2.getAllTransactionWithCategoriNameTipe(selectedTipeSpinner.value!!)
+            }
+            else if(selectedTipeSpinner.value =="ALL"&& selectedBulanSpinner.value!="ALL" && selectedKategoriSpinner.value == "ALL"){
+                datasource2.getAllTransactionsWithCategoryNameDate(selectedBulanSpinner.value!!)
+            }
+            else if(selectedTipeSpinner.value !="ALL" && selectedBulanSpinner.value=="ALL" && selectedKategoriSpinner.value != "ALL"){
+                datasource2.getAllTransactionsWithCategoryNameKategori(selectedKategoriSpinner.value!!)
+
+            }
+            else if(selectedTipeSpinner.value != "ALL" && selectedBulanSpinner.value!="ALL" && selectedKategoriSpinner.value=="ALL"){
+                datasource2.getAllTransactionsWithCategoryNameTipeDate(selectedTipeSpinner.value!!,selectedBulanSpinner.value!!)
+
+            }
+            //else if(selectedTipeSpinner.value !="ALL" && selectedKategoriSpinner.value != "ALL" && selectedBulanSpinner.value=="ALL"){
+              //  datasource2.getAllTransactionsWithCategoryNameDate(selectedBulanSpinner.value!!)
+
+            //}
+            else{
+                datasource2.getAllTransactionsWithCategoryNameKategoriDate(selectedKategoriSpinner.value!!+"", selectedBulanSpinner.value!!)
+
+            }
+            }
+            _recyclerViewData.value = newData
+        }
+    }
+    //transaction fragment
+    fun getKategoriEntries(value:String){
+        Toast.makeText(getApplication(),value+" kategori",Toast.LENGTH_SHORT).show()
+        viewModelScope.launch {
+            var newData = withContext(Dispatchers.IO) {
+                val list = datasource1.getKategoriNameD(value)
+                val modifiedList = listOf("ALL") + list // Create a new list with the added value
+                modifiedList // Return the modified list
+               // list
+            }
+            _kategori_entries.value = newData
+
+        }
+
+    }
 
     //Input Fragment
 
@@ -143,6 +239,7 @@ class MainViewModel(application: Application,
             transaction.date = getDate()
             transaction.note = note.value!!
             transaction.nominal = getNominal()
+            Toast.makeText(getApplication(),transaction.date.toString(),Toast.LENGTH_SHORT).show()
             insert(transaction)
         }
     onNavigateToHomeScreen()

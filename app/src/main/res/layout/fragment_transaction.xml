@@ -17,11 +17,11 @@
         tools:context=".transactions.TransactionFragment">
 
         <Spinner
-            android:id="@+id/spinner"
+            android:id="@+id/spinner_tipe_t"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/margin_medium"
-            android:entries="@{t_vmodel.a}"
+            android:entries="@{t_vmodel.tipe_entries}"
             app:layout_constraintEnd_toStartOf="@+id/spinner2"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
@@ -32,32 +32,32 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/margin_medium"
-            android:entries="@{t_vmodel.a}"
+            android:entries="@{t_vmodel.bulan}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/spinner"
+            app:layout_constraintStart_toEndOf="@+id/spinner_tipe_t"
             app:layout_constraintTop_toTopOf="parent" />
 
         <Spinner
-            android:id="@+id/spinner3"
+            android:id="@+id/spinner_kategori"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/margin_medium"
-            android:entries="@{t_vmodel.a}"
-            app:layout_constraintEnd_toStartOf="@+id/spinner4"
+
+            app:layout_constraintEnd_toStartOf="@+id/spinner_bulan"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/spinner" />
+            app:layout_constraintTop_toBottomOf="@id/spinner_tipe_t" />
 
         <Spinner
-            android:id="@+id/spinner4"
+            android:id="@+id/spinner_bulan"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/margin_medium"
-            android:entries="@{t_vmodel.a}"
+            android:entries="@{t_vmodel.bulan}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/spinner3"
+            app:layout_constraintStart_toEndOf="@+id/spinner_kategori"
             app:layout_constraintTop_toBottomOf="@id/spinner2" />
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/list_transaksi"
@@ -67,7 +67,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/spinner3"
+            app:layout_constraintTop_toBottomOf="@+id/spinner_kategori"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
