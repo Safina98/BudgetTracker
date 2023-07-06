@@ -29,6 +29,9 @@ interface CategoryDao{
     @Query("SELECT category_name FROM category_table WHERE category_type = :tipe")
     fun getKategoriNameD(tipe:String):List<String>
 
+    @Query("SELECT category_id FROM category_table WHERE category_name = :name")
+    fun getCategoryIdByName(name: String): Int
+
 
     @Query("SELECT category_name FROM category_table")
     fun getAllKategoriName():LiveData<List<String>>

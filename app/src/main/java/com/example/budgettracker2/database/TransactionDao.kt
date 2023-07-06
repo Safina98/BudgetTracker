@@ -5,6 +5,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
+import java.util.Date
 
 @Dao
 interface TransactionDao{
@@ -41,7 +42,27 @@ interface TransactionDao{
     fun getAllTransactionsWithCategoryNameDate(bulan:String): List<TransaksiModel>
     @Query("SELECT transaction_table.transaction_id as id, category_table.category_name as category_name_model_, transaction_table.note as ket, strftime('%Y-%m-%d', transaction_table.date) as date, transaction_table.nominal FROM transaction_table JOIN category_table ON transaction_table.category_id = category_table.category_id WHERE category_name =:kategori and strftime('%m', date) = :bulan")
     fun getAllTransactionsWithCategoryNameKategoriDate(kategori:String,bulan:String): List<TransaksiModel>
+    @Query("SELECT transaction_table.transaction_id AS id, category_table.category_name AS category_name_model_, " +
+            "transaction_table.note AS ket, transaction_table.date AS date, transaction_table.nominal AS nominal " +
+            "FROM transaction_table " +
+            "INNER JOIN category_table ON transaction_table.category_id = category_table.category_id " +
+            "WHERE (:type IS NULL OR category_table.category_type = :type) " +
+            "AND (:categoryId IS NULL OR transaction_table.category_id = :categoryId) " +
+            "AND (:startDate IS NULL OR strftime('%Y-%m-%d', transaction_table.date) >= :startDate) " +
+            "AND (:endDate IS NULL OR strftime('%Y-%m-%d', transaction_table.date) <= :endDate)")
+    fun getFilteredData(type: String?, categoryId: Int?, startDate: String?, endDate: String?): List<TransaksiModel>
+    @Query("SELECT t.transaction_id as id, c.category_name as category_name_model_, t.note as ket, t.date as date, t.nominal FROM transaction_table t INNER JOIN category_table c ON t.category_id = c.category_id WHERE (:type IS NULL OR c.category_type = :type OR :type = 'All') AND (:categoryId IS NULL OR t.category_id = :categoryId) AND (:startDate IS NULL OR t.date >= :startDate) AND (:endDate IS NULL OR t.date <= :endDate) ORDER BY t.date DESC")
+    fun getFilteredData2(type: String?, categoryId: Int?, startDate: Long?, endDate: Long?): List<TransaksiModel>
 
+    @Query("SELECT t.transaction_id AS id, c.category_name AS category_name_model_, t.note AS ket, t.date, t.nominal FROM transaction_table t " +
+            "INNER JOIN category_table c ON t.category_id = c.category_id WHERE" +
+            " (:type IS NULL OR c.category_type = :type OR :type = 'ALL') " +
+            "AND (:categoryId IS NULL OR t.category_id = :categoryId) " +
+            "AND (:startDate IS NULL OR t.date >= :startDate) " +
+            "AND (:endDate IS NULL OR  t.date <= :endDate) ORDER BY t.date DESC")
+    fun getFilteredData3(type: String?, categoryId: Int?, startDate: String?, endDate: String?): List<TransaksiModel>
+    @Query("SELECT t.transaction_id AS id, c.category_name AS category_name_model_, t.note AS ket, t.date, t.nominal FROM transaction_table t INNER JOIN category_table c ON t.category_id = c.category_id WHERE (:type IS NULL OR c.category_type = :type OR :type = 'All') AND (:categoryId IS NULL OR t.category_id = :categoryId) AND (t.date >= :startDate OR :startDate IS NULL) AND (t.date <= :endDate OR :endDate IS NULL) ORDER BY t.date DESC")
+    fun getFilteredData4(type: String?, categoryId: Int?, startDate: Long?, endDate: Long?): List<TransaksiModel>
 
 
     @Query("SELECT ifnull(SUM(nominal),0) from transaction_table")

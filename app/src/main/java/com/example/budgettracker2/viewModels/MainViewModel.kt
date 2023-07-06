@@ -2,8 +2,11 @@ package com.example.budgettracker2.viewModels
 
 import android.annotation.SuppressLint
 import android.app.Application
+import android.os.Build
+import android.util.Log
 import android.view.View
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.*
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewmodel.CreationExtras
@@ -15,6 +18,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
+import java.time.YearMonth
+import java.time.format.DateTimeFormatter
 import java.util.*
 
 class MainViewModel(application: Application,
@@ -47,19 +52,24 @@ class MainViewModel(application: Application,
     private val _selectedKategoriSpinner = MutableLiveData<String>()
     val selectedKategoriSpinner: LiveData<String> get() = _selectedKategoriSpinner
 
+    private val _selectedStartDate = MutableLiveData<Date>()
+    val selectedStartDate: LiveData<Date> get() = _selectedStartDate
 
+    private val _selectedEndDate = MutableLiveData<Date>()
+    val selectedEndDate: LiveData<Date> get() = _selectedEndDate
+
+    private var _is_date_range = MutableLiveData<Boolean>()
+    val is_date_range :LiveData<Boolean>get() = _is_date_range
 
     //val bulan = listOf<String>("ALL","Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","Oktober","November","Desember")
-    val bulan = listOf<String>("ALL","01","02","03","04","05","06")
+    val bulan = listOf<String>("ALL","01","02","03","04","05","06","07","08","09","10","11","12","Date Range")
     private val _selectedBulanSpinner = MutableLiveData<String>()
     val selectedBulanSpinner: LiveData<String> get() = _selectedBulanSpinner
-
-
-    val semuatabeltransaksi = datasource2.getAllTransactionTableCoba()
 
     private val _recyclerViewData = MutableLiveData<List<TransaksiModel>>()
     val recyclerViewData: LiveData<List<TransaksiModel>>
         get() = _recyclerViewData
+    val semuatabeltransaksi = datasource2.getAllTransactionTableCoba()
 
 
     val transaction = datasource2.getAllTransactionsWithCategoryName()
@@ -95,15 +105,19 @@ class MainViewModel(application: Application,
     //Date Picker
     private val _selectedDate = MutableLiveData<String>()
     val selectedDate: LiveData<String> = _selectedDate
-    private var _is_date_picker_clicked = MutableLiveData<Boolean>()
+    private var _is_date_picker_clicked = MutableLiveData<Boolean>(false)
     val is_date_picker_clicked :LiveData<Boolean>get() = _is_date_picker_clicked
+
+
     init {
         val currentDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+
         _selectedDate.value = currentDate
         _selectedTipeSpinner.value = "ALL"
         _selectedKategoriSpinner.value = "ALL"
         _selectedBulanSpinner.value  = "ALL"
         _selectedKategoriSpinner.value= "ALL"
+
     }
 
 
@@ -161,57 +175,62 @@ class MainViewModel(application: Application,
         _selectedBulanSpinner.value = value
     }
 
-  fun updateRecyclerViewData(value:String) {
-       // val selectedValue = _selected_kategori_entri.value
-     // Toast.makeText(getApplication(),value+" rv",Toast.LENGTH_SHORT).show()
-        viewModelScope.launch {
-            val newData = withContext(Dispatchers.IO) {
-                datasource2.getAllTransactionsWithCategoryNameKategori(value)
+    fun setDateRange(startDate:Date,endDate:Date){
+        _selectedStartDate.value = startDate
+        _selectedEndDate.value=endDate
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun updateRv4(){
+        val type = if (selectedTipeSpinner.value == "ALL") null else selectedTipeSpinner.value
+        val startDate: String?
+        val endDate: String?
+        if (selectedBulanSpinner.value != "Date Range") {
+            // Extract the month value from the selected date spinner
+            val selectedMonth =selectedBulanSpinner.value?.toIntOrNull()
+            if (selectedMonth != null) {
+                 startDate = constructStartDate(selectedMonth)
+                endDate = constructEndDate(selectedMonth)
+            } else {
+                // Invalid month value, handle the error case
+                startDate = null
+                endDate = null
             }
-                _recyclerViewData.value = newData
-            }
+        } else {
+            // Date range option selected, use the selected start and end dates
+            startDate = formatDate(selectedStartDate.value)
+            endDate = formatDate(selectedEndDate.value)
         }
-    fun updateRecyclerViewData2(value:String) {
-        Toast.makeText(getApplication(),value+" rv",Toast.LENGTH_SHORT).show()
+        performDataFiltering(type, selectedKategoriSpinner.value!!, startDate, endDate)
+    }
+    private fun performDataFiltering(type: String?, category: String, startDate: String?, endDate: String?) {
         viewModelScope.launch {
-            val newData = withContext(Dispatchers.IO) {
-                datasource2.getAllTransactionsWithCategoryNameDate(value)
+            val categoryId = withContext(Dispatchers.IO) {
+                if (category == "ALL") null else datasource1.getCategoryIdByName(category)
             }
-            _recyclerViewData.value = newData
+            val filteredData = withContext(Dispatchers.IO) {
+                datasource2.getFilteredData3(type, categoryId, startDate, endDate)
+            }
+            _recyclerViewData.value = filteredData
         }
     }
-    fun updateRecyclerViewData3() {
-        //Toast.makeText(getApplication(),value+" rv",Toast.LENGTH_SHORT).show()
-        viewModelScope.launch {
-            val newData = withContext(Dispatchers.IO) {
-            if ( selectedTipeSpinner.value=="ALL" && selectedBulanSpinner.value=="ALL"){
-                datasource2.getAllTransactionsWithCategoryList()
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun constructStartDate(month: Int): String? {
+        val startDate = YearMonth.of(2023, month).atDay(1)
+        return startDate.format(DateTimeFormatter.ISO_DATE)
+    }
 
-            }else if(selectedTipeSpinner.value !="ALL"&& selectedBulanSpinner.value=="ALL" && selectedKategoriSpinner.value == "ALL"){
-                datasource2.getAllTransactionWithCategoriNameTipe(selectedTipeSpinner.value!!)
-            }
-            else if(selectedTipeSpinner.value =="ALL"&& selectedBulanSpinner.value!="ALL" && selectedKategoriSpinner.value == "ALL"){
-                datasource2.getAllTransactionsWithCategoryNameDate(selectedBulanSpinner.value!!)
-            }
-            else if(selectedTipeSpinner.value !="ALL" && selectedBulanSpinner.value=="ALL" && selectedKategoriSpinner.value != "ALL"){
-                datasource2.getAllTransactionsWithCategoryNameKategori(selectedKategoriSpinner.value!!)
-
-            }
-            else if(selectedTipeSpinner.value != "ALL" && selectedBulanSpinner.value!="ALL" && selectedKategoriSpinner.value=="ALL"){
-                datasource2.getAllTransactionsWithCategoryNameTipeDate(selectedTipeSpinner.value!!,selectedBulanSpinner.value!!)
-
-            }
-            //else if(selectedTipeSpinner.value !="ALL" && selectedKategoriSpinner.value != "ALL" && selectedBulanSpinner.value=="ALL"){
-              //  datasource2.getAllTransactionsWithCategoryNameDate(selectedBulanSpinner.value!!)
-
-            //}
-            else{
-                datasource2.getAllTransactionsWithCategoryNameKategoriDate(selectedKategoriSpinner.value!!+"", selectedBulanSpinner.value!!)
-
-            }
-            }
-            _recyclerViewData.value = newData
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun constructEndDate(month: Int): String? {
+        val endDate = YearMonth.of(2023, month).atEndOfMonth()
+        return endDate.format(DateTimeFormatter.ISO_DATE)
+    }
+    private fun formatDate(date: Date?): String? {
+        if (date != null) {
+            val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            return dateFormat.format(date)
         }
+        return null
     }
     //transaction fragment
     fun getKategoriEntries(value:String){
@@ -224,9 +243,7 @@ class MainViewModel(application: Application,
                // list
             }
             _kategori_entries.value = newData
-
         }
-
     }
 
     //Input Fragment
@@ -237,6 +254,7 @@ class MainViewModel(application: Application,
             val selected_kategori = getSelectedCategory()
             transaction.category_id= getCategory_id()
             transaction.date = getDate()
+            Log.i("DATE","inputeddate: "+transaction.date)
             transaction.note = note.value!!
             transaction.nominal = getNominal()
             Toast.makeText(getApplication(),transaction.date.toString(),Toast.LENGTH_SHORT).show()

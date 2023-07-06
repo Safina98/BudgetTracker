@@ -28,22 +28,6 @@ class InputFragment : Fragment() {
         binding.iVmodel = viewModel
         binding.lifecycleOwner = this
 
-/*
-        viewModel._tipe_position.observe(requireActivity(),
-            object : Observer<Int> {
-                override fun onChanged(t: Int?) {
-                    //you will get the position on selection os spinner
-
-                    viewModel.nama_kategori?.observe(viewLifecycleOwner, Observer {
-                        it?.let {
-                           // adapter.submitList(it)
-                            //adapter.notifyDataSetChanged()
-                          //  Toast.makeText(context,it.toString(),Toast.LENGTH_LONG).show()
-                        }
-                    })
-                }})
-
- */
         viewModel._tipe_position.observe(viewLifecycleOwner, Observer{
 
         })
@@ -79,19 +63,6 @@ class InputFragment : Fragment() {
         viewModel.selectedDate.observe(viewLifecycleOwner, { selectedDate ->
             // Do something with the selected date
         })
-/*
-
-        viewModel._tipe_position.observe(viewLifecycleOwner, Observer {
-         //Toast.makeText(context,it.toString(),Toast.LENGTH_SHORT).show()
-            viewModel.getCathegoryName(0)
-        })
-        viewModel.nama_kategori.observe(viewLifecycleOwner, Observer {
-            //Toast.makeText(context,it.toString(),Toast.LENGTH_LONG).show()
-
-
-        })
-
- */
 
         viewModel.kategori.observe(viewLifecycleOwner, Observer {
             it?.let {
