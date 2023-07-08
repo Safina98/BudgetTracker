@@ -21,6 +21,8 @@ import java.text.SimpleDateFormat
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 import java.util.*
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 class MainViewModel(application: Application,
                     val datasource1:CategoryDao,
@@ -45,7 +47,6 @@ class MainViewModel(application: Application,
     val tipe_entries = listOf<String>("ALL","PEMASUKAN","PENGELUARAN")
     private val _selectedTipeSpinner = MutableLiveData<String>()
     val selectedTipeSpinner: LiveData<String> get() = _selectedTipeSpinner
-
 
     var _kategori_entries = MutableLiveData<List<String>>()
     val kategori_entries :LiveData<List<String>> get() = _kategori_entries
@@ -96,6 +97,7 @@ class MainViewModel(application: Application,
 
     val jumlah = MutableLiveData<String>("0")
     val note = MutableLiveData<String>("")
+    val kategoricobe = datasource1.getAllKategoriCoba()
 
 /*
     val nama_kategori get() = _tipe_position.value.let {tipe_p->
@@ -108,7 +110,6 @@ class MainViewModel(application: Application,
     private var _is_date_picker_clicked = MutableLiveData<Boolean>(false)
     val is_date_picker_clicked :LiveData<Boolean>get() = _is_date_picker_clicked
 
-
     init {
         val currentDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
 
@@ -117,11 +118,7 @@ class MainViewModel(application: Application,
         _selectedKategoriSpinner.value = "ALL"
         _selectedBulanSpinner.value  = "ALL"
         _selectedKategoriSpinner.value= "ALL"
-
     }
-
-
-
 
  /************************************************************************************************************/
  /*********************************************FUNTIONS*******************************************************/
@@ -144,20 +141,21 @@ class MainViewModel(application: Application,
        return kategori.value!!.filter { it.category_name_ == getSelectedCategory()}.map {
             it.id_ }.first()
     }
+    suspend fun getCategoryId(category: String) :Int{
+       var a =  withContext(Dispatchers.IO) {
+            datasource1.getCategoryIdByName(category)
+        }
+        return a
+    }
+
     fun getNominal():Int{
-       return if(_tipe_position.value!=1){
+       return if(selectedTipeSpinner.value=="PENGELUARAN"){
            jumlah.value?.toInt()!! *-1
        }else{
            jumlah.value!!.toInt()
        }
     }
-    fun getTodaysDate():String{
-        val calendar = Calendar.getInstance()
-        val year = calendar.get(Calendar.YEAR)
-        val month = calendar.get(Calendar.MONTH)
-        val day = calendar.get(Calendar.DAY_OF_MONTH)
-        return  "${year}-${(month+1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}"
-    }
+
     fun getDate():Date{
         val dateString = selectedDate.value
         val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
@@ -167,6 +165,8 @@ class MainViewModel(application: Application,
 
     fun setSelectedKategoriValue(value: String) {
         _selectedKategoriSpinner.value = value
+        viewModelScope.launch { getCategoryId(selectedKategoriSpinner.value ?: value) }
+
     }
     fun setSelectedTipeValue(value: String) {
         _selectedTipeSpinner.value = value
@@ -174,7 +174,6 @@ class MainViewModel(application: Application,
     fun setSelectedBulanValue(value: String) {
         _selectedBulanSpinner.value = value
     }
-
     fun setDateRange(startDate:Date,endDate:Date){
         _selectedStartDate.value = startDate
         _selectedEndDate.value=endDate
@@ -234,13 +233,12 @@ class MainViewModel(application: Application,
     }
     //transaction fragment
     fun getKategoriEntries(value:String){
-        Toast.makeText(getApplication(),value+" kategori",Toast.LENGTH_SHORT).show()
+       // Toast.makeText(getApplication(),value+" kategori",Toast.LENGTH_SHORT).show()
         viewModelScope.launch {
             var newData = withContext(Dispatchers.IO) {
                 val list = datasource1.getKategoriNameD(value)
                 val modifiedList = listOf("ALL") + list // Create a new list with the added value
                 modifiedList // Return the modified list
-               // list
             }
             _kategori_entries.value = newData
         }
@@ -251,13 +249,12 @@ class MainViewModel(application: Application,
     fun saveTransaction(){
         viewModelScope.launch {
             val transaction = TransactionTable()
-            val selected_kategori = getSelectedCategory()
-            transaction.category_id= getCategory_id()
+            //val selected_kategori = getSelectedCategory()
+            val kategori:String = selectedKategoriSpinner.value ?: ""
+            transaction.category_id= getCategoryId(kategori)
             transaction.date = getDate()
-            Log.i("DATE","inputeddate: "+transaction.date)
             transaction.note = note.value!!
             transaction.nominal = getNominal()
-            Toast.makeText(getApplication(),transaction.date.toString(),Toast.LENGTH_SHORT).show()
             insert(transaction)
         }
     onNavigateToHomeScreen()

@@ -13,9 +13,9 @@ import java.util.*
 @TypeConverters(DateTypeConverter::class)
 data class TransactionTable(
     @PrimaryKey(autoGenerate = true)
-    var transaction_id:Int=0,
+    var transaction_id:Int = 0,
     @ColumnInfo(name = "category_id")
-    var category_id:Int=0,
+    var category_id:Int? = null,
     @ColumnInfo(name = "note")
     var note:String="",
     @ColumnInfo(name = "date")

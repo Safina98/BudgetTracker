@@ -38,17 +38,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/margin_medium"
-                android:selectedItemPosition="@={i_vmodel._tipe_position}"
                 android:entries="@{i_vmodel.tipe_list}"
 
                 />
             <Spinner
-                android:id="@+id/spinner_kategori"
+                android:id="@+id/spinner_kategori_i"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/margin_medium"
-                android:selectedItemPosition="@={i_vmodel._kategori_Position}"
-                android:entries="@{i_vmodel.nama_kategori}"
                 />
             <!-- android:entries="@{i_vmodel.nama_kategori}"-->
            <com.google.android.material.textfield.TextInputLayout

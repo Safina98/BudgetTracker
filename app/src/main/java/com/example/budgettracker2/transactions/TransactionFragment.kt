@@ -65,17 +65,18 @@ class TransactionFragment : Fragment() {
         binding.spinnerBulan.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
                 val selectedItem = parent.getItemAtPosition(position).toString()
-                if (selectedItem == "Date Range") {
-                    // Handle the selection of date range, e.g., show a date picker dialog
-                    // and update the selected value in your ViewModel accordingly
-                    //showDatePickerDialog()
-                    viewModel.onDatePickerClick()
-                } else {
-                    // Update the selected value in your ViewModel for other options
                     viewModel.setSelectedBulanValue(selectedItem)
-                }
                 // Update the selected value in your ViewModel
-
+            }
+            override fun onNothingSelected(parent: AdapterView<*>) {
+                // Handle the case when nothing is selected
+            }
+        }
+        binding.spinnerKategori.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+                val selectedItem = parent.getItemAtPosition(position).toString()
+                // Update the selected value in your ViewModel
+                viewModel.setSelectedKategoriValue(selectedItem)
             }
             override fun onNothingSelected(parent: AdapterView<*>) {
                 // Handle the case when nothing is selected
@@ -115,21 +116,10 @@ class TransactionFragment : Fragment() {
 
         })
 
-        binding.spinnerKategori.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
-                val selectedItem = parent.getItemAtPosition(position).toString()
-                // Update the selected value in your ViewModel
-                viewModel.setSelectedKategoriValue(selectedItem)
-            }
-            override fun onNothingSelected(parent: AdapterView<*>) {
-                // Handle the case when nothing is selected
-            }
-        }
+
 
         viewModel.selectedKategoriSpinner.observe(viewLifecycleOwner, Observer { value ->
             // Handle the selected value
-            //viewModel.updateRecyclerViewData(value)
-           // viewModel.updateRecyclerViewData3()
             viewModel.updateRv4()
         })
         return binding.root

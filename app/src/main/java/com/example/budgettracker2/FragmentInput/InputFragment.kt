@@ -2,10 +2,13 @@ package com.example.budgettracker2.FragmentInput
 
 import android.app.DatePickerDialog
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
@@ -28,6 +31,40 @@ class InputFragment : Fragment() {
         binding.iVmodel = viewModel
         binding.lifecycleOwner = this
 
+        binding.spinnerTipe.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+                val selectedItem = parent.getItemAtPosition(position).toString()
+                // Update the selected value in your ViewModel
+                viewModel.setSelectedTipeValue(selectedItem)
+            }
+            override fun onNothingSelected(parent: AdapterView<*>) {
+                // Handle the case when nothing is selected
+            }
+        }
+        binding.spinnerKategoriI.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+                val selectedItem = parent.getItemAtPosition(position).toString()
+                // Update the selected value in your ViewModel
+                viewModel.setSelectedKategoriValue(selectedItem)
+            }
+            override fun onNothingSelected(parent: AdapterView<*>) {
+                // Handle the case when nothing is selected
+            }
+        }
+        viewModel.selectedTipeSpinner.observe(viewLifecycleOwner, Observer { value ->
+            // Handle the selected value
+            viewModel.getKategoriEntries(value)
+        })
+        viewModel.kategori_entries.observe(viewLifecycleOwner, Observer { entries ->
+            val adapter1 = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, entries)
+            adapter1.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            binding.spinnerKategoriI.adapter = adapter1
+        })
+        viewModel.selectedKategoriSpinner.observe(viewLifecycleOwner, Observer { value ->
+            // Handle the selected value
+            Log.i("THEBUG",value.toString())
+        })
+
         viewModel._tipe_position.observe(viewLifecycleOwner, Observer{
 
         })
@@ -36,11 +73,15 @@ class InputFragment : Fragment() {
         })
 
         viewModel.semuatabeltransaksi.observe(viewLifecycleOwner, Observer{it?.let {
-            Toast.makeText(context,it.toString(),Toast.LENGTH_LONG).show()
+
         }
 
         })
+        viewModel.kategoricobe.observe(viewLifecycleOwner, Observer{it?.let {
+            Log.i("THEBUG",it.toString())
+        }
 
+        })
          viewModel.navigate_to_toHomeScreen.observe(viewLifecycleOwner, Observer {if(it==true){
              this.findNavController().navigate(InputFragmentDirections.actionInputFragmentToHomeScreenFragment())
              viewModel.onNavigatedToHomeScreen()
