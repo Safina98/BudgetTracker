@@ -6,7 +6,7 @@
     <data>
         <variable
             name="hs_vmodel"
-            type="com.example.budgettracker2.viewModels.MainViewModel" />
+            type="com.example.budgettracker2.viewModels.HSViewModel" />
 
     </data>
 
@@ -52,6 +52,15 @@
             app:layout_constraintEnd_toStartOf="@+id/button"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/btn_budget_rn" />
+        <Button
+            android:id="@+id/add_category"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Add new category"
+            android:onClick="@{()-> hs_vmodel.onAddCategoryClick()}"
+            app:layout_constraintBottom_toTopOf="@+id/list_kategori"
+            app:layout_constraintStart_toStartOf="@+id/text_k"
+            app:layout_constraintTop_toBottomOf="@+id/text_k" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/list_kategori"
@@ -61,7 +70,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/text_k" />
+            app:layout_constraintTop_toBottomOf="@+id/add_category" />
 
         <Button
             android:id="@+id/button"
@@ -89,6 +98,8 @@
             android:onClick="@{()->hs_vmodel.onNavigateToInput()}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
+
+
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

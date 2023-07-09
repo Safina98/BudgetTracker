@@ -65,7 +65,7 @@ class TransactionFragment : Fragment() {
         binding.spinnerBulan.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
                 val selectedItem = parent.getItemAtPosition(position).toString()
-                    viewModel.setSelectedBulanValue(selectedItem)
+                viewModel.setSelectedBulanValue(selectedItem)
                 // Update the selected value in your ViewModel
             }
             override fun onNothingSelected(parent: AdapterView<*>) {
@@ -115,8 +115,6 @@ class TransactionFragment : Fragment() {
             adapter.submitList(data)
 
         })
-
-
 
         viewModel.selectedKategoriSpinner.observe(viewLifecycleOwner, Observer { value ->
             // Handle the selected value

@@ -3,7 +3,6 @@ package com.example.budgettracker2.viewModels
 import android.annotation.SuppressLint
 import android.app.Application
 import android.os.Build
-import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -21,8 +20,6 @@ import java.text.SimpleDateFormat
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 import java.util.*
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
 
 class MainViewModel(application: Application,
                     val datasource1:CategoryDao,
@@ -77,33 +74,19 @@ class MainViewModel(application: Application,
 
 
     /****************************************************HomeScreen**********************************************/
-    val kategori = datasource1.getAllKategori()
 
-    val budget_rn = datasource2.getBuget()
-    val tm_spend = datasource2.getSumByCategoryType("PENGELUARAN")
-    val tm_income = datasource2.getSumByCategoryType("PEMASUKAN")
-    var budget_tmm = datasource2.getBugetTM()
+
 
 /************************************************Input****************************************************/
     //Spinner Position
     var _tipe_position = MutableLiveData<Int>(0)
     var _kategori_Position = MutableLiveData<Int>()
     //Spinner entries
-    val tipe_list = listOf<String>(tipe.PENGELUARAN.toString(),tipe.PEMASUKAN.toString())
     val nama_kategori = datasource1.getAllKategoriName()
-    //selected item spinner
-    val selected_kategori = MutableLiveData<String>()
-    val selected_tipe = MutableLiveData<String>()
 
     val jumlah = MutableLiveData<String>("0")
     val note = MutableLiveData<String>("")
     val kategoricobe = datasource1.getAllKategoriCoba()
-
-/*
-    val nama_kategori get() = _tipe_position.value.let {tipe_p->
-        datasource1.getKategoriName(tipe_list[tipe_p!!])
-        }
- */
     //Date Picker
     private val _selectedDate = MutableLiveData<String>()
     val selectedDate: LiveData<String> = _selectedDate
@@ -133,14 +116,6 @@ class MainViewModel(application: Application,
     fun onDatePickerClicked(){ _is_date_picker_clicked.value = false }
 /******************************************************CRUD***********************************************/
 
-    //Getter
-    fun getSelectedCategory():String{
-        return kategori.value!![_kategori_Position.value!!].category_name_
-    }
-    fun getCategory_id():Int{
-       return kategori.value!!.filter { it.category_name_ == getSelectedCategory()}.map {
-            it.id_ }.first()
-    }
     suspend fun getCategoryId(category: String) :Int{
        var a =  withContext(Dispatchers.IO) {
             datasource1.getCategoryIdByName(category)
@@ -284,7 +259,7 @@ class MainViewModel(application: Application,
     fun onNavigateToHomeScreen(){ _navigate_to_homeScreen.value = true }
     @SuppressLint("NullSafeMutableLiveData")
     fun onNavigatedToHomeScreen(){_navigate_to_homeScreen.value=null}
-    fun onFabHSLongClick(v: View): Boolean { return true }
+
 
 
     companion object {

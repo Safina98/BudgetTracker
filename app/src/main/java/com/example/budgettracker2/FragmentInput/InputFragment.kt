@@ -105,13 +105,6 @@ class InputFragment : Fragment() {
             // Do something with the selected date
         })
 
-        viewModel.kategori.observe(viewLifecycleOwner, Observer {
-            it?.let {
-
-            }
-        })
-
-
         //viewModel.getCathegoryName(0)
 
         return binding.root

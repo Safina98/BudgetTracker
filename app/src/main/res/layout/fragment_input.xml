@@ -38,8 +38,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/margin_medium"
-                android:entries="@{i_vmodel.tipe_list}"
-
+                android:entries="@array/tipe_list"
                 />
             <Spinner
                 android:id="@+id/spinner_kategori_i"
