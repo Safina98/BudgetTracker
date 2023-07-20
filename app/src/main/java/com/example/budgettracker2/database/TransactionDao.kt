@@ -2,6 +2,7 @@ package com.example.budgettracker2.database
 
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
@@ -13,9 +14,14 @@ interface TransactionDao{
     fun insert(TransactionTable: TransactionTable)
     @Update
     fun update(TransactionTable: TransactionTable)
+    @Delete
+    fun delete2(t:TransactionTable)
 
     @Query("DELETE FROM transaction_table WHERE transaction_id =:trans_id")
     fun delete(trans_id:Int)
+
+    @Query("SELECT * FROM transaction_table WHERE transaction_id =:id ")
+    fun getTransById(id:Int):TransactionTable
 
     @Query("SELECT * FROM transaction_table")
     fun getAllTransactionTableCoba(): LiveData<List<TransactionTable>>
@@ -71,7 +77,7 @@ interface TransactionDao{
     @Query("SELECT ifnull(SUM(nominal),0)  from transaction_table WHERE nominal < 0")
     fun getBugetTM():LiveData<Int>
 
-    @Query("SELECT SUM(nominal) FROM transaction_table t JOIN category_table c ON t.category_id = c.category_id WHERE c.category_type = :categoryType")
+    @Query("SELECT SUM(nominal) FROM transaction_table t JOIN category_table c ON t.category_id = c.category_id WHERE c.category_type = :categoryType AND strftime('%Y-%m', date) = strftime('%Y-%m', 'now')")
     fun getSumByCategoryType(categoryType: String): LiveData<Int>
 
 

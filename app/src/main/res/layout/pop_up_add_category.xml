@@ -36,10 +36,12 @@
             android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
+            style="@style/big_text_style"
             app:layout_constraintTop_toBottomOf="@+id/spinner_tipe_ac">
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/text_category_name_ac"
                 android:hint="Note"
+                style="@style/big_text_style"
                 android:text="@={ac_vmodel._kategori_name_ac}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

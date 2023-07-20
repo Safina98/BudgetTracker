@@ -3,6 +3,7 @@ package com.example.budgettracker2.database
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
@@ -16,6 +17,15 @@ interface CategoryDao{
     //fun insertInit(category:CategoryTable)
     @Update
     fun update(category:CategoryTable)
+
+    @Delete
+    fun delete1(c:CategoryTable)
+
+    @Query("DELETE FROM category_table WHERE category_id =:id")
+    fun delete(id:Int)
+
+    @Query("SELECT * FROM category_table WHERE category_id =:id")
+    fun getCategory(id:Int):CategoryTable
 
     @Query("SELECT category_table.category_id as id_, category_table.category_name as category_name_, category_table.category_type as category_type_, category_table.category_color as category_color_, SUM(transaction_table.nominal) as sum FROM category_table LEFT JOIN transaction_table ON category_table.category_id = transaction_table.category_id GROUP BY category_table.category_id")
     fun getAllKategori(): LiveData<List<KategoriModel>>

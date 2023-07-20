@@ -5,12 +5,20 @@
     android:shape="oval">
     <solid android:color="#199fff"/>
     <gradient
-        android:angle="45"
-        android:centerColor="@color/btn_center_pink"
-        android:centerX="40%"
-        android:endColor="@color/center_blue"
-        android:startColor="@color/center_blue"
-        android:type="linear" />
+        android:centerX="50%"
+        android:centerY="50%"
+        android:gradientRadius="50%"
+        android:startColor="#E1F5FE"
+        android:endColor="#CAC1EA"
+        android:type="radial" />
+    <!--
+android:angle="45"
+        android:centerColor="#FFCDD2"
+        android:centerX="60%"
+        android:endColor="#DCEDC8"
+        android:startColor="#F8BBD0"
+        android:type="radial"
+    -->
     <size
         android:width="72dp"
         android:height="72dp"/>
@@ -30,10 +38,10 @@
             <corners android:radius="4dp" />
             <gradient
                 android:angle="45"
-                android:centerColor="#F8BBD0"
+                android:centerColor="#1A237E"
                 android:centerX="50%"
-                android:endColor="@color/puple_end"
-                android:startColor="@color/puple_end"
+                android:endColor="#0D47A1"
+                android:startColor="#242532"
                 android:type="linear" />
         </shape>
     </item>
@@ -44,10 +52,10 @@
             <corners android:radius="4dp" />
             <gradient
                 android:angle="45"
-                android:centerColor="#F8BBD0"
+                android:centerColor="#1A237E"
                 android:centerX="50%"
-                android:endColor="@color/puple_end"
-                android:startColor="@color/puple_end"
+                android:endColor="#0D47A1"
+                android:startColor="#242532"
                 android:type="linear" />
 
         </shape>

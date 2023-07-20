@@ -21,19 +21,21 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/margin_medium"
-            android:entries="@{t_vmodel.tipe_entries}"
             app:layout_constraintEnd_toStartOf="@+id/date_range_btn"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <Button
+        <TextView
             android:id="@+id/date_range_btn"
+            style="@style/big_text_style"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/margin_medium"
-            android:text="Pick Date Range"
             android:onClick="@{()->t_vmodel.onDatePickerClick()}"
+            android:text="Pick Date Range"
+            android:textAlignment="center"
+            android:textSize="14sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/spinner_tipe_t"
@@ -53,22 +55,21 @@
             android:id="@+id/spinner_bulan"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_medium"
-            android:entries="@{t_vmodel.bulan}"
+            app:layout_constraintBottom_toBottomOf="@+id/spinner_kategori"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/spinner_kategori"
-            app:layout_constraintTop_toBottomOf="@id/date_range_btn" />
+            app:layout_constraintStart_toEndOf="@+id/spinner_kategori" />
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/list_transaksi"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginTop="32dp"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/spinner_kategori"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
+            app:layout_constraintTop_toBottomOf="@+id/spinner_kategori" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

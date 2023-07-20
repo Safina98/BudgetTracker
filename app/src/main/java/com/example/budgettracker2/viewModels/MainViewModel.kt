@@ -3,13 +3,12 @@ package com.example.budgettracker2.viewModels
 import android.annotation.SuppressLint
 import android.app.Application
 import android.os.Build
-import android.view.View
+import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.*
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewmodel.CreationExtras
-import com.example.budgettracker2.tipe
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.budgettracker2.database.*
@@ -33,8 +32,11 @@ class MainViewModel(application: Application,
     private var _navigate_to_transaction = MutableLiveData<Int>()
     val navigate_to_transaction :LiveData<Int>get() = _navigate_to_transaction
 
-    private var _navigate_to_input = MutableLiveData<Boolean>()
-    val navigate_to_input :LiveData<Boolean>get() = _navigate_to_input
+    private var _navigate_to_input = MutableLiveData<Int>()
+    val navigate_to_input :LiveData<Int>get() = _navigate_to_input
+
+    private var _trans_id = MutableLiveData<Int>()
+    val trans_id:LiveData<Int>get() = _trans_id
 
     private var _navigate_to_homeScreen = MutableLiveData<Boolean>()
     val navigate_to_toHomeScreen :LiveData<Boolean>get() = _navigate_to_homeScreen
@@ -70,28 +72,22 @@ class MainViewModel(application: Application,
     val semuatabeltransaksi = datasource2.getAllTransactionTableCoba()
 
 
-    val transaction = datasource2.getAllTransactionsWithCategoryName()
-
-
-    /****************************************************HomeScreen**********************************************/
-
-
-
 /************************************************Input****************************************************/
     //Spinner Position
-    var _tipe_position = MutableLiveData<Int>(0)
-    var _kategori_Position = MutableLiveData<Int>()
     //Spinner entries
-    val nama_kategori = datasource1.getAllKategoriName()
-
+//field
     val jumlah = MutableLiveData<String>("0")
     val note = MutableLiveData<String>("")
-    val kategoricobe = datasource1.getAllKategoriCoba()
     //Date Picker
     private val _selectedDate = MutableLiveData<String>()
     val selectedDate: LiveData<String> = _selectedDate
     private var _is_date_picker_clicked = MutableLiveData<Boolean>(false)
     val is_date_picker_clicked :LiveData<Boolean>get() = _is_date_picker_clicked
+    /*************************************Update&Delete*******************************************************/
+    private var _clicked_transtab = MutableLiveData<TransactionTable>()
+    val clicked_transtab: LiveData<TransactionTable> get() = _clicked_transtab
+    val _clicked_category = MutableLiveData<CategoryTable>()
+
 
     init {
         val currentDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
@@ -116,7 +112,7 @@ class MainViewModel(application: Application,
     fun onDatePickerClicked(){ _is_date_picker_clicked.value = false }
 /******************************************************CRUD***********************************************/
 
-    suspend fun getCategoryId(category: String) :Int{
+    private suspend fun getCategoryId(category: String) :Int{
        var a =  withContext(Dispatchers.IO) {
             datasource1.getCategoryIdByName(category)
         }
@@ -216,11 +212,35 @@ class MainViewModel(application: Application,
                 modifiedList // Return the modified list
             }
             _kategori_entries.value = newData
+            Log.i("UPDATEC","input get c"+_kategori_entries.value.toString())
         }
     }
 
     //Input Fragment
 
+    fun saveOrUpdate(){
+        if (_trans_id.value!=-1)
+        {
+            updateTransaction()
+        }
+        else{
+            saveTransaction()
+        }
+    }
+    fun updateTransaction(){
+        viewModelScope.launch {
+            val transaction = TransactionTable()
+            transaction.date = getDate()
+            transaction.note=note.value!!
+            val kategori:String = selectedKategoriSpinner.value ?: ""
+            transaction.category_id = getCategoryId(kategori)
+            transaction.nominal=getNominal()
+            transaction.transaction_id = clicked_transtab.value!!.transaction_id
+            update_trans(transaction)
+        }
+
+        onNavigateToTransaction(-1)
+    }
     fun saveTransaction(){
         viewModelScope.launch {
             val transaction = TransactionTable()
@@ -232,26 +252,79 @@ class MainViewModel(application: Application,
             transaction.nominal = getNominal()
             insert(transaction)
         }
-    onNavigateToHomeScreen()
+        onNavigateToHomeScreen()
     }
-    fun deleteTransaction(trans_id:Int){
-        viewModelScope.launch {
 
-            delete_trans(trans_id)
+    fun getCategoryName(){
+        viewModelScope.launch {
+            _clicked_category.value  = getCategory()
+            }
+    }
+    private suspend fun getCategory(): CategoryTable? {
+        return withContext(Dispatchers.IO) {
+            datasource1.getCategory(clicked_transtab.value!!.category_id!!)
         }
     }
+
+    fun getClickedTransTab(id:Int){
+        viewModelScope.launch {
+            val a =withContext(Dispatchers.IO) {
+              datasource2.getTransById(id)
+            }
+            _clicked_transtab.value = a
+            _clicked_category.value = getCategory()
+        }
+    }
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun deleteTransaction(trans_id:Int){
+        viewModelScope.launch {
+           // Log.i("UPDATET",clicked_transtab.value.toString())
+            delete_trans(clicked_transtab.value!!)
+            updateRv4()
+        }
+    }
+    fun setValueForUpdate(){
+        val t = clicked_transtab.value
+        Toast.makeText(getApplication(),clicked_transtab.value.toString(),Toast.LENGTH_SHORT).show()
+        note.value = t?.note ?: ""
+        jumlah.value = t?.nominal.toString() ?: "0"
+        _selectedDate.value = formatDateToString(t?.date)
+
+    }
+
+    fun formatDateToString(date: Date?): String {
+        val format = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        return format.format(date)
+    }
+    fun resetValue(){
+        note.value = ""
+        jumlah.value = "0"
+        _selectedDate.value=SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+        _selectedKategoriSpinner.value ="ALL"
+        _selectedTipeSpinner.value = "PENGELUARAN"
+        _clicked_transtab.value = TransactionTable()
+        _clicked_category.value=CategoryTable()
+
+    }
+    fun setTransId(id:Int){
+        _trans_id.value = id
+    }
     private suspend fun insert(transaksi: TransactionTable){ withContext(Dispatchers.IO){datasource2.insert(transaksi)} }
-    private suspend fun delete_trans(trans_id:Int){ withContext(Dispatchers.IO){datasource2.delete(trans_id)} }
+    private suspend fun delete_trans(t:TransactionTable){ withContext(Dispatchers.IO){datasource2.delete2(t)} }
+    private suspend fun update_trans(t:TransactionTable){ withContext(Dispatchers.IO){datasource2.update(t)} }
 
     /********************************************Navigation***********************************************/
     //Navigating to transaction
     fun onClick(){ onNavigateToTransaction(-1) }
     fun onNavigateToTransaction(id:Int){ _navigate_to_transaction.value = id }
     @SuppressLint("NullSafeMutableLiveData")
-    fun onNavigatedToTransaction(){ _navigate_to_transaction.value = null }
+    fun onNavigatedToTransaction(){
+        _navigate_to_transaction.value = null
+       // resetValue()
+        }
 
     //Navigate to input
-    fun onNavigateToInput(){ _navigate_to_input.value = true }
+    fun onNavigateToInput(id: Int){ _navigate_to_input.value = id }
     @SuppressLint("NullSafeMutableLiveData")
     fun onNavigatedToInout(){ _navigate_to_input.value = null }
 

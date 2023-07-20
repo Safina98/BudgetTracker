@@ -19,6 +19,7 @@ import com.example.budgettracker2.R
 //import com.example.budgettracker2.database.BudgetDatabase
 import com.example.budgettracker2.databinding.FragmentHomeScreenBinding
 import com.example.budgettracker2.databinding.PopUpAddCategoryBinding
+//import com.example.budgettracker2.HomeScreen.HomeScreenFragmentDirections
 import com.example.budgettracker2.viewModels.HSViewModel
 import com.example.budgettracker2.viewModels.MainViewModel
 import java.util.Calendar
@@ -41,18 +42,21 @@ class HomeScreenFragment : Fragment() {
         binding.lifecycleOwner = this
         val manager = GridLayoutManager(activity, 2)
         binding.listKategori.layoutManager = manager
+        /*
         val adapter = HomeScreenAdapter(
             this.requireContext(),
             KategoriListener {
                 viewModel.onNavigateToTransaction(it)
             }
             )
-        binding.listKategori.adapter = adapter
+
+         */
+        //binding.listKategori.adapter = adapter
 
         viewModel.kategori.observe(viewLifecycleOwner, Observer {
             it?.let {
-                adapter.submitList(it)
-                adapter.notifyDataSetChanged()
+               // adapter.submitList(it)
+                //adapter.notifyDataSetChanged()
             }
         })
         viewModel.selected_tipe.observe(viewLifecycleOwner,Observer{
@@ -70,13 +74,13 @@ class HomeScreenFragment : Fragment() {
         })
         viewModel.navigate_to_transaction.observe(viewLifecycleOwner, Observer {
             it?.let {
-                this.findNavController().navigate(HomeScreenFragmentDirections.actionHomeScreenFragmentToTransactionFragment(it))
+               // this.findNavController().navigate(HomeScreenFragmentDirections.actionHomeScreenFragment2ToTransactionFragment(it))
                 viewModel.onNavigatedToTransaction()
             }
         })
         viewModel.navigate_to_input.observe(viewLifecycleOwner, Observer {
             if (it==true){
-                this.findNavController().navigate(HomeScreenFragmentDirections.actionHomeScreenFragmentToInputFragment())
+               // this.findNavController().navigate(HomeScreenFragmentDirections.actionHomeScreenFragment2ToInputFragment())
                 viewModel.onNavigatedToInout()
             }
         })
@@ -84,7 +88,7 @@ class HomeScreenFragment : Fragment() {
         // Inflate the layout for this fragment
         return binding.root
     }
-    fun showACDialog(){
+    private fun showACDialog(){
 
         val binding: PopUpAddCategoryBinding = PopUpAddCategoryBinding.inflate(LayoutInflater.from(requireContext()))
         binding.acVmodel = viewModel

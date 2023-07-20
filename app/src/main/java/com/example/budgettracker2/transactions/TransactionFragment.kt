@@ -1,8 +1,10 @@
 package com.example.budgettracker2.transactions
 
 import android.app.AlertDialog
+import android.content.DialogInterface
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -13,8 +15,10 @@ import android.widget.DatePicker
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import com.example.budgettracker2.R
 import com.example.budgettracker2.databinding.FragmentTransactionBinding
 import com.example.budgettracker2.viewModels.MainViewModel
@@ -23,10 +27,8 @@ import java.util.Calendar
 import java.util.Date
 
 class TransactionFragment : Fragment() {
-    private var startDate: Date? = null
-    private var endDate: Date? = null
 
-    private val viewModel :MainViewModel by viewModels {MainViewModel.Factory  }
+    private val viewModel :MainViewModel by activityViewModels { MainViewModel.Factory }
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -44,14 +46,26 @@ class TransactionFragment : Fragment() {
             this.requireContext(),
             TransaksiClickListener {
                 //viewModel.onNavigateToTransaction(it)
-                Toast.makeText(context,"clicked",Toast.LENGTH_SHORT).show()
+                Toast.makeText(context,it.toString(),Toast.LENGTH_SHORT).show()
+                //viewModel.deleteTransaction(it)
             },
             TransaksiLongClickListener {
-                viewModel.deleteTransaction(it)
+              //  Toast.makeText(context,it.toString(),Toast.LENGTH_SHORT).show()
+                viewModel.getClickedTransTab(it)
+                showOptionDialog(it)
+               // viewModel.deleteTransaction(it)
             }
         )
 
         binding.listTransaksi.adapter = adapter
+        val adapter2 = ArrayAdapter(requireContext(), R.layout.spinner_item_layout, resources.getStringArray(R.array.tipe_list_all))
+        adapter2.setDropDownViewResource(R.layout.spinner_item_layout)
+        binding.spinnerTipeT.adapter = adapter2
+
+        val adapter3 = ArrayAdapter(requireContext(), R.layout.spinner_item_layout, resources.getStringArray(R.array.bulan))
+        adapter3.setDropDownViewResource(R.layout.spinner_item_layout)
+        binding.spinnerBulan.adapter = adapter3
+
         binding.spinnerTipeT.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
                 val selectedItem = parent.getItemAtPosition(position).toString()
@@ -91,12 +105,12 @@ class TransactionFragment : Fragment() {
             // Handle the selected value
             viewModel.updateRv4()
         })
-        viewModel.selectedStartDate.observe(viewLifecycleOwner,Observer{
-
+        viewModel.selectedStartDate.observe(viewLifecycleOwner,Observer{})
+        viewModel.clicked_transtab.observe(viewLifecycleOwner, Observer {
+            Log.i("UPDATET","fragment: "+it.toString())
         })
         viewModel.selectedEndDate.observe(viewLifecycleOwner,Observer{
             viewModel.updateRv4()
-
         })
         viewModel.is_date_picker_clicked.observe(viewLifecycleOwner,Observer{
             if (it==true) {
@@ -105,20 +119,29 @@ class TransactionFragment : Fragment() {
         })
 
         viewModel.kategori_entries.observe(viewLifecycleOwner, Observer { entries ->
-            val adapter1 = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, entries)
-            adapter1.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            val adapter1 = ArrayAdapter(requireContext(),R.layout.spinner_item_layout, entries)
+            adapter1.setDropDownViewResource(R.layout.spinner_item_layout)
             binding.spinnerKategori.adapter = adapter1
         })
 
-        viewModel.recyclerViewData.observe(viewLifecycleOwner, Observer { data ->
+        viewModel.recyclerViewData.observe(viewLifecycleOwner, Observer {
+            it?.let{
+            adapter.submitList(it)
+                adapter.notifyDataSetChanged()
+          //  Log.i("UPDATET",it.toString())
+        }
             // Update the RecyclerView adapter with the new data
-            adapter.submitList(data)
-
         })
 
         viewModel.selectedKategoriSpinner.observe(viewLifecycleOwner, Observer { value ->
             // Handle the selected value
             viewModel.updateRv4()
+        })
+        viewModel.navigate_to_input.observe(viewLifecycleOwner, Observer {
+            if (it!=null){
+                this.findNavController().navigate(TransactionFragmentDirections.actionTransactionFragmentToInputFragment3(it))
+                viewModel.onNavigatedToInout()
+            }
         })
         return binding.root
 
@@ -150,14 +173,32 @@ class TransactionFragment : Fragment() {
 
                 // Perform any necessary actions with the selected date range
                 // Update your ViewModel or perform any other logic
-                Toast.makeText(context,startDate.toString()+" "+endDate.toString(),Toast.LENGTH_SHORT).show()
-
                 viewModel.setSelectedBulanValue("Date Range")
                 viewModel.setDateRange(startDate, endDate)
             }
             .setNegativeButton("Cancel", null)
             .create()
 
+        dialog.show()
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun showOptionDialog(id:Int) {
+        val dialogBuilder = AlertDialog.Builder(requireContext())
+        dialogBuilder.setTitle("Options")
+        dialogBuilder.setMessage("Choose an action:")
+        dialogBuilder.setPositiveButton("Update") { dialogInterface: DialogInterface, _: Int ->
+           // showACDialog(id)
+            viewModel.setValueForUpdate()
+            viewModel.onNavigateToInput(id)
+            dialogInterface.dismiss()
+        }
+        dialogBuilder.setNegativeButton("Delete") { dialogInterface: DialogInterface, _: Int ->
+            Toast.makeText(requireContext(),id.toString(),Toast.LENGTH_SHORT).show()
+            viewModel.deleteTransaction(0)
+            dialogInterface.dismiss()
+        }
+        val dialog = dialogBuilder.create()
         dialog.show()
     }
 

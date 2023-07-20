@@ -2,7 +2,9 @@ package com.example.budgettracker2.viewModels
 
 import android.annotation.SuppressLint
 import android.app.Application
+import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -37,25 +39,30 @@ class HSViewModel (application: Application,
     val navigate_to_input : LiveData<Boolean>
         get() = _navigate_to_input
 
-    private val _selected_tipe_ac = MutableLiveData<String>()
+    private val _selected_tipe_ac = MutableLiveData<String>("PENGELUARAN")
     val selected_tipe:LiveData<String> get() = _selected_tipe_ac
 
-    private val _selected_color_ac = MutableLiveData<String>()
+    val _selected_color_ac = MutableLiveData<String>("BLUE")
     val selected_color_ac:LiveData<String> get() = _selected_color_ac
 
     /****************************************************HomeScreen**********************************************/
     val kategori = datasource1.getAllKategori()
 
-    val budget_rn = datasource2.getBuget()
+    val budget_rn = datasource2.getBuget()//income this month
     val tm_spend = datasource2.getSumByCategoryType("PENGELUARAN")
     val tm_income = datasource2.getSumByCategoryType("PEMASUKAN")
-    var budget_tmm = datasource2.getBugetTM()
+    var budget_tmm = datasource2.getBugetTM()//budget left this month
 
     private var _is_ac_dialog_show = MutableLiveData<Boolean>()
     val is_ac_dialog_show : LiveData<Boolean>
         get() = _is_ac_dialog_show
 
+    private var _clicked_category = MutableLiveData<CategoryTable>(CategoryTable())
+    val clicked_category: LiveData<CategoryTable> get() = _clicked_category
+
     val _kategori_name_ac = MutableLiveData<String>("")
+
+    val c = datasource1.getAllKategoriCoba()
 
 
     /********************************************Add Category Dialog**************************************/
@@ -67,8 +74,43 @@ class HSViewModel (application: Application,
             category.category_type = selected_tipe.value ?: "PENGELUARAN"
             category.category_color =selected_color_ac.value ?: "BLUE"
             insertNewCategory(category)
+            Log.i("UPDATEC","save"+category.toString())
+            resetvalues()
         }
     }
+
+    fun getClickedCategort(id:Int){
+        viewModelScope.launch {
+           val a =withContext(Dispatchers.IO) {
+               datasource1.getCategory(id)
+            }
+            _clicked_category.value = a
+        }
+    }
+    fun deleteCategory(id:Int){
+        viewModelScope.launch {
+            //_deleteCategory(id)
+            _deleteCategory1(clicked_category.value!!)
+        }
+    }
+    fun updateCategory(){
+        viewModelScope.launch {
+            var c = CategoryTable()
+            c.category_name = _kategori_name_ac.value ?:""
+            c.category_type = selected_tipe.value!!
+            c.category_color = selected_color_ac.value!!
+            c.category_id = clicked_category.value!!.category_id
+            Log.i("UPDATEC","update"+c.toString())
+            resetvalues()
+            _update(c)
+        }
+    }
+    fun resetvalues(){
+        _kategori_name_ac.value=""
+        _selected_tipe_ac.value="PENGELUARAN"
+        _selected_color_ac.value="BLUE"
+    }
+
     fun setSelectedTipeValue(value:String){
         _selected_tipe_ac.value = value
     }
@@ -85,7 +127,15 @@ class HSViewModel (application: Application,
     private suspend fun insertNewCategory(category: CategoryTable){
         withContext(Dispatchers.IO){datasource1.insert(category)}
     }
-
+    private suspend fun _deleteCategory(id:Int){
+        withContext(Dispatchers.IO){datasource1.delete(id)}
+    }
+    private suspend fun _deleteCategory1(c :CategoryTable){
+        withContext(Dispatchers.IO){datasource1.delete1(c)}
+    }
+    private suspend fun _update(c:CategoryTable){
+        withContext(Dispatchers.IO){datasource1.update(c)
+    }}
     /********************************************Navigation***********************************************/
     //Navigating to transaction
     fun onClick(){ onNavigateToTransaction(-1) }

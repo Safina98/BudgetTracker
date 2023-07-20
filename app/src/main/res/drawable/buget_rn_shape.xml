@@ -13,10 +13,11 @@
         -->
     <gradient
         android:angle="45"
-        android:centerColor="@color/btn_center_pink"
+
         android:centerX="40%"
-        android:endColor="@color/btn_end_yellow"
-        android:startColor="@color/btn_end_yellow"
+        android:centerColor="#F3E5F5"
+        android:endColor="#FCE4EC"
+        android:startColor="#E1BEE7"
         android:type="linear" />
     <size
         android:width="@dimen/big_btn_width"
