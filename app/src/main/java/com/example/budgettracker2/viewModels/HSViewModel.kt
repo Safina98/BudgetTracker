@@ -4,27 +4,29 @@ import android.annotation.SuppressLint
 import android.app.Application
 import android.util.Log
 import android.view.View
-import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
 import com.example.budgettracker2.database.BudgetDB
 import com.example.budgettracker2.database.CategoryDao
 import com.example.budgettracker2.database.CategoryTable
 import com.example.budgettracker2.database.TransactionDao
+import com.example.budgettracker2.database.TransactionTable
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 
 class HSViewModel (application: Application,
-                   val datasource1: CategoryDao,
-                   val datasource2: TransactionDao
+                   private val datasource1: CategoryDao,
+                   private val datasource2: TransactionDao
 ): AndroidViewModel(application){
     /*************************************************************************************************************/
     /****************************************Variables***********************************************************/
@@ -35,8 +37,8 @@ class HSViewModel (application: Application,
     val navigate_to_transaction : LiveData<Int>
         get() = _navigate_to_transaction
 
-    private var _navigate_to_input = MutableLiveData<Boolean>()
-    val navigate_to_input : LiveData<Boolean>
+    private var _navigate_to_input = MutableLiveData<Int>()
+    val navigate_to_input : LiveData<Int>
         get() = _navigate_to_input
 
     private val _selected_tipe_ac = MutableLiveData<String>("PENGELUARAN")
@@ -48,10 +50,9 @@ class HSViewModel (application: Application,
     /****************************************************HomeScreen**********************************************/
     val kategori = datasource1.getAllKategori()
 
-    val budget_rn = datasource2.getBuget()//income this month
-    val tm_spend = datasource2.getSumByCategoryType("PENGELUARAN")
-    val tm_income = datasource2.getSumByCategoryType("PEMASUKAN")
-    var budget_tmm = datasource2.getBugetTM()//budget left this month
+    val tm_spend = datasource2.getSumTM()
+    val tySpent = datasource2.getSumByCategoryType("PENGELUARAN")
+
 
     private var _is_ac_dialog_show = MutableLiveData<Boolean>()
     val is_ac_dialog_show : LiveData<Boolean>
@@ -62,8 +63,55 @@ class HSViewModel (application: Application,
 
     val _kategori_name_ac = MutableLiveData<String>("")
 
-    val c = datasource1.getAllKategoriCoba()
+////////////////////////////////////////////Insert CSV HomeScreen///////////////////////////////////////////
+    fun insertCsv(tokens:List<String>){
+        var category =CategoryTable()
+    category.category_name = tokens[4]
+    category.category_type = tokens[5]
+    category.category_color= "BLUE"
+    insertCategoryCsv(category)
+    insertCsvTrans(tokens)
+    //Log.i("INSERTCSV","ViewModel insertCsv: "+category.toString())
+    }
+    fun getDate(dateString:String):Date{
+        val inputFormat = SimpleDateFormat("dd-MMM-yy", Locale.ENGLISH)
+        return inputFormat.parse(dateString)
+    }
+    private suspend fun getCategoryId(category: String) :Int{
+        var a =  withContext(Dispatchers.IO) {
+            datasource1.getCategoryIdByName(category)
+        }
+        return a
+    }
+    fun insertCsvTrans(tokens: List<String>){
+        viewModelScope.launch {
+            var transactionTable = TransactionTable()
+            transactionTable.note = tokens[2]
+            Log.i("INSERTCSV","ViewModel insertCsv: "+tokens[2]+" : "+tokens[3])
+            try {
+                transactionTable.nominal = tokens[3].toDouble().toInt()
+                transactionTable.category_id = getCategoryId(tokens[4])
+                transactionTable.date = getDate(tokens[1])
+                insert(transactionTable)
+                Log.i("INSERTCSV","ViewModel insertCsv try: "+tokens)
+            }catch (exception:Exception){
+                Log.i("INSERTCSV",exception.toString()+ " " +tokens)
 
+            }
+        }
+    }
+    fun insertCategoryCsv(category: CategoryTable){
+        viewModelScope.launch {
+            _insertCategoryCsv(category.category_name,category.category_type,category.category_color)
+           // Log.i("INSERTCSV","ViewModel insertCsv: "+category.toString())
+        }
+    }
+    suspend fun _insertCategoryCsv(categoryName:String,categoryType:String,categoryColor:String){
+        withContext(Dispatchers.IO){
+            datasource1.insertIfNotExist(categoryName, categoryType,categoryColor)
+        }
+    }
+    private suspend fun insert(transaksi: TransactionTable){ withContext(Dispatchers.IO){datasource2.insert(transaksi)} }
 
     /********************************************Add Category Dialog**************************************/
 
@@ -74,7 +122,6 @@ class HSViewModel (application: Application,
             category.category_type = selected_tipe.value ?: "PENGELUARAN"
             category.category_color =selected_color_ac.value ?: "BLUE"
             insertNewCategory(category)
-            Log.i("UPDATEC","save"+category.toString())
             resetvalues()
         }
     }
@@ -87,7 +134,7 @@ class HSViewModel (application: Application,
             _clicked_category.value = a
         }
     }
-    fun deleteCategory(id:Int){
+    fun deleteCategory(){
         viewModelScope.launch {
             //_deleteCategory(id)
             _deleteCategory1(clicked_category.value!!)
@@ -95,17 +142,16 @@ class HSViewModel (application: Application,
     }
     fun updateCategory(){
         viewModelScope.launch {
-            var c = CategoryTable()
+            val c = CategoryTable()
             c.category_name = _kategori_name_ac.value ?:""
             c.category_type = selected_tipe.value!!
             c.category_color = selected_color_ac.value!!
             c.category_id = clicked_category.value!!.category_id
-            Log.i("UPDATEC","update"+c.toString())
             resetvalues()
             _update(c)
         }
     }
-    fun resetvalues(){
+    private fun resetvalues(){
         _kategori_name_ac.value=""
         _selected_tipe_ac.value="PENGELUARAN"
         _selected_color_ac.value="BLUE"
@@ -127,9 +173,7 @@ class HSViewModel (application: Application,
     private suspend fun insertNewCategory(category: CategoryTable){
         withContext(Dispatchers.IO){datasource1.insert(category)}
     }
-    private suspend fun _deleteCategory(id:Int){
-        withContext(Dispatchers.IO){datasource1.delete(id)}
-    }
+
     private suspend fun _deleteCategory1(c :CategoryTable){
         withContext(Dispatchers.IO){datasource1.delete1(c)}
     }
@@ -144,7 +188,7 @@ class HSViewModel (application: Application,
     fun onNavigatedToTransaction(){ _navigate_to_transaction.value = null }
 
     //Navigate to input
-    fun onNavigateToInput(){ _navigate_to_input.value = true }
+    fun onNavigateToInput(id:Int){ _navigate_to_input.value = id }
     @SuppressLint("NullSafeMutableLiveData")
     fun onNavigatedToInout(){ _navigate_to_input.value = null }
 
@@ -164,7 +208,7 @@ class HSViewModel (application: Application,
                 // Get the Application object from extras
                 val application = checkNotNull(extras[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY])
                 // Create a SavedStateHandle for this ViewModel from extras
-                val savedStateHandle = extras.createSavedStateHandle()
+
                 val dataSource = BudgetDB.getInstance(application).category_dao
                 val dataSource2 = BudgetDB.getInstance(application).transaction_dao
 

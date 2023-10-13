@@ -21,7 +21,7 @@ data class CategoryTable (
     var category_color: String = "empty"
 ){
     @Ignore
-    constructor() : this(0, "empty", "empty", "empty")
+    constructor() : this(0, "empty", "empty", "BLUE")
 }
 
 

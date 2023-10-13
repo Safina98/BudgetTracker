@@ -1,48 +1,62 @@
 package com.example.budgettracker2.category
 
+import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.AlertDialog
 import android.content.DialogInterface
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SearchView
+import androidx.appcompat.widget.Toolbar
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.budgettracker2.R
 import com.example.budgettracker2.adapterp.CategoryAdapter
 import com.example.budgettracker2.adapterp.CategoryClickListener
 import com.example.budgettracker2.adapterp.CategoryLongClickListener
+import com.example.budgettracker2.database.CategoryTable
+import com.example.budgettracker2.database.TransactionTable
 import com.example.budgettracker2.databinding.FragmentCategoryBinding
 import com.example.budgettracker2.databinding.PopUpAddCategoryBinding
 import com.example.budgettracker2.viewModels.HSViewModel
+import java.io.BufferedReader
+import java.io.InputStreamReader
 
 
 class CategoryFragment : Fragment() {
-
+    private val REQUEST_CODE_FILE_PICKER = 123
     private val viewModel: HSViewModel by viewModels { HSViewModel.Factory }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
         val binding:FragmentCategoryBinding = DataBindingUtil.inflate(inflater,R.layout.fragment_category,container,false)
-        val application = requireNotNull(this.activity).application
         binding.hsVmodel = viewModel
         binding.lifecycleOwner = this
+        val toolbar: Toolbar = binding.toolbarHs
+        (requireActivity() as AppCompatActivity).setSupportActionBar(toolbar)
 
         val adapter =CategoryAdapter(
             this.requireContext(),
            CategoryClickListener {
-               Toast.makeText(application,it.toString(),Toast.LENGTH_SHORT).show()
-
+               viewModel.onNavigateToTransaction(it)
+            //   Log.i("SPINNERPROB","Category fragment: id: "+it)
            }, CategoryLongClickListener {
                 viewModel.getClickedCategort(it)
                showOptionDialog(id)
@@ -52,48 +66,42 @@ class CategoryFragment : Fragment() {
         val manager = GridLayoutManager(activity, 2)
         binding.listKategori.layoutManager = manager
 
-        viewModel.kategori.observe(viewLifecycleOwner, Observer {
+        viewModel.kategori.observe(viewLifecycleOwner) {
             it?.let {
-                 adapter.submitList(it)
+                adapter.submitList(it)
+              //  Log.i("INSERTCSV","Categori fragment kategori list: "+ it)
                 //adapter.notifyDataSetChanged()
             }
-        })
-        viewModel.tm_income.observe(viewLifecycleOwner,Observer{})
-        viewModel.tm_spend.observe(viewLifecycleOwner,Observer{})
-        viewModel.selected_tipe.observe(viewLifecycleOwner,Observer{})
-        viewModel.selected_color_ac.observe(viewLifecycleOwner, Observer {})
-        viewModel.clicked_category.observe(viewLifecycleOwner, Observer {})
-        viewModel.is_ac_dialog_show.observe(viewLifecycleOwner, Observer {
+        }
+        viewModel.tySpent.observe(viewLifecycleOwner) {}
+        viewModel.tm_spend.observe(viewLifecycleOwner){}
+        viewModel.selected_tipe.observe(viewLifecycleOwner){}
+        viewModel.selected_color_ac.observe(viewLifecycleOwner){}
+        viewModel.clicked_category.observe(viewLifecycleOwner){}
+        viewModel.is_ac_dialog_show.observe(viewLifecycleOwner) {
             if (it==true){
                 showACDialog(-1)
                 viewModel.onAddCategoryClicked()
             }
-        })
-        viewModel.c.observe(viewLifecycleOwner, Observer {
+        }
+
+        viewModel.navigate_to_transaction.observe(viewLifecycleOwner){
             it?.let {
-                Log.i("UPDATEC","all "+it.toString())
-            }
-        })
-        viewModel.navigate_to_transaction.observe(viewLifecycleOwner, Observer {
-            it?.let {
-                // this.findNavController().navigate(HomeScreenFragmentDirections.actionHomeScreenFragment2ToTransactionFragment(it))
                 this.findNavController().navigate(CategoryFragmentDirections.actionCategoryFragmentToTransactionFragment(it))
                 viewModel.onNavigatedToTransaction()
             }
-        })
-        viewModel.navigate_to_input.observe(viewLifecycleOwner, Observer {
-            if (it==true){
-                // this.findNavController().navigate(HomeScreenFragmentDirections.actionHomeScreenFragment2ToInputFragment())
-                this.findNavController().navigate(CategoryFragmentDirections.actionCategoryFragmentToInputFragment(-1))
+        }
+        viewModel.navigate_to_input.observe(viewLifecycleOwner) {
+            if (it!=null){
+                this.findNavController().navigate(CategoryFragmentDirections.actionCategoryFragmentToInputFragment(it))
                 viewModel.onNavigatedToInout()
             }
-        })
+        }
 
         return binding.root
     }
 
     private fun showACDialog(code:Int) {
-
         val binding: PopUpAddCategoryBinding =
             PopUpAddCategoryBinding.inflate(LayoutInflater.from(requireContext()))
         binding.acVmodel = viewModel
@@ -106,7 +114,7 @@ class CategoryFragment : Fragment() {
         if (code!=-1){
             val c = viewModel.clicked_category.value
             if (c != null) {
-                viewModel._kategori_name_ac.value = c.category_name ?: ""
+                viewModel._kategori_name_ac.value = c.category_name
                 binding.spinnerTipeAc.setSelection(resources.getStringArray(R.array.tipe_list).indexOf(c.category_type))
                 binding.spinnerColorAc.setSelection(resources.getStringArray(R.array.color_list).indexOf(c.category_color))
             }
@@ -115,7 +123,6 @@ class CategoryFragment : Fragment() {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long
             ) {
                 val selectedItem = parent.getItemAtPosition(position).toString()
-                // Update the selected value in your ViewModel
                 viewModel.setSelectedTipeValue(selectedItem)
             }
             override fun onNothingSelected(parent: AdapterView<*>) {}
@@ -147,11 +154,68 @@ class CategoryFragment : Fragment() {
             dialogInterface.dismiss()
         }
         dialogBuilder.setNegativeButton("Delete") { dialogInterface: DialogInterface, _: Int ->
-            Toast.makeText(requireContext(),id.toString(),Toast.LENGTH_SHORT).show()
-            viewModel.deleteCategory(id)
+            viewModel.deleteCategory()
             dialogInterface.dismiss()
         }
         val dialog = dialogBuilder.create()
         dialog.show()
     }
-}
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)  // Indicates that this fragment has an options menu.
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.overflow_menu, menu)
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+    private fun openFilePicker() {
+        val intent = Intent(Intent.ACTION_GET_CONTENT)
+        intent.type = "text/*" // Filter for CSV files
+        startActivityForResult(intent, REQUEST_CODE_FILE_PICKER)
+    }
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == REQUEST_CODE_FILE_PICKER && resultCode == Activity.RESULT_OK) {
+            val selectedFileUri = data?.data
+            if (selectedFileUri != null) {
+                readCSVFile(selectedFileUri)
+            }
+        }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.menu_import -> {
+                // Handle menu item 1 click
+                openFilePicker()
+                return true
+            }
+            R.id.menu_export -> {
+                // Handle menu item 2 click
+                return true
+            }
+            else -> return super.onOptionsItemSelected(item)
+        }
+    }
+    private fun readCSVFile(fileUri: Uri) {
+        val inputStream = requireContext().contentResolver.openInputStream(fileUri)
+        val reader = BufferedReader(InputStreamReader(inputStream))
+        var line: String?
+        var i  = 0
+        while (reader.readLine().also { line = it } != null) {
+
+            val tokens: List<String> = line!!.split(",")
+            if (i!=0) {
+                viewModel.insertCsv(tokens)
+            }
+            Log.i("INSERTCSV","Fragment: " +i )
+            i+=1
+        }
+    }
+
+
+
+     }

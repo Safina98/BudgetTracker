@@ -88,7 +88,8 @@
                     android:layout_height="wrap_content"
                     android:hint="Jumlah"
                     android:inputType="number"
-                    android:text="@={i_vmodel.jumlah}" />
+                    android:text="@={i_vmodel.jumlah}"
+                    />
             </com.google.android.material.textfield.TextInputLayout>
 
             <Button

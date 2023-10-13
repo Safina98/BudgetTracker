@@ -19,6 +19,7 @@ import java.text.SimpleDateFormat
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 import java.util.*
+import kotlin.math.absoluteValue
 
 class MainViewModel(application: Application,
                     val datasource1:CategoryDao,
@@ -42,6 +43,8 @@ class MainViewModel(application: Application,
     val navigate_to_toHomeScreen :LiveData<Boolean>get() = _navigate_to_homeScreen
 
 /*************************************************Transaction***********************************************/
+    //Category id
+    val _receivedCatId = MutableLiveData(0)
     //Spinner entries
     val tipe_entries = listOf<String>("ALL","PEMASUKAN","PENGELUARAN")
     private val _selectedTipeSpinner = MutableLiveData<String>()
@@ -61,6 +64,9 @@ class MainViewModel(application: Application,
     private var _is_date_range = MutableLiveData<Boolean>()
     val is_date_range :LiveData<Boolean>get() = _is_date_range
 
+    private var _filter_trans_sum = MutableLiveData<Int>()
+    val filter_trans_sum :LiveData<Int>get() = _filter_trans_sum
+
     //val bulan = listOf<String>("ALL","Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","Oktober","November","Desember")
     val bulan = listOf<String>("ALL","01","02","03","04","05","06","07","08","09","10","11","12","Date Range")
     private val _selectedBulanSpinner = MutableLiveData<String>()
@@ -69,14 +75,18 @@ class MainViewModel(application: Application,
     private val _recyclerViewData = MutableLiveData<List<TransaksiModel>>()
     val recyclerViewData: LiveData<List<TransaksiModel>>
         get() = _recyclerViewData
+    private val _unFilteredrecyclerViewData = MutableLiveData<List<TransaksiModel>>()
+
     val semuatabeltransaksi = datasource2.getAllTransactionTableCoba()
-
-
+    private val _filteredDataSum = MutableLiveData<Int>()
+    val filteredDataSum: LiveData<Int>
+        get() = _filteredDataSum
 /************************************************Input****************************************************/
     //Spinner Position
     //Spinner entries
-//field
+    //field
     val jumlah = MutableLiveData<String>("0")
+
     val note = MutableLiveData<String>("")
     //Date Picker
     private val _selectedDate = MutableLiveData<String>()
@@ -91,7 +101,6 @@ class MainViewModel(application: Application,
 
     init {
         val currentDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
-
         _selectedDate.value = currentDate
         _selectedTipeSpinner.value = "ALL"
         _selectedKategoriSpinner.value = "ALL"
@@ -121,12 +130,16 @@ class MainViewModel(application: Application,
 
     fun getNominal():Int{
        return if(selectedTipeSpinner.value=="PENGELUARAN"){
-           jumlah.value?.toInt()!! *-1
+           jumlah.value?.toInt()!!*-1
+
        }else{
            jumlah.value!!.toInt()
        }
     }
-
+    fun updateJumlah(value: String?) {
+        // Update the LiveData without Rupiah formatting
+        jumlah.value = value!!
+    }
     fun getDate():Date{
         val dateString = selectedDate.value
         val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
@@ -137,7 +150,6 @@ class MainViewModel(application: Application,
     fun setSelectedKategoriValue(value: String) {
         _selectedKategoriSpinner.value = value
         viewModelScope.launch { getCategoryId(selectedKategoriSpinner.value ?: value) }
-
     }
     fun setSelectedTipeValue(value: String) {
         _selectedTipeSpinner.value = value
@@ -181,8 +193,24 @@ class MainViewModel(application: Application,
             val filteredData = withContext(Dispatchers.IO) {
                 datasource2.getFilteredData3(type, categoryId, startDate, endDate)
             }
+            val filteredSum =  withContext(Dispatchers.IO) {
+                datasource2.getFilteredDataSum(type, categoryId, startDate, endDate)
+            }
             _recyclerViewData.value = filteredData
+            _unFilteredrecyclerViewData.value = filteredData
+            _filter_trans_sum.value = filteredSum
         }
+    }
+    fun filterData(query: String?) {
+        val list = mutableListOf<TransaksiModel>()
+        if(!query.isNullOrEmpty()) {
+            list.addAll(_unFilteredrecyclerViewData.value!!.filter {
+                it.ket.lowercase(Locale.getDefault()).contains(query.toString().lowercase(Locale.getDefault()))})
+        } else {
+            list.addAll(_unFilteredrecyclerViewData.value!!)
+        }
+      //  val filteredData = recyclerViewData.value?.filter { it.ket.contains(query as CharSequence, ignoreCase = true) }
+        _recyclerViewData.value =list
     }
     @RequiresApi(Build.VERSION_CODES.O)
     private fun constructStartDate(month: Int): String? {
@@ -212,7 +240,6 @@ class MainViewModel(application: Application,
                 modifiedList // Return the modified list
             }
             _kategori_entries.value = newData
-            Log.i("UPDATEC","input get c"+_kategori_entries.value.toString())
         }
     }
 
@@ -244,7 +271,6 @@ class MainViewModel(application: Application,
     fun saveTransaction(){
         viewModelScope.launch {
             val transaction = TransactionTable()
-            //val selected_kategori = getSelectedCategory()
             val kategori:String = selectedKategoriSpinner.value ?: ""
             transaction.category_id= getCategoryId(kategori)
             transaction.date = getDate()
@@ -255,41 +281,38 @@ class MainViewModel(application: Application,
         onNavigateToHomeScreen()
     }
 
-    fun getCategoryName(){
-        viewModelScope.launch {
-            _clicked_category.value  = getCategory()
-            }
-    }
-    private suspend fun getCategory(): CategoryTable? {
+    private suspend fun getCategory(id:Int): CategoryTable? {
         return withContext(Dispatchers.IO) {
-            datasource1.getCategory(clicked_transtab.value!!.category_id!!)
+            datasource1.getCategory(id)
         }
     }
-
     fun getClickedTransTab(id:Int){
         viewModelScope.launch {
             val a =withContext(Dispatchers.IO) {
               datasource2.getTransById(id)
             }
             _clicked_transtab.value = a
-            _clicked_category.value = getCategory()
+            getClickedCategory(clicked_transtab.value!!.category_id!!)
+        }
+    }
+    fun getClickedCategory(id:Int){
+        viewModelScope.launch {
+            _clicked_category.value = getCategory(id)
+            Log.i("SPINNERPROB","Main View Model clicked_category: "+_clicked_category.value)
         }
     }
     @RequiresApi(Build.VERSION_CODES.O)
     fun deleteTransaction(trans_id:Int){
         viewModelScope.launch {
-           // Log.i("UPDATET",clicked_transtab.value.toString())
             delete_trans(clicked_transtab.value!!)
             updateRv4()
         }
     }
     fun setValueForUpdate(){
         val t = clicked_transtab.value
-        Toast.makeText(getApplication(),clicked_transtab.value.toString(),Toast.LENGTH_SHORT).show()
         note.value = t?.note ?: ""
-        jumlah.value = t?.nominal.toString() ?: "0"
+        jumlah.value = Math.abs(t!!.nominal!!).toString() ?: "0"
         _selectedDate.value = formatDateToString(t?.date)
-
     }
 
     fun formatDateToString(date: Date?): String {
@@ -308,6 +331,9 @@ class MainViewModel(application: Application,
     }
     fun setTransId(id:Int){
         _trans_id.value = id
+    }
+    fun setCatId(id:Int){
+        _receivedCatId.value= id
     }
     private suspend fun insert(transaksi: TransactionTable){ withContext(Dispatchers.IO){datasource2.insert(transaksi)} }
     private suspend fun delete_trans(t:TransactionTable){ withContext(Dispatchers.IO){datasource2.delete2(t)} }

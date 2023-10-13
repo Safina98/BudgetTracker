@@ -15,33 +15,18 @@ import com.example.budgettracker2.databinding.TransactionItemListBinding
 
 class TransactionAdapter(
     val context: Context,
-    val clickListener: TransaksiClickListener,
-    val longListener: TransaksiLongClickListener
+    private val clickListener: TransaksiClickListener,
+    private val longListener: TransaksiLongClickListener
 ) : ListAdapter<TransaksiModel,
         TransactionAdapter.ViewHolder>(TransaksiDiffCallback()) {
     class ViewHolder private constructor(val binding: TransactionItemListBinding)
         : RecyclerView.ViewHolder(binding.root) {
 
-        fun bind( context: Context,item: TransaksiModel,position: Int,clickListener: TransaksiClickListener,longListener: TransaksiLongClickListener) {
-
+        fun bind( context: Context,item: TransaksiModel,clickListener: TransaksiClickListener,longListener: TransaksiLongClickListener) {
             binding.transaksi = item
             binding.clickListener = clickListener
             binding.longC = longListener
             binding.cv.setBackground(ContextCompat.getDrawable(context, R.drawable.bg_1))
-            
-            /*
-           if (position%5==0|| position%5==4){
-               binding.btnItemKategori.setBackground(ContextCompat.getDrawable(context,R.drawable.btn_kategori_list))
-           }else if(position%5==1){
-               binding.btnItemKategori.setBackground(ContextCompat.getDrawable(context,R.drawable.btn_kategori_list2))
-           }else if(position%5==2){
-               binding.btnItemKategori.setBackground(ContextCompat.getDrawable(context,R.drawable.btn_kategori_list3))
-           }else if(position%5==3){
-               binding.btnItemKategori.setBackground(ContextCompat.getDrawable(context,R.drawable.btn_kategori_list4))
-           }
-
-             */
-
             binding.executePendingBindings()
         }
 
@@ -49,7 +34,6 @@ class TransactionAdapter(
             fun from(parent: ViewGroup): ViewHolder {
                 val layoutInflater = LayoutInflater.from(parent.context)
                 val binding = TransactionItemListBinding.inflate(layoutInflater, parent, false)
-
                 return ViewHolder(binding)
             }
         }
@@ -61,7 +45,7 @@ class TransactionAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = getItem(position)
-        holder.bind(context,item,position,clickListener,longListener)
+        holder.bind(context,item,clickListener,longListener)
     }
 }
 class TransaksiDiffCallback : DiffUtil.ItemCallback<TransaksiModel>() {

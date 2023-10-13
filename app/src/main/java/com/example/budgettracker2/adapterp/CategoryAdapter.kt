@@ -1,6 +1,7 @@
 package com.example.budgettracker2.adapterp
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -72,6 +73,7 @@ class CategoryDiffCallback : DiffUtil.ItemCallback<KategoriModel>() {
 class CategoryClickListener(val clickListener: (cathId: Int) -> Unit) {
     fun onCateoryItemClick(cath: KategoriModel) {
         clickListener(cath.id_)
+        Log.i("SPINNERPROB","Category Adapter: id: "+cath)
     }
 }
 class CategoryLongClickListener(val longClickListener: (id:Int)->Unit){
