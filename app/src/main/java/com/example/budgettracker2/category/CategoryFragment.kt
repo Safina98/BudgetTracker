@@ -1,6 +1,5 @@
 package com.example.budgettracker2.category
 
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.DialogInterface
@@ -19,7 +18,6 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
@@ -29,8 +27,6 @@ import com.example.budgettracker2.R
 import com.example.budgettracker2.adapterp.CategoryAdapter
 import com.example.budgettracker2.adapterp.CategoryClickListener
 import com.example.budgettracker2.adapterp.CategoryLongClickListener
-import com.example.budgettracker2.database.CategoryTable
-import com.example.budgettracker2.database.TransactionTable
 import com.example.budgettracker2.databinding.FragmentCategoryBinding
 import com.example.budgettracker2.databinding.PopUpAddCategoryBinding
 import com.example.budgettracker2.viewModels.HSViewModel
@@ -73,8 +69,11 @@ class CategoryFragment : Fragment() {
                 //adapter.notifyDataSetChanged()
             }
         }
-        viewModel.tySpent.observe(viewLifecycleOwner) {}
-        viewModel.tm_spend.observe(viewLifecycleOwner){}
+        viewModel.tySpent.observe(viewLifecycleOwner) {
+
+        }
+        viewModel.ty_money.observe(viewLifecycleOwner){
+        }
         viewModel.selected_tipe.observe(viewLifecycleOwner){}
         viewModel.selected_color_ac.observe(viewLifecycleOwner){}
         viewModel.clicked_category.observe(viewLifecycleOwner){}

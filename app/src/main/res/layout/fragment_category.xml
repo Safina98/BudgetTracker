@@ -31,7 +31,7 @@
             android:layout_marginStart="@dimen/margin_medium"
             android:layout_marginTop="@dimen/margin_big"
             android:background="@drawable/budget_tm"
-            app:rupiahFormat="@{hs_vmodel.tm_spend}"
+            app:rupiahFormat="@{hs_vmodel.ty_money}"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/toolbar_hs" />
 
@@ -87,13 +87,14 @@
 
         <ImageView
             android:id="@+id/button"
-            android:contentDescription="@string/arrow"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_marginEnd="8dp"
             android:background="@drawable/ic_baseline_arrow_forward_ios_24"
+            android:contentDescription="@string/arrow"
+            android:onClick="@{() -> hs_vmodel.onClick()}"
             app:layout_constraintBottom_toTopOf="@+id/list_kategori"
             app:layout_constraintEnd_toEndOf="parent"
-            android:onClick="@{() -> hs_vmodel.onClick()}"
             app:layout_constraintTop_toBottomOf="@+id/btn_budget_rn" />
 
         <com.example.budgettracker2.DraggableFloatingActionButton

@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -46,11 +47,14 @@ class InputFragment : Fragment() {
         val adapter2 = ArrayAdapter(requireContext(), R.layout.spinner_item_layout, resources.getStringArray(R.array.tipe_list))
         adapter2.setDropDownViewResource(R.layout.spinner_item_layout)
         binding.spinnerTipe.adapter = adapter2
+        val cattype = viewModel._clicked_category.value!!.category_type
 
+        binding.spinnerTipe.setSelection(resources.getStringArray(R.array.tipe_list).indexOf(cattype))
         binding.spinnerTipe.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
                 val selectedItem = parent.getItemAtPosition(position).toString()
                 viewModel.setSelectedTipeValue(selectedItem)
+                Log.i("SPINNERPROB","Trans Fragment selected item kategori: "+selectedItem)
             }
             override fun onNothingSelected(parent: AdapterView<*>) {}
         }
@@ -58,11 +62,13 @@ class InputFragment : Fragment() {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
                 val selectedItem = parent.getItemAtPosition(position).toString()
                 this@InputFragment.viewModel.setSelectedKategoriValue(selectedItem)
+                Log.i("SPINNERPROB","Trans Fragment selected item kategori: "+selectedItem)
             }
             override fun onNothingSelected(parent: AdapterView<*>) {}
         }
         viewModel.selectedTipeSpinner.observe(viewLifecycleOwner) { value ->
             viewModel.getKategoriEntries(value)
+
         }
         viewModel.kategori_entries.observe(viewLifecycleOwner)
         { entries ->
@@ -70,9 +76,7 @@ class InputFragment : Fragment() {
             adapter1.setDropDownViewResource(R.layout.spinner_item_layout)
             binding.spinnerKategoriI.adapter = adapter1
             val catname = viewModel._clicked_category.value?.category_name
-            val cattype = viewModel._clicked_category.value!!.category_type
             val defaultPosition = entries.indexOf(catname)
-            binding.spinnerTipe.setSelection(resources.getStringArray(R.array.tipe_list).indexOf(cattype))
             binding.spinnerKategoriI.setSelection(defaultPosition)
         }
         viewModel.selectedKategoriSpinner.observe(viewLifecycleOwner){  }

@@ -21,8 +21,7 @@ interface CategoryDao{
             "WHERE category_name = :category_name"+
     ")")
     fun insertIfNotExist(category_name:String,category_type:String,category_color:String)
-    //@Insert
-    //fun insertInit(category:CategoryTable)
+
     @Update
     fun update(category:CategoryTable)
 

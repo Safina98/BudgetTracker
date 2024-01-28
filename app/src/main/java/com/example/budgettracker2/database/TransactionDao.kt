@@ -46,10 +46,10 @@ interface TransactionDao{
     @Query("SELECT ifnull(SUM(nominal),0)  from transaction_table WHERE nominal < 0")
     fun getBugetTM():LiveData<Int>
 
-    @Query("SELECT SUM(nominal) FROM transaction_table t JOIN category_table c ON t.category_id = c.category_id WHERE c.category_type = :categoryType AND strftime('%Y-%m', date) = strftime('%Y-%m', 'now')")
+    @Query("SELECT SUM(nominal) FROM transaction_table t JOIN category_table c ON t.category_id = c.category_id WHERE c.category_type = :categoryType AND strftime('%Y', date) = strftime('%Y', 'now')")
     fun getSumByCategoryType(categoryType: String): LiveData<Int>
 
-    @Query("SELECT SUM(nominal) FROM transaction_table WHERE strftime('%Y-%m', date) = strftime('%Y-%m', 'now')")
+    @Query("SELECT SUM(nominal) FROM transaction_table WHERE strftime('%Y', date) = strftime('%Y', 'now')")
     fun getSumTM(): LiveData<Int>
 
 

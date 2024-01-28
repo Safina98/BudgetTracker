@@ -50,7 +50,11 @@ class HSViewModel (application: Application,
     /****************************************************HomeScreen**********************************************/
     val kategori = datasource1.getAllKategori()
 
-    val tm_spend = datasource2.getSumTM()
+
+
+    //Total uang tahun ini
+    val ty_money = datasource2.getSumTM()
+    //Total pengeluaran tahun ini
     val tySpent = datasource2.getSumByCategoryType("PENGELUARAN")
 
 

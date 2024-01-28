@@ -16,6 +16,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
+import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 import java.util.*
@@ -44,7 +45,7 @@ class MainViewModel(application: Application,
 
 /*************************************************Transaction***********************************************/
     //Category id
-    val _receivedCatId = MutableLiveData(0)
+    val _receivedCatId = MutableLiveData<Int>()
     //Spinner entries
     val tipe_entries = listOf<String>("ALL","PEMASUKAN","PENGELUARAN")
     private val _selectedTipeSpinner = MutableLiveData<String>()
@@ -81,6 +82,9 @@ class MainViewModel(application: Application,
     private val _filteredDataSum = MutableLiveData<Int>()
     val filteredDataSum: LiveData<Int>
         get() = _filteredDataSum
+
+    private val _categoryLoadedEvent = MutableLiveData<Boolean>()
+    val categoryLoadedEvent: LiveData<Boolean> get() = _categoryLoadedEvent
 /************************************************Input****************************************************/
     //Spinner Position
     //Spinner entries
@@ -97,15 +101,17 @@ class MainViewModel(application: Application,
     private var _clicked_transtab = MutableLiveData<TransactionTable>()
     val clicked_transtab: LiveData<TransactionTable> get() = _clicked_transtab
     val _clicked_category = MutableLiveData<CategoryTable>()
+    val clicked_category: LiveData<CategoryTable> get() = _clicked_category
 
 
     init {
         val currentDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
         _selectedDate.value = currentDate
-        _selectedTipeSpinner.value = "ALL"
-        _selectedKategoriSpinner.value = "ALL"
-        _selectedBulanSpinner.value  = "ALL"
+        _selectedBulanSpinner.value  = "THIS YEAR"
         _selectedKategoriSpinner.value= "ALL"
+        _clicked_category.observeForever {
+            _categoryLoadedEvent.value = true
+        }
     }
 
  /************************************************************************************************************/
@@ -173,7 +179,8 @@ class MainViewModel(application: Application,
             if (selectedMonth != null) {
                  startDate = constructStartDate(selectedMonth)
                 endDate = constructEndDate(selectedMonth)
-            } else {
+            }
+            else {
                 // Invalid month value, handle the error case
                 startDate = null
                 endDate = null
@@ -199,6 +206,7 @@ class MainViewModel(application: Application,
             _recyclerViewData.value = filteredData
             _unFilteredrecyclerViewData.value = filteredData
             _filter_trans_sum.value = filteredSum
+            _filteredDataSum.value = _filter_trans_sum.value
         }
     }
     fun filterData(query: String?) {
@@ -208,19 +216,24 @@ class MainViewModel(application: Application,
                 it.ket.lowercase(Locale.getDefault()).contains(query.toString().lowercase(Locale.getDefault()))})
         } else {
             list.addAll(_unFilteredrecyclerViewData.value!!)
+            _filter_trans_sum.value = _filteredDataSum.value
         }
-      //  val filteredData = recyclerViewData.value?.filter { it.ket.contains(query as CharSequence, ignoreCase = true) }
+        val filteredData = recyclerViewData.value?.filter { it.ket.contains(query as CharSequence, ignoreCase = true) }
+        _filter_trans_sum.value = calculateFilteredDataSum(filteredData)
         _recyclerViewData.value =list
+    }
+    private fun calculateFilteredDataSum(filteredData: List<TransaksiModel>?): Int {
+        return filteredData?.sumBy { it.nominal } ?: 0
     }
     @RequiresApi(Build.VERSION_CODES.O)
     private fun constructStartDate(month: Int): String? {
-        val startDate = YearMonth.of(2023, month).atDay(1)
+        val startDate = YearMonth.of(LocalDate.now().year, month).atDay(1)
         return startDate.format(DateTimeFormatter.ISO_DATE)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun constructEndDate(month: Int): String? {
-        val endDate = YearMonth.of(2023, month).atEndOfMonth()
+        val endDate = YearMonth.of(LocalDate.now().year, month).atEndOfMonth()
         return endDate.format(DateTimeFormatter.ISO_DATE)
     }
     private fun formatDate(date: Date?): String? {
@@ -298,7 +311,7 @@ class MainViewModel(application: Application,
     fun getClickedCategory(id:Int){
         viewModelScope.launch {
             _clicked_category.value = getCategory(id)
-            Log.i("SPINNERPROB","Main View Model clicked_category: "+_clicked_category.value)
+            Log.i("SPINNERPROB","Main View Model clicked_category: "+_clicked_category.value?.category_type)
         }
     }
     @RequiresApi(Build.VERSION_CODES.O)
@@ -346,7 +359,6 @@ class MainViewModel(application: Application,
     @SuppressLint("NullSafeMutableLiveData")
     fun onNavigatedToTransaction(){
         _navigate_to_transaction.value = null
-       // resetValue()
         }
 
     //Navigate to input

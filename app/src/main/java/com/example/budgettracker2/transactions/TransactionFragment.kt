@@ -45,13 +45,11 @@ class TransactionFragment : Fragment() {
             inflater, R.layout.fragment_transaction,container,false
         )
         binding.tVmodel = viewModel
-        binding.lifecycleOwner = this
         val args: TransactionFragmentArgs by navArgs()
         val cat_id: Int = args.id
         viewModel.setCatId(cat_id)
-        if (cat_id!=-1){
-            viewModel.getClickedCategory(cat_id)
-        }
+        viewModel.getClickedCategory(cat_id)
+        binding.lifecycleOwner = this
         val adapter = TransactionAdapter(
             this.requireContext(),
             TransaksiClickListener {
@@ -62,15 +60,26 @@ class TransactionFragment : Fragment() {
             }
         )
         binding.listTransaksi.adapter = adapter
+        viewModel.categoryLoadedEvent.observe(viewLifecycleOwner) { isCategoryLoaded ->
+            if (isCategoryLoaded) {
+                // Category data is loaded, set the selected item in the spinner
+                val cattype = viewModel._clicked_category.value?.category_type
+                val tipeListAll = resources.getStringArray(R.array.tipe_list_all)
+                val selectedPosition = tipeListAll.indexOf(cattype)
+                binding.spinnerTipeT.setSelection(selectedPosition)
+            }
+        }
 
         val adapter2 = ArrayAdapter(requireContext(), R.layout.spinner_item_layout, resources.getStringArray(R.array.tipe_list_all))
         adapter2.setDropDownViewResource(R.layout.spinner_item_layout)
         binding.spinnerTipeT.adapter = adapter2
+
         binding.spinnerTipeT.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
                 val selectedItem = parent.getItemAtPosition(position).toString()
                 // Update the selected value in your ViewModel
-                viewModel.setSelectedTipeValue(selectedItem)
+                this@TransactionFragment.viewModel.setSelectedTipeValue(selectedItem)
+
             }
             override fun onNothingSelected(parent: AdapterView<*>) {
                 // Handle the case when nothing is selected
@@ -96,7 +105,7 @@ class TransactionFragment : Fragment() {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
                 val selectedItem = parent.getItemAtPosition(position).toString()
                 // Update the selected value in your ViewModel
-                viewModel.setSelectedKategoriValue(selectedItem)
+                this@TransactionFragment.viewModel.setSelectedKategoriValue(selectedItem)
             }
             override fun onNothingSelected(parent: AdapterView<*>) {
                 // Handle the case when nothing is selected
@@ -111,10 +120,13 @@ class TransactionFragment : Fragment() {
             // Handle the selected value
             viewModel.updateRv4()
         }
-        viewModel.selectedStartDate.observe(viewLifecycleOwner) {}
+        viewModel.selectedStartDate.observe(viewLifecycleOwner) {
+            Log.i("SPINNERPROB","Trans Fragment selected StartDate: "+viewModel.selectedKategoriSpinner.value)
+        }
         viewModel.clicked_transtab.observe(viewLifecycleOwner) {}
         viewModel.selectedEndDate.observe(viewLifecycleOwner) {
             viewModel.updateRv4()
+            Log.i("SPINNERPROB","Trans Fragment selected end date: "+viewModel.selectedKategoriSpinner.value)
         }
         viewModel.is_date_picker_clicked.observe(viewLifecycleOwner) {
             if (it == true) {
@@ -127,17 +139,24 @@ class TransactionFragment : Fragment() {
             val adapter1 = ArrayAdapter(requireContext(), R.layout.spinner_item_layout, entries)
             adapter1.setDropDownViewResource(R.layout.spinner_item_layout)
             binding.spinnerKategori.adapter = adapter1
-            //val catname = viewModel._clicked_category.value?.category_name
-            //val defaultPosition = entries.indexOf(catname)
-            //val cattype = viewModel._clicked_category.value!!.category_type
-           // binding.spinnerTipeT.setSelection(resources.getStringArray(R.array.tipe_list).indexOf(cattype))
-           // binding.spinnerKategori.setSelection(defaultPosition)
+            if (cat_id!=-1){
+                val catname = viewModel._clicked_category.value?.category_name
+                Log.i("SPINNERPROB","Trans Fragment kategori entries catname: "+catname)
+                val defaultPosition = entries.indexOf(catname)
+                binding.spinnerKategori.setSelection(defaultPosition)
+            }
+            //
+           //
         }
 
         viewModel.recyclerViewData.observe(viewLifecycleOwner) {
             it?.let {
                 adapter.submitList(it)
                 adapter.notifyDataSetChanged()
+            }
+        }
+        viewModel.clicked_category.observe(viewLifecycleOwner){
+            it?.let {
             }
         }
         viewModel.filter_trans_sum.observe(viewLifecycleOwner){}
@@ -234,9 +253,9 @@ class TransactionFragment : Fragment() {
 
 
         // Trigger loading the spinner entries
-        viewModel.getKategoriEntries("PENGELUARAN")
+       // viewModel.getKategoriEntries("PENGELUARAN")
         //viewModel.updateRecyclerViewData("BEAUTY")
-        viewModel.updateRv4()
+       // viewModel.updateRv4()
     }
 
 
