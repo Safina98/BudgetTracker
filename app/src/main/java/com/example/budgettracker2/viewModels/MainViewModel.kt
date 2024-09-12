@@ -166,10 +166,12 @@ class MainViewModel(application: Application,
     fun setDateRange(startDate:Date,endDate:Date){
         _selectedStartDate.value = startDate
         _selectedEndDate.value=endDate
+
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun updateRv4(){
+        Log.i("UpdateRv","update rv called")
         val type = if (selectedTipeSpinner.value == "ALL") null else selectedTipeSpinner.value
         val startDate: String?
         val endDate: String?
@@ -177,19 +179,26 @@ class MainViewModel(application: Application,
             // Extract the month value from the selected date spinner
             val selectedMonth =selectedBulanSpinner.value?.toIntOrNull()
             if (selectedMonth != null) {
-                 startDate = constructStartDate(selectedMonth)
+                startDate = constructStartDate(selectedMonth)
                 endDate = constructEndDate(selectedMonth)
             }
             else {
-                // Invalid month value, handle the error case
-                startDate = null
-                endDate = null
+                if (selectedBulanSpinner.value=="THIS YEAR")
+                {
+                startDate = constructStartDate(1)
+                endDate = constructEndDate(12)}
+                else{
+                    // Invalid month value, handle the error case
+                    startDate = null
+                    endDate = null
+                }
             }
         } else {
             // Date range option selected, use the selected start and end dates
-            startDate = formatDate(selectedStartDate.value)
-            endDate = formatDate(selectedEndDate.value)
+            startDate = formatDate(_selectedStartDate.value)
+            endDate = formatDate(_selectedEndDate.value)
         }
+        
         performDataFiltering(type, selectedKategoriSpinner.value!!, startDate, endDate)
     }
     private fun performDataFiltering(type: String?, category: String, startDate: String?, endDate: String?) {

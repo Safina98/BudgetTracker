@@ -79,7 +79,6 @@ class TransactionFragment : Fragment() {
                 val selectedItem = parent.getItemAtPosition(position).toString()
                 // Update the selected value in your ViewModel
                 this@TransactionFragment.viewModel.setSelectedTipeValue(selectedItem)
-
             }
             override fun onNothingSelected(parent: AdapterView<*>) {
                 // Handle the case when nothing is selected
@@ -90,11 +89,17 @@ class TransactionFragment : Fragment() {
         adapter3.setDropDownViewResource(R.layout.spinner_item_layout)
         binding.spinnerBulan.adapter = adapter3
 
-
         binding.spinnerBulan.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+                if (position == AdapterView.INVALID_POSITION || parent.getItemAtPosition(position) == null) {
+                    Log.i("SPINNERBulanProb", "Spinner is unselected, skipping update")
+                    return
+                }
+
                 val selectedItem = parent.getItemAtPosition(position).toString()
-                viewModel.setSelectedBulanValue(selectedItem)
+                Log.i("SPINNERBulanProb","Selected bulan spinner: $selectedItem")
+                //viewModel.setSelectedBulanValue(selectedItem)
+                viewModel.updateRv4()
                 // Update the selected value in your ViewModel
             }
             override fun onNothingSelected(parent: AdapterView<*>) {
@@ -106,6 +111,7 @@ class TransactionFragment : Fragment() {
                 val selectedItem = parent.getItemAtPosition(position).toString()
                 // Update the selected value in your ViewModel
                 this@TransactionFragment.viewModel.setSelectedKategoriValue(selectedItem)
+                viewModel.updateRv4()
             }
             override fun onNothingSelected(parent: AdapterView<*>) {
                 // Handle the case when nothing is selected
@@ -118,15 +124,16 @@ class TransactionFragment : Fragment() {
         }
         viewModel.selectedBulanSpinner.observe(viewLifecycleOwner) {
             // Handle the selected value
-            viewModel.updateRv4()
-        }
-        viewModel.selectedStartDate.observe(viewLifecycleOwner) {
-            Log.i("SPINNERPROB","Trans Fragment selected StartDate: "+viewModel.selectedKategoriSpinner.value)
+            Log.i("SPINNERBulanProb","Selectedbulanspinner Observer: $it")
         }
         viewModel.clicked_transtab.observe(viewLifecycleOwner) {}
+        viewModel.selectedStartDate.observe(viewLifecycleOwner) {
+            //viewModel.updateRv4()
+
+        }
         viewModel.selectedEndDate.observe(viewLifecycleOwner) {
-            viewModel.updateRv4()
-            Log.i("SPINNERPROB","Trans Fragment selected end date: "+viewModel.selectedKategoriSpinner.value)
+            //viewModel.updateRv4()
+
         }
         viewModel.is_date_picker_clicked.observe(viewLifecycleOwner) {
             if (it == true) {
@@ -163,7 +170,7 @@ class TransactionFragment : Fragment() {
 
         viewModel.selectedKategoriSpinner.observe(viewLifecycleOwner) {
             // Handle the selected value
-            viewModel.updateRv4()
+            //viewModel.updateRv4()
         }
         viewModel.navigate_to_input.observe(viewLifecycleOwner) {
             if (it != null) {
@@ -192,9 +199,11 @@ class TransactionFragment : Fragment() {
                 val endDate = Calendar.getInstance().apply {
                     set(datePickerEnd.year, datePickerEnd.month, datePickerEnd.dayOfMonth)
                 }.time
-
                 viewModel.setSelectedBulanValue("Date Range")
                 viewModel.setDateRange(startDate, endDate)
+                viewModel.updateRv4()
+                // Reset spinner to an invalid position (simulate unselected state)
+                binding.spinnerBulan.setSelection(AdapterView.INVALID_POSITION)
             }
             .setNegativeButton("Cancel", null)
             .create()
