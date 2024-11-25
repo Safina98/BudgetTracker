@@ -98,7 +98,7 @@ class TransactionFragment : Fragment() {
 
                 val selectedItem = parent.getItemAtPosition(position).toString()
                 Log.i("SPINNERBulanProb","Selected bulan spinner: $selectedItem")
-                //viewModel.setSelectedBulanValue(selectedItem)
+                viewModel.setSelectedBulanValue(selectedItem)
                 viewModel.updateRv4()
                 // Update the selected value in your ViewModel
             }
