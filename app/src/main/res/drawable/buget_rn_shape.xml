@@ -3,17 +3,10 @@
     android:shape="rectangle">
     <corners android:radius="14dp" />
     <!--
-    <gradient
-        android:angle="45"
-        android:centerColor="#1FA8D1"
-        android:centerX="35%"
-        android:endColor="#060d96"
-        android:startColor="#0e7e1d"
-        android:type="linear" />
-        -->
-    <gradient
-        android:angle="45"
 
+
+    <gradient
+        android:angle="45"
         android:centerX="40%"
         android:centerColor="#F3E5F5"
         android:endColor="#FCE4EC"
@@ -22,5 +15,15 @@
     <size
         android:width="@dimen/big_btn_width"
         android:height="@dimen/medium_btn_height" />
-
+    -->
+    <gradient
+        android:angle="90"
+        android:centerX="40%"
+        android:centerColor="#F1EEDC"
+        android:endColor="#B3C8CF"
+        android:startColor="#E5DDC5"
+        android:type="linear" />
+    <size
+        android:width="@dimen/big_btn_width"
+        android:height="@dimen/medium_btn_height" />
 </shape>

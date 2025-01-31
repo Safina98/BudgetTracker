@@ -10,4 +10,9 @@
         <item name="android:textColor">@color/black</item>
         <!-- Add other custom attributes as needed -->
     </style>
+    <style name="title_text_style">
+        <item name="android:fontFamily">@font/alegreya_sc</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">20sp</item>
+    </style>
 </resources>

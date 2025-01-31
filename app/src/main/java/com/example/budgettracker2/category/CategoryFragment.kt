@@ -59,8 +59,8 @@ class CategoryFragment : Fragment() {
                showOptionDialog(id)
             }
             )
-        binding.btnBudgetTm.setBackground(ContextCompat.getDrawable(requireContext(), R.drawable.btn_kategori_list))
-        binding.btnBudgetLaptop.setBackground(ContextCompat.getDrawable(requireContext(), R.drawable.btn_kategori_list2))
+        binding.btnBudgetTm.setBackground(ContextCompat.getDrawable(requireContext(), R.drawable.steady_blue_bg))
+        binding.btnBudgetLaptop.setBackground(ContextCompat.getDrawable(requireContext(), R.drawable.another_blue))
         binding.listKategori.adapter = adapter
         val manager = GridLayoutManager(activity, 2)
         binding.listKategori.layoutManager = manager
