@@ -6,13 +6,15 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.example.budgettracker2.database.Migrations.MIGRATION_2_3
 import java.util.concurrent.Executors
 
-@Database(entities = [CategoryTable::class,TransactionTable::class], version = 2, exportSchema = false)
+@Database(entities = [CategoryTable::class,TransactionTable::class,PocketTable::class], version = 3, exportSchema = false)
 abstract class BudgetDB : RoomDatabase() {
 
     abstract val category_dao: CategoryDao
     abstract val transaction_dao:TransactionDao
+    abstract val pocket_dao:PocketDao
 
 
     companion object{
@@ -43,7 +45,9 @@ abstract class BudgetDB : RoomDatabase() {
                         BudgetDB::class.java,
                         "budget_db"
                     ).addCallback(rdc)
-                        .fallbackToDestructiveMigration().build()
+                        .addMigrations(MIGRATION_2_3)
+                       // .fallbackToDestructiveMigration()
+                    .build()
                     INSTANCE = instance
                 }
                 return instance

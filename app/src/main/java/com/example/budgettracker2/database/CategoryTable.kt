@@ -9,7 +9,7 @@ import com.example.budgettracker2.warna
 
 @Entity(tableName = "category_table")
 
-data class CategoryTable (
+data class  CategoryTable (
 
     @PrimaryKey(autoGenerate = true)
     var category_id: Int = 0,

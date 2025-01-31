@@ -40,5 +40,8 @@ interface CategoryDao{
     @Query("SELECT category_id FROM category_table WHERE category_name = :name")
     fun getCategoryIdByName(name: String): Int
 
+    @Query("SELECT * FROM category_table WHERE category_name = :name")
+    fun getCategoryByName(name: String): CategoryTable
+
 
 }

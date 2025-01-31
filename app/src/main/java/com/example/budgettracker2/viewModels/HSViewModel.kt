@@ -14,6 +14,8 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import com.example.budgettracker2.database.BudgetDB
 import com.example.budgettracker2.database.CategoryDao
 import com.example.budgettracker2.database.CategoryTable
+import com.example.budgettracker2.database.PocketDao
+import com.example.budgettracker2.database.PocketTable
 import com.example.budgettracker2.database.TransactionDao
 import com.example.budgettracker2.database.TransactionTable
 import kotlinx.coroutines.Dispatchers
@@ -26,7 +28,8 @@ import java.util.Locale
 
 class HSViewModel (application: Application,
                    private val datasource1: CategoryDao,
-                   private val datasource2: TransactionDao
+                   private val datasource2: TransactionDao,
+                    private val pocketDao: PocketDao
 ): AndroidViewModel(application){
     /*************************************************************************************************************/
     /****************************************Variables***********************************************************/
@@ -54,6 +57,8 @@ class HSViewModel (application: Application,
 
     //Total uang tahun ini
     val ty_money = datasource2.getSumTM()
+    //Tabungan Laptop
+    val lp_money = datasource2.getSumLp()
     //Total pengeluaran tahun ini
     val tySpent = datasource2.getSumByCategoryType("PENGELUARAN")
 
@@ -68,6 +73,8 @@ class HSViewModel (application: Application,
     val _kategori_name_ac = MutableLiveData<String>("")
 
 ////////////////////////////////////////////Insert CSV HomeScreen///////////////////////////////////////////
+
+
     fun insertCsv(tokens:List<String>){
         var category =CategoryTable()
     category.category_name = tokens[4]
@@ -86,6 +93,17 @@ class HSViewModel (application: Application,
             datasource1.getCategoryIdByName(category)
         }
         return a
+    }
+    private suspend fun getCategoryByName(category: String) :CategoryTable{
+        return withContext(Dispatchers.IO) {
+            datasource1.getCategoryByName(category)
+        }
+
+    }
+    private suspend fun getPocketId(category: String) :Int{
+        return  withContext(Dispatchers.IO) {
+            pocketDao.getIdByPocketName(category)
+        }
     }
     fun insertCsvTrans(tokens: List<String>){
         viewModelScope.launch {
@@ -127,6 +145,40 @@ class HSViewModel (application: Application,
             category.category_color =selected_color_ac.value ?: "BLUE"
             insertNewCategory(category)
             resetvalues()
+        }
+    }
+    fun populatePocket(){
+        viewModelScope.launch {
+            val allTransaction= getAllTransaction()
+           // val category= getCategoryByName("Tabungan laptop")
+            //val pocketLaptopId=getPocketId("Tabungan Laptop")
+            val pocketTabunganUtamaId=getPocketId("Tabungan Utama")
+            Log.i("PocketProbs","tabungan utama id $pocketTabunganUtamaId")
+            //pindah dana
+            allTransaction.forEach {
+
+
+            }
+        }
+
+    }
+
+    private suspend fun getIdByName():List<TransactionTable>{
+        return withContext(Dispatchers.IO){
+            datasource2.getAllTransactionTable()
+        }
+    }
+    private suspend fun getAllTransaction():List<TransactionTable>{
+        return withContext(Dispatchers.IO){
+            datasource2.getAllTransactionTable()
+        }
+    }
+
+    fun insertPocket(name:String){
+        viewModelScope.launch {
+            val pocketTable=PocketTable()
+            pocketTable.pocketName=name
+            insertPocketToDao(pocketTable)
         }
     }
 
@@ -184,6 +236,11 @@ class HSViewModel (application: Application,
     private suspend fun _update(c:CategoryTable){
         withContext(Dispatchers.IO){datasource1.update(c)
     }}
+    private suspend fun insertPocketToDao(pocketTable: PocketTable){
+        withContext(Dispatchers.IO){
+            pocketDao.insert(pocketTable)
+        }
+    }
     /********************************************Navigation***********************************************/
     //Navigating to transaction
     fun onClick(){ onNavigateToTransaction(-1) }
@@ -215,9 +272,10 @@ class HSViewModel (application: Application,
 
                 val dataSource = BudgetDB.getInstance(application).category_dao
                 val dataSource2 = BudgetDB.getInstance(application).transaction_dao
+                val dataSource3 = BudgetDB.getInstance(application).pocket_dao
 
                 return HSViewModel(
-                    application,dataSource,dataSource2
+                    application,dataSource,dataSource2,dataSource3
                 ) as T
             }
         }

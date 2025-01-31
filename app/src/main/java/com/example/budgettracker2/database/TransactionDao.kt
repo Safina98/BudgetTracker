@@ -21,6 +21,9 @@ interface TransactionDao{
 
     @Query("SELECT * FROM transaction_table")
     fun getAllTransactionTableCoba(): LiveData<List<TransactionTable>>
+
+    @Query("SELECT * FROM transaction_table")
+    fun getAllTransactionTable(): List<TransactionTable>
     // // SELECT :brand_name_ as brand_name, (SELECT category_id FROM category_table WHERE category_name = :caht_name_ limit 1) as cath_code FROM brand_table WHERE NOT EXISTS(SELECT brand_name,cath_code FROM brand_table WHERE brand_name =:brand_name_ AND cath_code = (SELECT category_id FROM category_table WHERE category_name = :caht_name_ limit 1)) LIMIT 1 ")
 
 
@@ -49,8 +52,9 @@ interface TransactionDao{
     @Query("SELECT SUM(nominal) FROM transaction_table t JOIN category_table c ON t.category_id = c.category_id WHERE c.category_type = :categoryType AND strftime('%Y', date) = strftime('%Y', 'now')")
     fun getSumByCategoryType(categoryType: String): LiveData<Int>
 
-    @Query("SELECT SUM(nominal) FROM transaction_table WHERE strftime('%Y', date) = strftime('%Y', 'now')")
+    @Query("SELECT SUM(nominal) FROM transaction_table WHERE strftime('%Y', date) = strftime('%Y', 'now') AND pocket_id=1")
     fun getSumTM(): LiveData<Int>
-
+    @Query("SELECT SUM(nominal) FROM transaction_table WHERE  pocket_id=2")
+    fun getSumLp(): LiveData<Int>
 
 }

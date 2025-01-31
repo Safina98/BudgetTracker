@@ -44,6 +44,7 @@ class InputFragment : Fragment() {
         }else{
             viewModel.resetValue()
         }
+        viewModel.getPocketEntries()
         val adapter2 = ArrayAdapter(requireContext(), R.layout.spinner_item_layout, resources.getStringArray(R.array.tipe_list))
         adapter2.setDropDownViewResource(R.layout.spinner_item_layout)
         binding.spinnerTipe.adapter = adapter2
@@ -66,6 +67,13 @@ class InputFragment : Fragment() {
             }
             override fun onNothingSelected(parent: AdapterView<*>) {}
         }
+        binding.spinnerPocketI.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+                val selectedItem = parent.getItemAtPosition(position).toString()
+                this@InputFragment.viewModel.setSelectedPocketValue(selectedItem)
+            }
+            override fun onNothingSelected(parent: AdapterView<*>) {}
+        }
         viewModel.selectedTipeSpinner.observe(viewLifecycleOwner) { value ->
             viewModel.getKategoriEntries(value)
 
@@ -79,7 +87,14 @@ class InputFragment : Fragment() {
             val defaultPosition = entries.indexOf(catname)
             binding.spinnerKategoriI.setSelection(defaultPosition)
         }
+        viewModel.pocketEntries.observe(viewLifecycleOwner)
+        { entries ->
+            val adapter1 = ArrayAdapter(requireContext(), R.layout.spinner_item_layout, entries)
+            adapter1.setDropDownViewResource(R.layout.spinner_item_layout)
+            binding.spinnerPocketI.adapter=adapter1
+        }
         viewModel.selectedKategoriSpinner.observe(viewLifecycleOwner){  }
+        viewModel.selectedPocketSpinner.observe(viewLifecycleOwner){  }
         viewModel.semuatabeltransaksi.observe(viewLifecycleOwner){it?.let {} }
 
          viewModel.navigate_to_toHomeScreen.observe(viewLifecycleOwner) {if(it==true){

@@ -1,0 +1,18 @@
+package com.example.budgettracker2.database
+
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.Query
+
+@Dao
+interface PocketDao {
+    @Insert
+    fun insert(pocketTable: PocketTable)
+
+    @Query("SELECT pocket_name FROM pocket_table")
+    fun getAllPocketName():List<String>
+
+    @Query("SELECT pocket_id FROM pocket_table WHERE pocket_name =:name")
+    fun getIdByPocketName(name:String):Int
+
+}

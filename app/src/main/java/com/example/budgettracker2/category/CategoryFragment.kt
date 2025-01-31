@@ -19,6 +19,7 @@ import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -58,9 +59,12 @@ class CategoryFragment : Fragment() {
                showOptionDialog(id)
             }
             )
+        binding.btnBudgetTm.setBackground(ContextCompat.getDrawable(requireContext(), R.drawable.btn_kategori_list))
+        binding.btnBudgetLaptop.setBackground(ContextCompat.getDrawable(requireContext(), R.drawable.btn_kategori_list2))
         binding.listKategori.adapter = adapter
         val manager = GridLayoutManager(activity, 2)
         binding.listKategori.layoutManager = manager
+        viewModel.populatePocket()
 
         viewModel.kategori.observe(viewLifecycleOwner) {
             it?.let {

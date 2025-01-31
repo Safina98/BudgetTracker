@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.app.Application
 import android.os.Build
 import android.util.Log
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.*
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
@@ -12,6 +11,7 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.budgettracker2.database.*
+import com.example.budgettracker2.utils.TIPE
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -20,11 +20,11 @@ import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 import java.util.*
-import kotlin.math.absoluteValue
 
 class MainViewModel(application: Application,
                     val datasource1:CategoryDao,
-                    val datasource2:TransactionDao
+                    val datasource2:TransactionDao,
+                    val pocketDao: PocketDao
                     ):AndroidViewModel (application){
 /*************************************************************************************************************/
 /****************************************Variables***********************************************************/
@@ -53,8 +53,15 @@ class MainViewModel(application: Application,
 
     var _kategori_entries = MutableLiveData<List<String>>()
     val kategori_entries :LiveData<List<String>> get() = _kategori_entries
+
     private val _selectedKategoriSpinner = MutableLiveData<String>()
     val selectedKategoriSpinner: LiveData<String> get() = _selectedKategoriSpinner
+
+    var _pocketEntries = MutableLiveData<List<String>>()
+    val pocketEntries :LiveData<List<String>> get() = _pocketEntries
+
+    private val _selectedPocketSpinner = MutableLiveData<String>()
+    val selectedPocketSpinner: LiveData<String> get() = _selectedPocketSpinner
 
     private val _selectedStartDate = MutableLiveData<Date>()
     val selectedStartDate: LiveData<Date> get() = _selectedStartDate
@@ -109,6 +116,7 @@ class MainViewModel(application: Application,
         _selectedDate.value = currentDate
         _selectedBulanSpinner.value  = "THIS YEAR"
         _selectedKategoriSpinner.value= "ALL"
+        _selectedPocketSpinner.value="Main"
         _clicked_category.observeForever {
             _categoryLoadedEvent.value = true
         }
@@ -133,9 +141,13 @@ class MainViewModel(application: Application,
         }
         return a
     }
-
-    fun getNominal():Int{
-       return if(selectedTipeSpinner.value=="PENGELUARAN"){
+    private suspend fun getPocketId(pocket: String) :Int{
+       return withContext(Dispatchers.IO) {
+            pocketDao.getIdByPocketName(pocket)
+        }
+    }
+    fun getNominal(value: String?):Int{
+       return if(value==TIPE.keluar){
            jumlah.value?.toInt()!!*-1
 
        }else{
@@ -152,10 +164,11 @@ class MainViewModel(application: Application,
         return dateFormat.parse(dateString)
     }
     // Method to update the selected value
-
+    fun setSelectedPocketValue(value: String) {
+        _selectedPocketSpinner.value = value
+    }
     fun setSelectedKategoriValue(value: String) {
         _selectedKategoriSpinner.value = value
-        viewModelScope.launch { getCategoryId(selectedKategoriSpinner.value ?: value) }
     }
     fun setSelectedTipeValue(value: String) {
         _selectedTipeSpinner.value = value
@@ -256,12 +269,30 @@ class MainViewModel(application: Application,
     fun getKategoriEntries(value:String){
        // Toast.makeText(getApplication(),value+" kategori",Toast.LENGTH_SHORT).show()
         viewModelScope.launch {
-            var newData = withContext(Dispatchers.IO) {
-                val list = datasource1.getKategoriNameD(value)
-                val modifiedList = listOf("ALL") + list // Create a new list with the added value
-                modifiedList // Return the modified list
+            val newData = withContext(Dispatchers.IO) {
+
+                    if(value== TIPE.transfer){
+                        val list = pocketDao.getAllPocketName()
+                        list
+                    }
+                else {
+                     val list =   datasource1.getKategoriNameD(value)
+                        val modifiedList = listOf("ALL") + list
+                        modifiedList
+                }
+                 // Create a new list with the added value
+                 // Return the modified list
             }
             _kategori_entries.value = newData
+        }
+    }
+
+    fun getPocketEntries(){
+        viewModelScope.launch {
+            val newData= withContext(Dispatchers.IO){
+                pocketDao.getAllPocketName()
+            }
+            _pocketEntries.value=newData
         }
     }
 
@@ -283,7 +314,7 @@ class MainViewModel(application: Application,
             transaction.note=note.value!!
             val kategori:String = selectedKategoriSpinner.value ?: ""
             transaction.category_id = getCategoryId(kategori)
-            transaction.nominal=getNominal()
+            transaction.nominal=getNominal(selectedTipeSpinner.value)
             transaction.transaction_id = clicked_transtab.value!!.transaction_id
             update_trans(transaction)
         }
@@ -294,15 +325,41 @@ class MainViewModel(application: Application,
         viewModelScope.launch {
             val transaction = TransactionTable()
             val kategori:String = selectedKategoriSpinner.value ?: ""
-            transaction.category_id= getCategoryId(kategori)
-            transaction.date = getDate()
-            transaction.note = note.value!!
-            transaction.nominal = getNominal()
-            insert(transaction)
+            val pocket:String=selectedPocketSpinner.value ?: ""
+            val tipe:String=selectedTipeSpinner.value?:""
+            if (tipe==TIPE.transfer){
+                pocketTransfer()
+            }else{
+                transaction.category_id= getCategoryId(kategori)
+                transaction.pocket_id = getPocketId(pocket)
+                transaction.date = getDate()
+                transaction.note = note.value!!
+                transaction.nominal = getNominal(selectedTipeSpinner.value)
+                insert(transaction)
+            }
         }
         onNavigateToHomeScreen()
     }
+    //transfer antar tabungan
+    fun pocketTransfer() {
+        viewModelScope.launch {
+            val transaction = TransactionTable()
+            val pocketAsal:String = selectedKategoriSpinner.value ?: ""
+            val pocketTujuan:String=selectedPocketSpinner.value ?: ""
+            val tipe:String=selectedTipeSpinner.value?:""
+            transaction.category_id= getCategoryId("TRANSFER")
+            transaction.pocket_id = getPocketId(pocketAsal)
+            transaction.date = getDate()
+            transaction.note = note.value!!
+            transaction.nominal = getNominal(TIPE.keluar)
+            insert(transaction)
 
+            transaction.pocket_id=getPocketId(pocketTujuan)
+            transaction.nominal = getNominal(TIPE.masuk)
+            insert(transaction)
+        }
+
+    }
     private suspend fun getCategory(id:Int): CategoryTable? {
         return withContext(Dispatchers.IO) {
             datasource1.getCategory(id)
@@ -351,6 +408,7 @@ class MainViewModel(application: Application,
         _clicked_category.value=CategoryTable()
 
     }
+
     fun setTransId(id:Int){
         _trans_id.value = id
     }
@@ -397,9 +455,10 @@ class MainViewModel(application: Application,
                 val savedStateHandle = extras.createSavedStateHandle()
                 val dataSource = BudgetDB.getInstance(application).category_dao
                 val dataSource2 = BudgetDB.getInstance(application).transaction_dao
+                val dataSource3 = BudgetDB.getInstance(application).pocket_dao
 
                 return MainViewModel(
-                    application,dataSource,dataSource2
+                    application,dataSource,dataSource2,dataSource3
                 ) as T
             }
         }

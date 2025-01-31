@@ -3,6 +3,7 @@
     <string-array name="tipe_list">
         <item>PENGELUARAN</item>
         <item>PEMASUKAN</item>
+        <item>TRANSFER</item>
     </string-array>
     <string-array name="tipe_list_all">
         <item>ALL</item>
