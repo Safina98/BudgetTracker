@@ -39,9 +39,10 @@
 
         <Spinner
             android:id="@+id/spinner_tipe_t"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/margin_medium"
+            android:visibility="gone"
             app:layout_constraintEnd_toStartOf="@+id/date_range_btn"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
@@ -55,12 +56,25 @@
             android:layout_marginTop="@dimen/margin_medium"
             android:onClick="@{()->t_vmodel.onDatePickerClick()}"
             android:text="Pick Date Range"
+            android:visibility="gone"
             android:textAlignment="center"
             android:textSize="14sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/spinner_tipe_t"
             app:layout_constraintTop_toBottomOf="@id/toolbar" />
+
+        <ImageView
+            android:id="@+id/img_filter"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_medium"
+            android:onClick="@{()->t_vmodel.onDatePickerClick()}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/spinner_tipe_t"
+            app:layout_constraintTop_toBottomOf="@id/toolbar"
+            app:srcCompat="@drawable/baseline_tune_24" />
 
         <Spinner
             android:id="@+id/spinner_kategori"

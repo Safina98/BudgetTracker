@@ -313,7 +313,9 @@ class MainViewModel(application: Application,
             transaction.date = getDate()
             transaction.note=note.value!!
             val kategori:String = selectedKategoriSpinner.value ?: ""
+            val pocket:String=selectedPocketSpinner.value ?: "Tabungan Utama"
             transaction.category_id = getCategoryId(kategori)
+            transaction.pocket_id=getPocketId(pocket)
             transaction.nominal=getNominal(selectedTipeSpinner.value)
             transaction.transaction_id = clicked_transtab.value!!.transaction_id
             update_trans(transaction)
@@ -325,7 +327,7 @@ class MainViewModel(application: Application,
         viewModelScope.launch {
             val transaction = TransactionTable()
             val kategori:String = selectedKategoriSpinner.value ?: ""
-            val pocket:String=selectedPocketSpinner.value ?: ""
+            val pocket:String=selectedPocketSpinner.value ?: "Tabungan Utama"
             val tipe:String=selectedTipeSpinner.value?:""
             if (tipe==TIPE.transfer){
                 pocketTransfer()
@@ -353,7 +355,6 @@ class MainViewModel(application: Application,
             transaction.note = note.value!!
             transaction.nominal = getNominal(TIPE.keluar)
             insert(transaction)
-
             transaction.pocket_id=getPocketId(pocketTujuan)
             transaction.nominal = getNominal(TIPE.masuk)
             insert(transaction)
@@ -365,19 +366,24 @@ class MainViewModel(application: Application,
             datasource1.getCategory(id)
         }
     }
+    private suspend fun getPocket(id:Int): PocketTable? {
+        return withContext(Dispatchers.IO) {
+            pocketDao.getPocketById(id)
+        }
+    }
     fun getClickedTransTab(id:Int){
         viewModelScope.launch {
             val a =withContext(Dispatchers.IO) {
               datasource2.getTransById(id)
             }
             _clicked_transtab.value = a
-            getClickedCategory(clicked_transtab.value!!.category_id!!)
+            getClickedCategory(clicked_transtab.value!!.category_id!!,clicked_transtab.value!!.pocket_id!!)
         }
     }
-    fun getClickedCategory(id:Int){
+    fun getClickedCategory(id:Int,pocketId:Int){
         viewModelScope.launch {
             _clicked_category.value = getCategory(id)
-            Log.i("SPINNERPROB","Main View Model clicked_category: "+_clicked_category.value?.category_type)
+            _selectedPocketSpinner.value = getPocket(pocketId)?.pocketName
         }
     }
     @RequiresApi(Build.VERSION_CODES.O)

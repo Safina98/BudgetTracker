@@ -29,6 +29,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.navigation.fragment.navArgs
 import com.example.budgettracker2.FragmentInput.InputFragmentArgs
+import com.example.budgettracker2.databinding.PopUpFilterBinding
 
 class TransactionFragment : Fragment() {
 
@@ -48,7 +49,7 @@ class TransactionFragment : Fragment() {
         val args: TransactionFragmentArgs by navArgs()
         val cat_id: Int = args.id
         viewModel.setCatId(cat_id)
-        viewModel.getClickedCategory(cat_id)
+        viewModel.getClickedCategory(cat_id,-1)
         binding.lifecycleOwner = this
         val adapter = TransactionAdapter(
             this.requireContext(),
@@ -73,6 +74,10 @@ class TransactionFragment : Fragment() {
         val adapter2 = ArrayAdapter(requireContext(), R.layout.spinner_item_layout, resources.getStringArray(R.array.tipe_list_all))
         adapter2.setDropDownViewResource(R.layout.spinner_item_layout)
         binding.spinnerTipeT.adapter = adapter2
+
+        binding.imgFilter.setOnClickListener {
+            showFilterDialog()
+        }
 
         binding.spinnerTipeT.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
@@ -258,16 +263,17 @@ class TransactionFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         val toolbar = view.findViewById<Toolbar>(R.id.toolbar)
         (activity as AppCompatActivity).setSupportActionBar(toolbar)
-
-
-
-        // Trigger loading the spinner entries
-       // viewModel.getKategoriEntries("PENGELUARAN")
-        //viewModel.updateRecyclerViewData("BEAUTY")
-       // viewModel.updateRv4()
     }
 
+    fun showFilterDialog(){
+        val dialogBinding = PopUpFilterBinding.inflate(LayoutInflater.from(requireContext()))
 
+        val dialog = AlertDialog.Builder(requireContext())
+            .setView(dialogBinding.root) // Use DataBinding
+            .create()
 
+        //dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT)) // Optional: Transparent background
+        dialog.show()
 
+    }
 }

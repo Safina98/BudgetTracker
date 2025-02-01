@@ -15,4 +15,9 @@ interface PocketDao {
     @Query("SELECT pocket_id FROM pocket_table WHERE pocket_name =:name")
     fun getIdByPocketName(name:String):Int
 
+    @Query("SELECT * FROM pocket_table WHERE pocket_id =:id")
+    fun getPocketById(id:Int):PocketTable?
+
+
+
 }

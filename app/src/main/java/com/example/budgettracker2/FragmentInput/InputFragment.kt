@@ -48,6 +48,7 @@ class InputFragment : Fragment() {
         val adapter2 = ArrayAdapter(requireContext(), R.layout.spinner_item_layout, resources.getStringArray(R.array.tipe_list))
         adapter2.setDropDownViewResource(R.layout.spinner_item_layout)
         binding.spinnerTipe.adapter = adapter2
+
         val cattype = viewModel._clicked_category.value!!.category_type
 
         binding.spinnerTipe.setSelection(resources.getStringArray(R.array.tipe_list).indexOf(cattype))
@@ -92,6 +93,9 @@ class InputFragment : Fragment() {
             val adapter1 = ArrayAdapter(requireContext(), R.layout.spinner_item_layout, entries)
             adapter1.setDropDownViewResource(R.layout.spinner_item_layout)
             binding.spinnerPocketI.adapter=adapter1
+            val pocketName=viewModel.selectedPocketSpinner.value
+            val defaultPosition=entries.indexOf(pocketName)
+            binding.spinnerPocketI.setSelection(defaultPosition)
         }
         viewModel.selectedKategoriSpinner.observe(viewLifecycleOwner){  }
         viewModel.selectedPocketSpinner.observe(viewLifecycleOwner){  }
