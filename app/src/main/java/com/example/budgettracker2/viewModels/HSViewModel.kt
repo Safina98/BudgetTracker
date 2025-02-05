@@ -76,16 +76,25 @@ class HSViewModel (application: Application,
 
 
     fun insertCsv(tokens:List<String>){
-        var category =CategoryTable()
-    category.category_name = tokens[4]
-    category.category_type = tokens[5]
-    category.category_color= "BLUE"
-    insertCategoryCsv(category)
-    insertCsvTrans(tokens)
+        viewModelScope.launch {
+            val category =CategoryTable()
+            category.category_id=tokens[0].toInt()
+            category.category_name = tokens[1]
+            category.category_type = tokens[2]
+            category.category_color= tokens[3]
+            try {
+                _insertCategoryCsv(category)
+            }catch (e:Exception){
+                Log.i("INSERTCSV",e.toString()+ " " +tokens)
+            }
+
+        }
+
+   // insertCsvTrans(tokens)
     //Log.i("INSERTCSV","ViewModel insertCsv: "+category.toString())
     }
-    fun getDate(dateString:String):Date{
-        val inputFormat = SimpleDateFormat("dd-MMM-yy", Locale.ENGLISH)
+    fun getDate(dateString: String): Date {
+        val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH)
         return inputFormat.parse(dateString)
     }
     private suspend fun getCategoryId(category: String) :Int{
@@ -105,32 +114,43 @@ class HSViewModel (application: Application,
             pocketDao.getIdByPocketName(category)
         }
     }
+    fun insertPocket(tokens:List<String>){
+        viewModelScope.launch {
+            val pocket=PocketTable()
+            pocket.pocket_id=tokens[0].toInt()
+            pocket.pocketName=tokens[1]
+            pocket.saldo=tokens[2].toInt()
+            insertPocketToDao(pocket)
+        }
+    }
     fun insertCsvTrans(tokens: List<String>){
         viewModelScope.launch {
             var transactionTable = TransactionTable()
-            transactionTable.note = tokens[2]
-            Log.i("INSERTCSV","ViewModel insertCsv: "+tokens[2]+" : "+tokens[3])
+            transactionTable.note = tokens[3]
+            //Log.i("INSERTCSV","ViewModel insertCsv: "+tokens[3]+" : "+tokens[3])
             try {
-                transactionTable.nominal = tokens[3].toDouble().toInt()
-                transactionTable.category_id = getCategoryId(tokens[4])
-                transactionTable.date = getDate(tokens[1])
+                transactionTable.pocket_id=tokens[2].toInt()
+                transactionTable.nominal = tokens[5].toDouble().toInt()
+                transactionTable.category_id = tokens[1].toInt()
+                transactionTable.date = getDate(tokens[4])
                 insert(transactionTable)
-                Log.i("INSERTCSV","ViewModel insertCsv try: "+tokens)
+               // Log.i("INSERTCSV","ViewModel insertCsv try: "+tokens)
             }catch (exception:Exception){
-                Log.i("INSERTCSV",exception.toString()+ " " +tokens)
+                Log.i("INSERTCSV",exception.toString()+ " " +tokens[4])
 
             }
         }
     }
     fun insertCategoryCsv(category: CategoryTable){
         viewModelScope.launch {
-            _insertCategoryCsv(category.category_name,category.category_type,category.category_color)
+           // _insertCategoryCsv(category.category_name,category.category_type,category.category_color)
            // Log.i("INSERTCSV","ViewModel insertCsv: "+category.toString())
         }
     }
-    suspend fun _insertCategoryCsv(categoryName:String,categoryType:String,categoryColor:String){
+    suspend fun _insertCategoryCsv(category: CategoryTable){
         withContext(Dispatchers.IO){
-            datasource1.insertIfNotExist(categoryName, categoryType,categoryColor)
+          //  datasource1.insertIfNotExist(categoryName, categoryType,categoryColor)
+            datasource1.insert(category)
         }
     }
     private suspend fun insert(transaksi: TransactionTable){ withContext(Dispatchers.IO){datasource2.insert(transaksi)} }

@@ -24,13 +24,14 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
-import com.example.budgettracker2.R
+
 import com.example.budgettracker2.adapterp.CategoryAdapter
 import com.example.budgettracker2.adapterp.CategoryClickListener
 import com.example.budgettracker2.adapterp.CategoryLongClickListener
+import com.example.budgettracker2.viewModels.HSViewModel
+import com.example.budgettracker2.R
 import com.example.budgettracker2.databinding.FragmentCategoryBinding
 import com.example.budgettracker2.databinding.PopUpAddCategoryBinding
-import com.example.budgettracker2.viewModels.HSViewModel
 import java.io.BufferedReader
 import java.io.InputStreamReader
 
@@ -43,7 +44,8 @@ class CategoryFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         // Inflate the layout for this fragment
-        val binding:FragmentCategoryBinding = DataBindingUtil.inflate(inflater,R.layout.fragment_category,container,false)
+        val binding: FragmentCategoryBinding = DataBindingUtil.inflate(inflater,
+            R.layout.fragment_category,container,false)
         binding.hsVmodel = viewModel
         binding.lifecycleOwner = this
         val toolbar: Toolbar = binding.toolbarHs
@@ -212,9 +214,16 @@ class CategoryFragment : Fragment() {
 
             val tokens: List<String> = line!!.split(",")
             if (i!=0) {
-                viewModel.insertCsv(tokens)
+               // Log.i("INSERTCSV","tokens: $tokens, size: ${tokens.size}" )
+                if (tokens.size==3){
+                    viewModel.insertPocket(tokens)
+                }else if (tokens.size==4){
+                    viewModel.insertCsv(tokens)
+                }else{
+                    viewModel.insertCsvTrans(tokens)
+                }
             }
-            Log.i("INSERTCSV","Fragment: " +i )
+
             i+=1
         }
     }

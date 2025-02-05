@@ -10,8 +10,9 @@ import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.AP
 import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.example.budgettracker2.TIPE
 import com.example.budgettracker2.database.*
-import com.example.budgettracker2.utils.TIPE
+
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -147,7 +148,7 @@ class MainViewModel(application: Application,
         }
     }
     fun getNominal(value: String?):Int{
-       return if(value==TIPE.keluar){
+       return if(value== TIPE.keluar){
            jumlah.value?.toInt()!!*-1
 
        }else{
@@ -271,7 +272,7 @@ class MainViewModel(application: Application,
         viewModelScope.launch {
             val newData = withContext(Dispatchers.IO) {
 
-                    if(value== TIPE.transfer){
+                    if(value== TIPE.TRANSFER){
                         val list = pocketDao.getAllPocketName()
                         list
                     }
@@ -329,7 +330,7 @@ class MainViewModel(application: Application,
             val kategori:String = selectedKategoriSpinner.value ?: ""
             val pocket:String=selectedPocketSpinner.value ?: "Tabungan Utama"
             val tipe:String=selectedTipeSpinner.value?:""
-            if (tipe==TIPE.transfer){
+            if (tipe==TIPE.TRANSFER){
                 pocketTransfer()
             }else{
                 transaction.category_id= getCategoryId(kategori)
