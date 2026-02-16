@@ -2,18 +2,22 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.hilt)
+    alias(libs.plugins.ksp)
     id("kotlin-kapt")
     id("androidx.navigation.safeargs.kotlin")
 }
 
 android {
     namespace = "com.example.budgettracker2"
-    compileSdk = 35
+    compileSdk {
+        version = release(36)
+    }
 
     defaultConfig {
         applicationId = "com.example.budgettracker2"
         minSdk = 28
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
         multiDexEnabled = true
@@ -51,44 +55,59 @@ android {
 }
 
 dependencies {
-// Kotlin Standard Library
-    implementation("org.jetbrains.kotlin:kotlin-stdlib:2.0.0")
 
-    // AndroidX AppCompat
-    implementation("androidx.appcompat:appcompat:1.7.0")
     implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation(libs.androidx.activity.compose)
-    implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.ui)
-    implementation(libs.androidx.ui.graphics)
-    implementation(libs.androidx.ui.tooling.preview)
-    implementation(libs.androidx.material3)
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation(libs.androidx.ui.test.junit4)
-    debugImplementation(libs.androidx.ui.tooling)
-    debugImplementation(libs.androidx.ui.test.manifest)
-    //material
-    implementation("com.google.android.material:material:1.5.0")
-    //navigation
-    implementation("androidx.navigation:navigation-fragment-ktx:2.7.7") // Use the latest version
-    implementation("androidx.navigation:navigation-ui-ktx:2.7.7")
-    //room
-    implementation("androidx.room:room-runtime:2.6.1")
-    kapt("androidx.room:room-compiler:2.6.1")
-    implementation("androidx.room:room-ktx:2.6.1")
+    implementation(libs.androidx.appcompat)
 
-    implementation("androidx.lifecycle:lifecycle-extensions:2.2.0")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2")
-    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.6.2")
+    // Compose
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.compose.ui)
+    implementation(libs.androidx.compose.ui.graphics)
+    implementation(libs.androidx.compose.ui.tooling.preview)
+    implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.compose.runtime.livedata)
+    implementation(libs.androidx.activity.compose)
+
+    // Navigation
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.navigation.runtime)
+    implementation(libs.androidx.hilt.navigation.compose)
+
+    // Lifecycle
+    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
+
+    // Room
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    ksp(libs.androidx.room.compiler)
+
+    implementation(libs.androidx.navigation.fragment)
+    implementation(libs.androidx.navigation.ui)
+
+
+
+
+    // Hilt
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.compiler)
+
+    // Coroutines
+    implementation(libs.jetbrains.kotlinx.coroutines)
+
+    implementation(libs.google.material)
+
+
+
+
+    // Google Drive
     implementation("com.google.android.gms:play-services-auth:21.0.0")
     implementation("com.google.api-client:google-api-client-android:2.2.0")
     implementation("com.google.http-client:google-http-client-gson:1.43.3")
     implementation("com.google.apis:google-api-services-drive:v3-rev20230822-2.0.0")
 
-
-
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
 }

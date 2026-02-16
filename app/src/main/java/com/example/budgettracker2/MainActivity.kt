@@ -5,12 +5,10 @@ import android.os.Bundle
 import androidx.appcompat.widget.Toolbar
 
 enum class tipe{PEMASUKAN, PENGELUARAN, TABUNGAN}
-enum class warna{PINK,YELLOW_PINK,BLUE,GREEN,PURPLE,YELLOW}
+
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
     }
-
 }

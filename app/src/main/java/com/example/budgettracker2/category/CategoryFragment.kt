@@ -64,7 +64,6 @@ class CategoryFragment : Fragment() {
                 val manager = DriveBackupManager(requireContext(), account)
 
                 lifecycleScope.launch {
-
                     when (pendingAction) {
                         Action.BACKUP -> manager.backupToDrive()
                         Action.RESTORE -> manager.restoreFromDrive()
@@ -87,8 +86,6 @@ class CategoryFragment : Fragment() {
         val toolbar: Toolbar = binding.toolbarHs
         (requireActivity() as AppCompatActivity).setSupportActionBar(toolbar)
 
-
-
         val adapter =CategoryAdapter(
             this.requireContext(),
            CategoryClickListener {
@@ -109,8 +106,6 @@ class CategoryFragment : Fragment() {
         viewModel.kategori.observe(viewLifecycleOwner) {
             it?.let {
                 adapter.submitList(it)
-              //  Log.i("INSERTCSV","Categori fragment kategori list: "+ it)
-                //adapter.notifyDataSetChanged()
             }
         }
         viewModel.tySpent.observe(viewLifecycleOwner) {

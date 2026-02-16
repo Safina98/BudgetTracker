@@ -5,7 +5,7 @@ import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import com.example.budgettracker2.tipe
-import com.example.budgettracker2.warna
+
 
 @Entity(tableName = "category_table")
 

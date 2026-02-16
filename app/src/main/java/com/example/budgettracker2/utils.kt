@@ -6,4 +6,10 @@ object TIPETRANSAKSI {
     const val TRANSFER = "TRANSFER"
 
 }
-enum class WARNA{PINK,YELLOW_PINK,BLUE,GREEN,PURPLE,YELLOW}
+object WARNA {
+    const val PINK = 0
+    const val YELLOW = 1
+    const val BLUE = 2
+    const val GREEN = 2
+    const val PURPLE = 2
+}
