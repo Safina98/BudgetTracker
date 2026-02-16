@@ -4,11 +4,21 @@
     <corners android:radius="14dp" />
     <gradient
         android:angle="60"
+        android:centerColor="#D3969C"
+        android:centerX="60%"
+        android:endColor="#D3969C"
+        android:startColor="#D3969C"
+        android:type="linear" />
+    <!--
+
+    <gradient
+        android:angle="60"
         android:centerColor="#6A9AB0"
         android:centerX="60%"
         android:endColor="#9EC8B9"
         android:startColor="#3A6D8C"
         android:type="linear" />
+    -->
 
     <size
         android:width="@dimen/big_btn_width"

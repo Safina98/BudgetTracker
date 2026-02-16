@@ -17,11 +17,13 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 
@@ -34,10 +36,44 @@ import com.example.budgettracker2.databinding.FragmentCategoryBinding
 import com.example.budgettracker2.databinding.PopUpAddCategoryBinding
 import java.io.BufferedReader
 import java.io.InputStreamReader
+import com.example.budgettracker2.backup.DriveBackupManager
+import com.google.android.gms.auth.api.signin.*
+import com.google.android.gms.common.api.Scope
+import com.google.api.services.drive.DriveScopes
+import kotlinx.coroutines.launch
 
 
 class CategoryFragment : Fragment() {
     private val REQUEST_CODE_FILE_PICKER = 123
+    private lateinit var signInClient: GoogleSignInClient
+    private var pendingAction: Action? = null
+
+    private enum class Action {
+        BACKUP, RESTORE
+    }
+
+    // Modern Activity Result API
+    private val signInLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+
+            if (result.resultCode == Activity.RESULT_OK) {
+
+                val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+                val account = task.result ?: return@registerForActivityResult
+
+                val manager = DriveBackupManager(requireContext(), account)
+
+                lifecycleScope.launch {
+
+                    when (pendingAction) {
+                        Action.BACKUP -> manager.backupToDrive()
+                        Action.RESTORE -> manager.restoreFromDrive()
+                        null -> {}
+                    }
+                }
+            }
+        }
+
     private val viewModel: HSViewModel by viewModels { HSViewModel.Factory }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -50,6 +86,8 @@ class CategoryFragment : Fragment() {
         binding.lifecycleOwner = this
         val toolbar: Toolbar = binding.toolbarHs
         (requireActivity() as AppCompatActivity).setSupportActionBar(toolbar)
+
+
 
         val adapter =CategoryAdapter(
             this.requireContext(),
@@ -150,6 +188,7 @@ class CategoryFragment : Fragment() {
         dialog.show()
 
     }
+
     private fun showOptionDialog(id:Int) {
         val dialogBuilder = AlertDialog.Builder(requireContext())
         dialogBuilder.setTitle("Options")
@@ -169,11 +208,29 @@ class CategoryFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)  // Indicates that this fragment has an options menu.
+        val signInOptions = GoogleSignInOptions.Builder(
+            GoogleSignInOptions.DEFAULT_SIGN_IN
+        )
+            .requestEmail()
+            .requestScopes(Scope(DriveScopes.DRIVE_FILE))
+            .build()
+
+        signInClient = GoogleSignIn.getClient(requireContext(), signInOptions)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.overflow_menu, menu)
         super.onCreateOptionsMenu(menu, inflater)
+    }
+    private fun startSignIn() {
+        val account = GoogleSignIn.getLastSignedInAccount(requireContext())
+
+        if (account != null) {
+            // Already signed in
+            signInLauncher.launch(signInClient.signInIntent)
+        } else {
+            signInLauncher.launch(signInClient.signInIntent)
+        }
     }
     private fun openFilePicker() {
         val intent = Intent(Intent.ACTION_GET_CONTENT)
@@ -195,11 +252,15 @@ class CategoryFragment : Fragment() {
         when (item.itemId) {
             R.id.menu_import -> {
                 // Handle menu item 1 click
-                openFilePicker()
+               // openFilePicker()
+                pendingAction = Action.RESTORE
+                startSignIn()
                 return true
             }
             R.id.menu_export -> {
                 // Handle menu item 2 click
+                pendingAction = Action.BACKUP
+                startSignIn()
                 return true
             }
             else -> return super.onOptionsItemSelected(item)

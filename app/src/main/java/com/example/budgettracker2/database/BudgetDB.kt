@@ -20,6 +20,9 @@ abstract class BudgetDB : RoomDatabase() {
     companion object{
         @Volatile
         private var INSTANCE : BudgetDB? = null
+        fun destroyInstance() {
+            INSTANCE = null
+        }
 
         fun getInstance(context: Context) : BudgetDB {
             synchronized(this){

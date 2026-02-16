@@ -18,4 +18,10 @@
     <color name="purple_center">#EDE7F6</color>
     <color name="center_blue">#E0F7FA</color>
     <color name="end_blue">#90CAF9</color>
+
+    <color name="dark_green">#0A3332</color>
+    <color name="moss_green">#839958</color>
+    <color name="beige">#F7F4D5</color>
+    <color name="rossy_brown">#D3968C</color>
+    <color name="midnight_green">#105666</color>
 </resources>

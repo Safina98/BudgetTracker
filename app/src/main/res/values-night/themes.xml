@@ -3,18 +3,19 @@
 
 
 
-    <style name="Theme.BudgetTracker2" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="Theme.BudgetTracker" parent="Theme.MaterialComponents.DayNight.NoActionBar">
 
         <item name="colorPrimary">@color/purple_200</item>
-        <item name="colorPrimaryVariant">@color/purple_700</item>
+        <item name="colorPrimaryVariant">@color/beige</item>
         <item name="colorOnPrimary">@color/black</item>
 
         <item name="colorSecondary">@color/teal_200</item>
         <item name="colorSecondaryVariant">@color/teal_200</item>
-        <item name="colorOnSecondary">@color/black</item>
+        <item name="colorOnSecondary">@color/beige</item>
 
-        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
 
+        <item name="android:statusBarColor">@color/dark_green</item>
+        \
     </style>
 
 

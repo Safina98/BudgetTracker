@@ -1,7 +1,6 @@
 package com.example.budgettracker2.database
 
-import com.example.budgettracker2.tipe
-import com.example.budgettracker2.warna
+
 
 data class KategoriModel (
     var id_: Int,

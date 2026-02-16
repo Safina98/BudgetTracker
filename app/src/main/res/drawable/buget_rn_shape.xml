@@ -12,6 +12,13 @@
         android:endColor="#FCE4EC"
         android:startColor="#E1BEE7"
         android:type="linear" />
+        <gradient
+        android:angle="90"
+        android:centerX="40%"
+        android:centerColor="#F1EEDC"
+        android:endColor="#B3C8CF"
+        android:startColor="#E5DDC5"
+        android:type="linear" />
     <size
         android:width="@dimen/big_btn_width"
         android:height="@dimen/medium_btn_height" />
@@ -19,9 +26,9 @@
     <gradient
         android:angle="90"
         android:centerX="40%"
-        android:centerColor="#F1EEDC"
-        android:endColor="#B3C8CF"
-        android:startColor="#E5DDC5"
+        android:centerColor="#F7f4d5"
+        android:endColor="#F7f4d5"
+        android:startColor="#F7f4d5"
         android:type="linear" />
     <size
         android:width="@dimen/big_btn_width"

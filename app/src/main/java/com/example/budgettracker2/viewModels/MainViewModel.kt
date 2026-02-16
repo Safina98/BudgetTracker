@@ -10,7 +10,7 @@ import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.AP
 import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.example.budgettracker2.TIPE
+import com.example.budgettracker2.TIPETRANSAKSI
 import com.example.budgettracker2.database.*
 
 import kotlinx.coroutines.Dispatchers
@@ -148,7 +148,7 @@ class MainViewModel(application: Application,
         }
     }
     fun getNominal(value: String?):Int{
-       return if(value== TIPE.keluar){
+       return if(value== TIPETRANSAKSI.keluar){
            jumlah.value?.toInt()!!*-1
 
        }else{
@@ -272,7 +272,7 @@ class MainViewModel(application: Application,
         viewModelScope.launch {
             val newData = withContext(Dispatchers.IO) {
 
-                    if(value== TIPE.TRANSFER){
+                    if(value== TIPETRANSAKSI.TRANSFER){
                         val list = pocketDao.getAllPocketName()
                         list
                     }
@@ -330,7 +330,7 @@ class MainViewModel(application: Application,
             val kategori:String = selectedKategoriSpinner.value ?: ""
             val pocket:String=selectedPocketSpinner.value ?: "Tabungan Utama"
             val tipe:String=selectedTipeSpinner.value?:""
-            if (tipe==TIPE.TRANSFER){
+            if (tipe==TIPETRANSAKSI.TRANSFER){
                 pocketTransfer()
             }else{
                 transaction.category_id= getCategoryId(kategori)
@@ -354,10 +354,10 @@ class MainViewModel(application: Application,
             transaction.pocket_id = getPocketId(pocketAsal)
             transaction.date = getDate()
             transaction.note = note.value!!
-            transaction.nominal = getNominal(TIPE.keluar)
+            transaction.nominal = getNominal(TIPETRANSAKSI.keluar)
             insert(transaction)
             transaction.pocket_id=getPocketId(pocketTujuan)
-            transaction.nominal = getNominal(TIPE.masuk)
+            transaction.nominal = getNominal(TIPETRANSAKSI.masuk)
             insert(transaction)
         }
 

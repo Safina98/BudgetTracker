@@ -1,6 +1,6 @@
 package com.example.budgettracker2
 
-object TIPE {
+object TIPETRANSAKSI {
     const val keluar= "PENGELUARAN"
     const val masuk = "PEMASUKAN"
     const val TRANSFER = "TRANSFER"
