@@ -262,6 +262,10 @@ class CategoryFragment : Fragment() {
                 startSignIn()
                 return true
             }
+            R.id.menu_manage->{
+                this.findNavController().navigate(CategoryFragmentDirections.actionCategoryFragmentToManageFragment())
+                return true
+            }
             else -> return super.onOptionsItemSelected(item)
         }
     }

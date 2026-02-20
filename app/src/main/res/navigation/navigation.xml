@@ -54,9 +54,21 @@
         <action
             android:id="@+id/action_categoryFragment_to_fragmentTabungan"
             app:destination="@id/fragmentTabungan" />
+        <action
+            android:id="@+id/action_categoryFragment_to_manageFragment"
+            app:destination="@id/manageFragment" />
     </fragment>
     <fragment
         android:id="@+id/fragmentTabungan"
         android:name="com.example.budgettracker2.FragmentTabungan.FragmentTabungan"
         android:label="FragmentTabungan" />
+    <fragment
+        android:id="@+id/manageFragment"
+        android:name="com.example.budgettracker2.FragmentManage.ManageFragment"
+        android:label="fragment_manage"
+        tools:layout="@layout/fragment_manage" >
+        <action
+            android:id="@+id/action_manageFragment_to_fragmentTabungan"
+            app:destination="@id/fragmentTabungan" />
+    </fragment>
 </navigation>

@@ -5,4 +5,6 @@
         android:id="@+id/menu_import"/>
     <item android:title="Export Data"
         android:id="@+id/menu_export"/>
+    <item android:title="Manage"
+        android:id="@+id/menu_manage"/>
 </menu>

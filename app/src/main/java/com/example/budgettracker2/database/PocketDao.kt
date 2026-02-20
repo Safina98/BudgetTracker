@@ -3,6 +3,7 @@ package com.example.budgettracker2.database
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface PocketDao {
@@ -17,6 +18,9 @@ interface PocketDao {
 
     @Query("SELECT * FROM pocket_table WHERE pocket_id =:id")
     fun getPocketById(id:Int):PocketTable?
+
+    @Query("SELECT * FROM pocket_table")
+    fun getAllPocket(): Flow<List<PocketTable>>
 
 
 

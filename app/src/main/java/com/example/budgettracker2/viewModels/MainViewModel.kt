@@ -112,10 +112,6 @@ class MainViewModel(application: Application,
     val _clicked_category = MutableLiveData<CategoryTable>()
     val clicked_category: LiveData<CategoryTable> get() = _clicked_category
 
-    /***************************************Tabungan*****************************************/
-    val namaTabungan=  MutableStateFlow<String>("")
-    val saldo=MutableStateFlow<Int>(0)
-
 
     init {
         val currentDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
@@ -432,15 +428,7 @@ class MainViewModel(application: Application,
     private suspend fun update_trans(t:TransactionTable){ withContext(Dispatchers.IO){datasource2.update(t)} }
 
     //*******************************************Tabungan************************************//
-    fun insertTabungan(){
-        viewModelScope.launch {
-            val tabungan = PocketTable()
-            tabungan.pocketName = namaTabungan.value
-            tabungan.saldo = saldo.value
-            insertTabungantoDB(tabungan)
-            Log.i("MainViewModel","InsertTabungan")
-        }
-    }
+
     private suspend fun insertTabungantoDB(pocketTable: PocketTable){
         withContext(Dispatchers.IO){
             pocketDao.insert(pocketTable)
