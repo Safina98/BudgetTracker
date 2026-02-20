@@ -1,5 +1,8 @@
 package com.example.budgettracker2
 
+import java.text.NumberFormat
+import java.util.Locale
+
 object TIPETRANSAKSI {
     const val keluar= "PENGELUARAN"
     const val masuk = "PEMASUKAN"
@@ -13,3 +16,10 @@ object WARNA {
     const val GREEN = 2
     const val PURPLE = 2
 }
+
+val rupiahFormatter = NumberFormat
+    .getCurrencyInstance(Locale("id", "ID"))
+    .apply {
+        maximumFractionDigits = 0
+        minimumFractionDigits = 0
+    }

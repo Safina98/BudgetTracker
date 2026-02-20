@@ -123,6 +123,10 @@ class CategoryFragment : Fragment() {
             }
         }
 
+        binding.btnBudgetTm.setOnClickListener {
+            this.findNavController().navigate(CategoryFragmentDirections.actionCategoryFragmentToFragmentTabungan())
+        }
+
         viewModel.navigate_to_transaction.observe(viewLifecycleOwner){
             it?.let {
                 this.findNavController().navigate(CategoryFragmentDirections.actionCategoryFragmentToTransactionFragment(it))

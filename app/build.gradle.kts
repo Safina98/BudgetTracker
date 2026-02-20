@@ -98,6 +98,8 @@ dependencies {
 
     implementation(libs.google.material)
 
+    implementation(libs.kotlinx.coroutines.core)
+
 
 
 

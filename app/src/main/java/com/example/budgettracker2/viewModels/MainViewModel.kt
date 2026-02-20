@@ -14,6 +14,7 @@ import com.example.budgettracker2.TIPETRANSAKSI
 import com.example.budgettracker2.database.*
 
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
@@ -110,6 +111,10 @@ class MainViewModel(application: Application,
     val clicked_transtab: LiveData<TransactionTable> get() = _clicked_transtab
     val _clicked_category = MutableLiveData<CategoryTable>()
     val clicked_category: LiveData<CategoryTable> get() = _clicked_category
+
+    /***************************************Tabungan*****************************************/
+    val namaTabungan=  MutableStateFlow<String>("")
+    val saldo=MutableStateFlow<Int>(0)
 
 
     init {
@@ -425,6 +430,22 @@ class MainViewModel(application: Application,
     private suspend fun insert(transaksi: TransactionTable){ withContext(Dispatchers.IO){datasource2.insert(transaksi)} }
     private suspend fun delete_trans(t:TransactionTable){ withContext(Dispatchers.IO){datasource2.delete2(t)} }
     private suspend fun update_trans(t:TransactionTable){ withContext(Dispatchers.IO){datasource2.update(t)} }
+
+    //*******************************************Tabungan************************************//
+    fun insertTabungan(){
+        viewModelScope.launch {
+            val tabungan = PocketTable()
+            tabungan.pocketName = namaTabungan.value
+            tabungan.saldo = saldo.value
+            insertTabungantoDB(tabungan)
+            Log.i("MainViewModel","InsertTabungan")
+        }
+    }
+    private suspend fun insertTabungantoDB(pocketTable: PocketTable){
+        withContext(Dispatchers.IO){
+            pocketDao.insert(pocketTable)
+        }
+    }
 
     /********************************************Navigation***********************************************/
     //Navigating to transaction
