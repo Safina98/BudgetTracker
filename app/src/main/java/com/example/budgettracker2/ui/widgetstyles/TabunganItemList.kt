@@ -70,7 +70,7 @@ fun TabunganItemList(
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     fontSize = 20.sp,
-                    fontFamily =
+
                 )
                 Spacer(modifier = Modifier.height(10.dp))
                 Text(
