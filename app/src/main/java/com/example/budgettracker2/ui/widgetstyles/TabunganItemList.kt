@@ -33,6 +33,8 @@ import com.example.budgettracker2.database.model.TabunganModel
 import com.example.budgettracker2.rupiahFormatter
 import androidx.compose.foundation.layout.size
 import androidx.compose.ui.unit.sp
+import com.example.budgettracker2.ui.theme.AnticSlabFamily
+import com.example.budgettracker2.ui.theme.CormorantMedium
 
 @Composable
 fun TabunganItemList(
@@ -50,7 +52,6 @@ fun TabunganItemList(
         shape = RoundedCornerShape(12.dp)
         // Note: Card uses 'colors = CardDefaults.cardColors(...)' for background normally
     ) {
-
 
         Box(
             modifier = Modifier
@@ -70,6 +71,7 @@ fun TabunganItemList(
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     fontSize = 20.sp,
+                    fontFamily = CormorantMedium
 
                 )
                 Spacer(modifier = Modifier.height(10.dp))
@@ -77,6 +79,7 @@ fun TabunganItemList(
                     modifier = Modifier,
                     text = "Saldo saat ini : ${rupiahFormatter.format(tabunganModel.currentBallance)}",
                     style = MaterialTheme.typography.titleMedium,
+                    fontFamily = CormorantMedium
 
                 )
 

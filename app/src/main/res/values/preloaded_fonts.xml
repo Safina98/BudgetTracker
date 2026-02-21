@@ -3,5 +3,6 @@
     <array name="preloaded_fonts" translatable="false">
         <item>@font/alegreya_sc</item>
         <item>@font/antic_slab</item>
+        <item>@font/cormorant_medium</item>
     </array>
 </resources>

@@ -1,5 +1,8 @@
 package com.example.budgettracker2.database.repository
 
+import com.example.budgettracker2.database.CategoryDao
+import com.example.budgettracker2.database.CategoryTable
+import com.example.budgettracker2.database.KategoriModel
 import com.example.budgettracker2.database.PocketDao
 import com.example.budgettracker2.database.PocketTable
 import com.example.budgettracker2.database.TransactionDao
@@ -13,24 +16,14 @@ import javax.inject.Inject
 
 class BudgetRepository @Inject constructor(
     private val pocketDao: PocketDao,
-    private val transactionDao: TransactionDao
+    private val transactionDao: TransactionDao,
+    private val categoryDao: CategoryDao
 ){
-
-    suspend fun insertPocket(pocket: PocketTable): Long{
-        return withContext(Dispatchers.IO){
-            pocketDao.insertPocket(pocket)
-        }
-    }
 
     fun getAllPocket(): Flow<List<TabunganModel>> =
         pocketDao.getPocketsWithSum()
 
 
-    suspend fun insertTransaction(transaction: TransactionTable){
-        withContext(Dispatchers.IO){
-            transactionDao.insert(transaction)
-        }
-    }
     suspend fun insertPocketWithInitialBalance(
         name: String,
         saldo: Int
@@ -53,6 +46,26 @@ class BudgetRepository @Inject constructor(
                 transaction
             )
         }
+    suspend fun insertKategori(
+        namaKategori: String,
+        tipeKategori: String,
+        warnaKategori: String
+    ): Result<Unit> =
+        runCatching {
+            withContext(Dispatchers.IO){
+                val category= CategoryTable().apply {
+                    category_name=namaKategori
+                    category_type=tipeKategori
+                    category_color=warnaKategori
+                }
+                categoryDao.insert(category)
+            }
 
+
+        }
+
+    fun getAllCategory(): Flow<List<KategoriModel>> =
+        categoryDao.getAllKategoriFlow()
 
 }
+

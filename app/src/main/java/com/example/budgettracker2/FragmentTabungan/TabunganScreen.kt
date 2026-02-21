@@ -58,7 +58,7 @@ fun TabunganScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Compose Screen") }
+                title = { Text("Tabungan") }
             )
         }
     ) { padding ->

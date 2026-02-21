@@ -9,6 +9,10 @@ object TIPETRANSAKSI {
     const val TRANSFER = "TRANSFER"
 
 }
+
+val tipeList = listOf("PEMASUKAN", "PENGELUARAN", "TRANSFER")
+val warnaList = listOf("Pink","Yellow","Blue","Green","Purple")
+
 object WARNA {
     const val PINK = 0
     const val YELLOW = 1

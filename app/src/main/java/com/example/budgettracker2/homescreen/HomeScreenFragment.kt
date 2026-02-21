@@ -1,4 +1,4 @@
-package com.example.budgettracker2.category
+package com.example.budgettracker2.homescreen
 
 import android.app.Activity
 import android.app.AlertDialog
@@ -6,7 +6,6 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.Menu
@@ -16,7 +15,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -32,18 +30,19 @@ import com.example.budgettracker2.adapterp.CategoryClickListener
 import com.example.budgettracker2.adapterp.CategoryLongClickListener
 import com.example.budgettracker2.viewModels.HSViewModel
 import com.example.budgettracker2.R
-import com.example.budgettracker2.databinding.FragmentCategoryBinding
+
 import com.example.budgettracker2.databinding.PopUpAddCategoryBinding
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import com.example.budgettracker2.backup.DriveBackupManager
+import com.example.budgettracker2.databinding.FragmentHomeScreenBinding
 import com.google.android.gms.auth.api.signin.*
 import com.google.android.gms.common.api.Scope
 import com.google.api.services.drive.DriveScopes
 import kotlinx.coroutines.launch
 
 
-class CategoryFragment : Fragment() {
+class HomeScreenFragment : Fragment() {
     private val REQUEST_CODE_FILE_PICKER = 123
     private lateinit var signInClient: GoogleSignInClient
     private var pendingAction: Action? = null
@@ -79,8 +78,8 @@ class CategoryFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         // Inflate the layout for this fragment
-        val binding: FragmentCategoryBinding = DataBindingUtil.inflate(inflater,
-            R.layout.fragment_category,container,false)
+        val binding: FragmentHomeScreenBinding = DataBindingUtil.inflate(inflater,
+            R.layout.fragment_home_screen,container,false)
         binding.hsVmodel = viewModel
         binding.lifecycleOwner = this
         val toolbar: Toolbar = binding.toolbarHs
@@ -124,18 +123,18 @@ class CategoryFragment : Fragment() {
         }
 
         binding.btnBudgetTm.setOnClickListener {
-            this.findNavController().navigate(CategoryFragmentDirections.actionCategoryFragmentToFragmentTabungan())
+            this.findNavController().navigate(HomeScreenFragmentDirections.actionCategoryFragmentToFragmentTabungan())
         }
 
         viewModel.navigate_to_transaction.observe(viewLifecycleOwner){
             it?.let {
-                this.findNavController().navigate(CategoryFragmentDirections.actionCategoryFragmentToTransactionFragment(it))
+                this.findNavController().navigate(HomeScreenFragmentDirections.actionCategoryFragmentToTransactionFragment(it))
                 viewModel.onNavigatedToTransaction()
             }
         }
         viewModel.navigate_to_input.observe(viewLifecycleOwner) {
             if (it!=null){
-                this.findNavController().navigate(CategoryFragmentDirections.actionCategoryFragmentToInputFragment(it))
+                this.findNavController().navigate(HomeScreenFragmentDirections.actionCategoryFragmentToInputFragment(it))
                 viewModel.onNavigatedToInout()
             }
         }
@@ -263,7 +262,7 @@ class CategoryFragment : Fragment() {
                 return true
             }
             R.id.menu_manage->{
-                this.findNavController().navigate(CategoryFragmentDirections.actionCategoryFragmentToManageFragment())
+                this.findNavController().navigate(HomeScreenFragmentDirections.actionCategoryFragmentToManageFragment())
                 return true
             }
             else -> return super.onOptionsItemSelected(item)

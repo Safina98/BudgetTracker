@@ -30,7 +30,9 @@ fun ManageScreen(navController: NavController){
         )
         PrimaryButtonStyle(
             "Manage Kategori",
-            onClick = {},
+            onClick = {
+                navController.navigate(R.id.action_manageFragment_to_kategoriFragment)
+            },
             modifier = Modifier.fillMaxWidth()
         )
         PrimaryButtonStyle(
