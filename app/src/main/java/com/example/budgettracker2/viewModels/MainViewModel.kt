@@ -14,7 +14,6 @@ import com.example.budgettracker2.TIPETRANSAKSI
 import com.example.budgettracker2.database.*
 
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
@@ -431,7 +430,7 @@ class MainViewModel(application: Application,
 
     private suspend fun insertTabungantoDB(pocketTable: PocketTable){
         withContext(Dispatchers.IO){
-            pocketDao.insert(pocketTable)
+            pocketDao.insertPocket(pocketTable)
         }
     }
 

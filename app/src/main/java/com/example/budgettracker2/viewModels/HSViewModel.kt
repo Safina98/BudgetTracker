@@ -258,7 +258,7 @@ class HSViewModel (application: Application,
     }}
     private suspend fun insertPocketToDao(pocketTable: PocketTable){
         withContext(Dispatchers.IO){
-            pocketDao.insert(pocketTable)
+            pocketDao.insertPocket(pocketTable)
         }
     }
     /********************************************Navigation***********************************************/

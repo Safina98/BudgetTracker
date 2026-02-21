@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -38,6 +39,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.budgettracker2.RupiahVisualTransformation
+import com.example.budgettracker2.ui.widgetstyles.TabunganItemList
 import com.example.budgettracker2.viewModels.MainViewModel
 import com.example.budgettracker2.viewModels.ManageViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -48,14 +50,11 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 fun TabunganScreen(
     manageViewModel: ManageViewModel = hiltViewModel())
 {
-
     val namaTabungan by manageViewModel.namaTabungan.collectAsState()
     val saldo by manageViewModel.saldo.collectAsState()
     val pockets by manageViewModel.allPockets.collectAsState()
-    val showSheet = remember { mutableStateOf(false) }
-    pockets.forEach {
-        Log.i("MainViewModel","${it.pocketName}")
-    }
+    val showSheet by manageViewModel.showDialog.collectAsState()
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -67,22 +66,33 @@ fun TabunganScreen(
             modifier = Modifier.fillMaxSize().padding(padding),
             contentAlignment = Alignment.TopStart
         ) {
-
-            LazyColumn {
-                items(pockets) { pocket ->
-                    Text(text = pocket.pocketName) // Example field
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(8.dp),
+                state = rememberLazyListState()
+            ) {
+                items(
+                    items = pockets,
+                    key = { it.pocketTable.pocket_id }   // 🔥 Important for smooth performance
+                ){ pocket ->
+                    TabunganItemList(
+                        pocket,
+                        {},
+                        {}
+                    )
                 }
             }
             ExtendedFloatingActionButton(
-            onClick = { showSheet.value= true },
+            onClick = { manageViewModel.onShowDialog() },
                 modifier = Modifier
                     .align(Alignment.BottomEnd),
             icon = { Icon(Icons.Filled.Edit, "Edit") },
             text = { Text(text = "Add Tabungan") },
         )
-            if (showSheet.value) {
+            if (showSheet) {
                 ModalBottomSheet(
-                    onDismissRequest = { showSheet.value = false }
+                    onDismissRequest = { manageViewModel.clearMutbale()}
                 ) {
                     UpsertTabunganDialog (
                         namaTabungan = namaTabungan,
@@ -94,7 +104,6 @@ fun TabunganScreen(
                         },
                         onSave = {
                             manageViewModel.insertTabungan()
-                            showSheet.value = false
                         }
                     )
                 }

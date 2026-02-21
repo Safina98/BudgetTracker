@@ -24,5 +24,13 @@ object DatabaseModule {
     fun providePocketDao(db: BudgetDB): PocketDao {
         return db.pocket_dao
     }
+    @Provides
+    fun provideTransactionDao(db: BudgetDB): TransactionDao {
+        return db.transaction_dao
+    }
+    @Provides
+    fun provideCategoryDao(db: BudgetDB): CategoryDao {
+        return db.category_dao
+    }
 
 }

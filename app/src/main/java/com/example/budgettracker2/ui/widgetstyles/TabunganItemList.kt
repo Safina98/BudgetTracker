@@ -1,0 +1,127 @@
+package com.example.budgettracker2.ui.widgetstyles
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import com.example.budgettracker2.database.PocketTable
+import com.example.budgettracker2.database.model.TabunganModel
+import com.example.budgettracker2.rupiahFormatter
+import androidx.compose.foundation.layout.size
+import androidx.compose.ui.unit.sp
+
+@Composable
+fun TabunganItemList(
+    tabunganModel: TabunganModel,
+    onUpdateClicked: () -> Unit,
+    onDeleteClicked: () -> Unit
+){
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(100.dp)
+            .padding(2.dp),
+
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        shape = RoundedCornerShape(12.dp)
+        // Note: Card uses 'colors = CardDefaults.cardColors(...)' for background normally
+    ) {
+
+
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(brush = beige)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(12.dp), // Add padding so text doesn't touch the edges
+                horizontalAlignment = Alignment.Start
+            ) {
+                // Header: Word and Definition
+                Text(
+                    modifier = Modifier,
+                    text = "${tabunganModel.pocketTable.pocketName}",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 20.sp,
+                    fontFamily =
+                )
+                Spacer(modifier = Modifier.height(10.dp))
+                Text(
+                    modifier = Modifier,
+                    text = "Saldo saat ini : ${rupiahFormatter.format(tabunganModel.currentBallance)}",
+                    style = MaterialTheme.typography.titleMedium,
+
+                )
+
+            }
+
+// ... rest of imports
+
+                    Row(
+                        modifier = Modifier
+                            .align(Alignment.TopEnd),
+                        horizontalArrangement = Arrangement.spacedBy((-8).dp), // Negative spacing pulls them together
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        IconButton(
+                            onClick = onUpdateClicked,
+                            modifier = Modifier.size(40.dp) // Shrinks the container from 48dp to 40dp
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Edit,
+                                contentDescription = "Edit",
+                                tint = Color.DarkGray,
+                                modifier = Modifier.size(25.dp) // Scales the icon appropriately
+                            )
+                        }
+
+                        IconButton(
+                            onClick = onDeleteClicked,
+                            modifier = Modifier.size(40.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Delete,
+                                contentDescription = "Delete",
+                                tint = Color.Red,
+                                modifier = Modifier.size(25.dp)
+                            )
+                        }
+                    }
+        }
+    }
+
+}
+@Preview
+@Composable
+fun TabunganItemListPreview(){
+ TabunganItemList(TabunganModel(PocketTable(),0),
+     onUpdateClicked = {},
+     onDeleteClicked = {})
+}

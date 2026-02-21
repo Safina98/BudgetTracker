@@ -29,25 +29,14 @@ data class TransactionTable(
     @ColumnInfo(name = "date")
     var date: Date = Date(),
     @ColumnInfo(name = "nominal")
-    var nominal:Int=0
+    var nominal:Int=0,
+    @ColumnInfo(name = "tipe")
+    var tipe: String=""
+
 ){
     @Ignore
     constructor() : this(0, 0,null, "empty", Date(),0)
 }
-/*
-ada tabungan utama
-bisa buka tabungan lain, otomatis dipotong dari tabungan utama
-pengeluaran bisa dipotong dari tabungan utama atau tabungan lain
 
-table tabungan
-id nama_tabungan
-1 utama
-2 emas
-3 laptop
-pemasukan/pengeluaran
-transaction
-tambah nullable foreign key tabungan
-
- */
 
 
