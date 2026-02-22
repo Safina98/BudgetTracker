@@ -4,6 +4,9 @@ import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -18,8 +21,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.budgettracker2.FragmentTabungan.UpsertTabunganDialog
+import com.example.budgettracker2.ui.dialog.DeleteConfirmationDialog
+import com.example.budgettracker2.ui.widgetstyles.KategoriLinearItemList
 import com.example.budgettracker2.viewModels.ManageViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -32,11 +37,9 @@ fun KategoriScreen(
     val warnaKategori by manageViewModel.warnaKategori.collectAsState()
     val kategoriList by manageViewModel.allCategory.collectAsState()
 
-    kategoriList.forEach {
-        Log.i("Kategori", "${it.category_name_}")
-    }
-
-    val showSheet by manageViewModel.showDialog.collectAsState()
+    val deleteAllTransaction by manageViewModel.deleteAllTransaction.collectAsState()
+    val showSheet by manageViewModel.showUpsertDialog.collectAsState()
+    val showDeleteDialog by manageViewModel.showDeleteDialog.collectAsState()
     Scaffold(
         topBar = {
             TopAppBar(
@@ -48,8 +51,30 @@ fun KategoriScreen(
             modifier = Modifier.fillMaxSize().padding(padding),
             contentAlignment = Alignment.TopStart
         ) {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(8.dp),
+                state = rememberLazyListState()
+            ) {
+                items(
+                    items = kategoriList,
+                    key = { it.categoryTable.category_id }   // 🔥 Important for smooth performance
+                ){ kategori ->
+                    KategoriLinearItemList(
+                        kategori,
+                        {
+                            manageViewModel.onEditKategoriClick(kategori)
+                        },
+                        {
+                            Log.i("KategoriDelete", "Kategori Screen: delete clicked")
+                            manageViewModel.onDeleteClick(kategori.categoryTable.category_id)
+                        }
+                    )
+                }
+            }
             ExtendedFloatingActionButton(
-                onClick = { manageViewModel.onShowDialog() },
+                onClick = { manageViewModel.onShowUpsertDialog() },
                 modifier = Modifier
                     .align(Alignment.BottomEnd),
                 icon = { Icon(Icons.Filled.Edit, "Edit") },
@@ -72,10 +97,26 @@ fun KategoriScreen(
                             manageViewModel.warnaKategori.value = it
                         },
                         onSave = {
-                            manageViewModel.insertKategori()
+                            manageViewModel.onKategoriSaveClick()
                         }
                     )
                 }
+            }
+            if (showDeleteDialog!=null){
+                DeleteConfirmationDialog(
+                    "",
+                    deleteAllTransaction,
+                    onCheckChange = { checked ->
+                        manageViewModel.toggleDeleteAllTransaction(checked)
+                    },
+                    {
+                        manageViewModel.deleteKategori()
+                    },
+                    {
+                        manageViewModel.onDeleteDialogDismiss()
+                    }
+                )
+
             }
         }
     }
