@@ -23,20 +23,25 @@ class ManageViewModel @Inject constructor( private val repository: BudgetReposit
     val pocketId= MutableStateFlow<Int?>(null)
 
 
-    val _showUpsertDialog = MutableStateFlow<Boolean>(false)
+    private val _showUpsertDialog = MutableStateFlow<Boolean>(false)
     val showUpsertDialog: StateFlow<Boolean> = _showUpsertDialog
-    val _showDeleteDialog = MutableStateFlow<Int?>(null)
+    private val _showDeleteDialog = MutableStateFlow<Int?>(null)
     val showDeleteDialog: StateFlow<Int?> = _showDeleteDialog
 
-    val _deleteAllTransaction = MutableStateFlow<Boolean>(false)
+    private val _deleteAllTransaction = MutableStateFlow<Boolean>(false)
     val deleteAllTransaction: StateFlow<Boolean> = _deleteAllTransaction
+
+    private val _errorMessage = MutableStateFlow<String?>(null)
+    val errorMessage:StateFlow<String?> = _errorMessage
+
 
     val namaKategori=  MutableStateFlow<String>("")
     val tipeKategori=  MutableStateFlow<String>("")
     val warnaKategori=  MutableStateFlow<String>("")
     val kategoriId= MutableStateFlow<Int?>(null)
 
-    private val _errorMessage = MutableStateFlow<String?>(null)
+
+
 
 
     val allPockets: StateFlow<List<TabunganModel>> = repository.getAllPocket()
@@ -73,6 +78,10 @@ class ManageViewModel @Inject constructor( private val repository: BudgetReposit
 
     }
 
+    fun onCloseErrorMessage(){
+        _errorMessage.value=null
+    }
+
     fun clearMutbale(){
         _showUpsertDialog.value=false
         namaTabungan.value=""
@@ -92,23 +101,18 @@ class ManageViewModel @Inject constructor( private val repository: BudgetReposit
     }
 
     fun onSaveTabunganClick(){
-        Log.i("Tabungan", "onSaveTabunganClick:${pocketId.value}")
         if (pocketId.value==null)insertTabungan() else updateTabungan()
     }
 
 
     fun insertTabungan(){
         viewModelScope.launch {
-
-                repository.insertPocketWithInitialBalance(namaTabungan.value.uppercase().trim(), saldo.value)
+            repository.insertPocketWithInitialBalance(namaTabungan.value.uppercase().trim(), saldo.value)
                 .onSuccess {
-                    //
                     clearMutbale()
                 }
                 .onFailure { exception ->
-                    // Logic for error (e.g., show "Database Error: ${exception.message}")
-                    _errorMessage.value = exception.localizedMessage
-                    Log.i("Tabungan", "Insert failed due to: ${exception.localizedMessage}")
+                    _errorMessage.value = "Insert failed due to "+exception.localizedMessage
                 }
         }
     }
@@ -116,12 +120,10 @@ class ManageViewModel @Inject constructor( private val repository: BudgetReposit
         viewModelScope.launch {
             repository.updatePocketWithInitialBalance(pocketId.value!!,namaTabungan.value,saldo.value)
                 .onSuccess {
-                    //
                     clearMutbale()
                 }
                 .onFailure { exception ->
-                    // Logic for error (e.g., show "Database Error: ${exception.message}")
-                    Log.i("Tabungan", "Update failed due to ${exception.localizedMessage}")
+                    _errorMessage.value = "Update failed. "+exception.localizedMessage
                 }
         }
     }
@@ -133,7 +135,7 @@ class ManageViewModel @Inject constructor( private val repository: BudgetReposit
                     clearMutbale()
                     onDeleteDialogDismiss()
                 }.onFailure { exception ->
-                    Log.i("Tabungan", "Delete failed due to ${exception.localizedMessage}")
+                    _errorMessage.value = "Delete failed. "+exception.localizedMessage
                 }
         }
     }
@@ -150,7 +152,7 @@ class ManageViewModel @Inject constructor( private val repository: BudgetReposit
                 .onSuccess {
                     clearMutbale()
                 }.onFailure { exception ->
-                    Log.i("Kategori", "${exception.localizedMessage}")
+                    _errorMessage.value = "Insert failed. "+exception.localizedMessage
                 }
         }
     }
@@ -161,7 +163,7 @@ class ManageViewModel @Inject constructor( private val repository: BudgetReposit
                 .onSuccess {
                     clearMutbale()
                 }.onFailure { exception ->
-                    Log.i("Kategori", "${exception.localizedMessage}")
+                   _errorMessage.value="Update Failed. "+exception.localizedMessage
                 }
         }
     }
@@ -174,10 +176,10 @@ class ManageViewModel @Inject constructor( private val repository: BudgetReposit
                         clearMutbale()
                         onDeleteDialogDismiss()
                     }.onFailure { exception ->
-                        Log.i("Kategori", "${exception.localizedMessage}")
+                        _errorMessage.value = "Delete failed. "+exception.localizedMessage
                     }
             }else{
-                Log.i("Kategori", "Initial saving cannot be deleted")
+                _errorMessage.value = "Delete Failed. Initial saving is a default category which can't be deleted"
             }
 
         }

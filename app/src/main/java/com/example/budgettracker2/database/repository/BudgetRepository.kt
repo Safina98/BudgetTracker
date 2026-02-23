@@ -24,6 +24,8 @@ class BudgetRepository @Inject constructor(
 
     fun getAllPocket(): Flow<List<TabunganModel>> =
         pocketDao.getPocketsWithSum()
+    fun getAllPocketName(): Flow<List<String>> =
+        pocketDao.getAllPocketNameFlow()
 
 
     suspend fun insertPocketWithInitialBalance(
@@ -114,6 +116,9 @@ class BudgetRepository @Inject constructor(
         }
     fun getAllCategory(): Flow<List<NewKategoriModel>> =
         categoryDao.getAllKategoriFlow()
+
+    fun getCategoryNamebyTipe(tipe:String): Flow<List<String>> =
+        categoryDao.getKategoriNameByTipe(tipe)
 
 }
 

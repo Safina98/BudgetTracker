@@ -15,10 +15,14 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.example.budgettracker2.FragmentManage.ManageScreen
 import com.example.budgettracker2.R
 import com.example.budgettracker2.databinding.FragmentInputBinding
 import com.example.budgettracker2.viewModels.MainViewModel
@@ -33,6 +37,20 @@ class InputFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         // Inflate the layout for this fragment
+        val args: InputFragmentArgs by navArgs()
+        val transId: Int = args.transId
+        val navController = findNavController()
+        return ComposeView(requireContext()).apply {
+            setViewCompositionStrategy(
+                ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
+            )
+            setContent {
+                MaterialTheme {
+                    InputScreen(navController,transId)
+                }
+            }
+        }
+        /*
         val binding :FragmentInputBinding = DataBindingUtil.inflate(inflater,R.layout.fragment_input,container,false)
         binding.iVmodel = viewModel
         binding.lifecycleOwner = this
@@ -122,6 +140,8 @@ class InputFragment : Fragment() {
         }
 
         return binding.root
+
+         */
     }
 
     fun showDatePickerDialog(){

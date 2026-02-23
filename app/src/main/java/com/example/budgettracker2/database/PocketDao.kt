@@ -61,6 +61,9 @@ interface PocketDao {
     """)
     fun getPocketsWithSum(): Flow<List<TabunganModel>>
 
+    @Query("SELECT pocket_name FROM pocket_table ")
+    fun getAllPocketNameFlow(): Flow<List<String>>
+
     @Transaction
     suspend fun insertPocketWithInitialBalance(
         pocket: PocketTable,
