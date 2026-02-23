@@ -6,6 +6,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface TransactionDao{
@@ -20,7 +21,7 @@ interface TransactionDao{
     fun getTransById(id:Int):TransactionTable
 
     @Query("SELECT * FROM transaction_table")
-    fun getAllTransactionTableCoba(): LiveData<List<TransactionTable>>
+    fun getAllTransactionTableCoba(): Flow<List<TransactionTable>>
 
     @Query("SELECT * FROM transaction_table")
     fun getAllTransactionTable(): List<TransactionTable>
@@ -34,6 +35,13 @@ interface TransactionDao{
             "AND (:startDate IS NULL OR t.date >= :startDate) " +
             "AND (:endDate IS NULL OR  t.date <= :endDate) ORDER BY t.date DESC")
     fun getFilteredData3(type: String?, categoryId: Int?, startDate: String?, endDate: String?): List<TransaksiModel>
+    @Query("SELECT t.transaction_id AS id, c.category_name AS category_name_model_, t.note AS ket, t.date, t.nominal FROM transaction_table t " +
+            "INNER JOIN category_table c ON t.category_id = c.category_id WHERE" +
+            " (:type IS NULL OR c.category_type = :type OR :type = 'ALL') " +
+            "AND (:categoryId IS NULL OR t.category_id = :categoryId) " +
+            "AND (:startDate IS NULL OR t.date >= :startDate) " +
+            "AND (:endDate IS NULL OR  t.date <= :endDate) ORDER BY t.date DESC")
+    fun getFilteredDataFlow(type: String?, categoryId: Int?, startDate: String?, endDate: String?): Flow<List<TransaksiModel>>
 
     @Query("SELECT SUM(t.nominal)  FROM transaction_table t " +
             "INNER JOIN category_table c ON t.category_id = c.category_id WHERE" +

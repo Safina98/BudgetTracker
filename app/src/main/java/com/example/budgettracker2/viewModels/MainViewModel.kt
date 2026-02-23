@@ -86,7 +86,7 @@ class MainViewModel(application: Application,
         get() = _recyclerViewData
     private val _unFilteredrecyclerViewData = MutableLiveData<List<TransaksiModel>>()
 
-    val semuatabeltransaksi = datasource2.getAllTransactionTableCoba()
+
     private val _filteredDataSum = MutableLiveData<Int>()
     val filteredDataSum: LiveData<Int>
         get() = _filteredDataSum

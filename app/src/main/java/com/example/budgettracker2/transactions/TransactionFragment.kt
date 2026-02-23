@@ -27,9 +27,13 @@ import android.view.Menu
 import android.view.MenuInflater
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.navigation.fragment.navArgs
 import com.example.budgettracker2.FragmentInput.InputFragmentArgs
 import com.example.budgettracker2.databinding.PopUpFilterBinding
+import com.example.budgettracker2.kategori.KategoriScreen
 
 class TransactionFragment : Fragment() {
 
@@ -41,7 +45,22 @@ class TransactionFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        val navController = findNavController()
+        val args: TransactionFragmentArgs by navArgs()
+        val cat_id: Int = args.id
+
+        return ComposeView(requireContext()).apply {
+            setViewCompositionStrategy(
+                ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
+            )
+            setContent {
+                MaterialTheme {
+                    TransactionScreen(cat_id,navController)
+                }
+            }
+        }
         // Inflate the layout for this fragment
+        /*
         binding= DataBindingUtil.inflate(
             inflater, R.layout.fragment_transaction,container,false
         )
@@ -186,6 +205,8 @@ class TransactionFragment : Fragment() {
             }
         }
         return binding.root
+
+         */
 
     }
     @RequiresApi(Build.VERSION_CODES.O)

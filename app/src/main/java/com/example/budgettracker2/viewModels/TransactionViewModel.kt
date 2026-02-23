@@ -3,6 +3,7 @@ package com.example.budgettracker2.viewModels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.budgettracker2.database.TransactionTable
+import com.example.budgettracker2.database.TransaksiModel
 import com.example.budgettracker2.database.repository.BudgetRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -53,6 +54,12 @@ class TransactionViewModel @Inject constructor( private val repository: BudgetRe
 
     private val _navigateToTransaction= MutableStateFlow<Int?>(null)
     val navigateToTransaction:StateFlow<Int?> = _navigateToTransaction
+
+    val transactionList: StateFlow<List<TransaksiModel>> = repository.getAllTransaction().stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = emptyList()
+    )
 
 
     val categoryNames: StateFlow<List<String>> = tipe

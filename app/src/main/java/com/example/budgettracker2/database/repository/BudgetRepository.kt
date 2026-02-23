@@ -8,6 +8,7 @@ import com.example.budgettracker2.database.PocketDao
 import com.example.budgettracker2.database.PocketTable
 import com.example.budgettracker2.database.TransactionDao
 import com.example.budgettracker2.database.TransactionTable
+import com.example.budgettracker2.database.TransaksiModel
 import com.example.budgettracker2.database.model.NewKategoriModel
 import com.example.budgettracker2.database.model.TabunganModel
 import kotlinx.coroutines.Dispatchers
@@ -157,6 +158,8 @@ class BudgetRepository @Inject constructor(
             }
         }
     }
+    fun getAllTransaction(): Flow<List<TransaksiModel>> =
+        transactionDao.getFilteredDataFlow(null,null,null,null)
 
 }
 

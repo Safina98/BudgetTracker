@@ -77,7 +77,7 @@ fun KategoriScreen(
             ) {
                 items(
                     items = kategoriList,
-                    key = { it.categoryTable.category_id }   // 🔥 Important for smooth performance
+                    key = { it.categoryTable.category_id }   /// 🔥 Important for smooth performance
                 ){ kategori ->
                     KategoriLinearItemList(
                         kategori,
