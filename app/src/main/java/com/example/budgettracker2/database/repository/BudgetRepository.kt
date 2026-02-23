@@ -26,6 +26,11 @@ class BudgetRepository @Inject constructor(
         pocketDao.getPocketsWithSum()
     fun getAllPocketName(): Flow<List<String>> =
         pocketDao.getAllPocketNameFlow()
+    suspend fun getPocketIdByName(name:String): Int? {
+        return withContext(Dispatchers.IO){
+            pocketDao.getIdByPocketName(name)
+        }
+    }
 
 
     suspend fun insertPocketWithInitialBalance(
@@ -116,9 +121,42 @@ class BudgetRepository @Inject constructor(
         }
     fun getAllCategory(): Flow<List<NewKategoriModel>> =
         categoryDao.getAllKategoriFlow()
+    suspend fun getCategoryIdByName(name:String):Int{
+        return withContext(Dispatchers.IO){
+            categoryDao.getCategoryIdByName(name)
+        }
+
+    }
 
     fun getCategoryNamebyTipe(tipe:String): Flow<List<String>> =
         categoryDao.getKategoriNameByTipe(tipe)
+
+
+    suspend fun upsertTransaction(
+        transactionId: Int?,
+        transactionTable: TransactionTable,
+        kategoriName: String,
+        tabunganName: String
+    ): Result<Unit> { // Return Result to be used by the ViewModel
+        return runCatching {
+            withContext(Dispatchers.IO) {
+                // Fetch IDs based on names
+                val pocketId = getPocketIdByName(tabunganName)
+                val categoryId = getCategoryIdByName(kategoriName)
+
+                // Assign foreign keys to the table object
+                transactionTable.pocket_id = pocketId
+                transactionTable.category_id = categoryId
+
+                if (transactionId == null || transactionId == 0) {
+                    transactionDao.insert(transactionTable)
+                } else {
+                    transactionTable.transaction_id = transactionId
+                    transactionDao.update(transactionTable)
+                }
+            }
+        }
+    }
 
 }
 

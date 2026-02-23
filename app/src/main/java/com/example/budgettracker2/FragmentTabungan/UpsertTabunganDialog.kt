@@ -18,7 +18,7 @@ import com.example.budgettracker2.RupiahVisualTransformation
 @Composable
 fun UpsertTabunganDialog(
     namaTabungan: String,
-    saldo: Int,
+    saldo: Int?,
     onNamaChange: (String) -> Unit,
     onSaldoChange: (String) -> Unit,
     onSave: () -> Unit
@@ -35,7 +35,7 @@ fun UpsertTabunganDialog(
             modifier = Modifier.fillMaxWidth()
         )
         OutlinedTextField(
-            value = saldo.toString(),
+            value =  saldo?.toString() ?: "Rp",
             onValueChange = onSaldoChange,
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Number

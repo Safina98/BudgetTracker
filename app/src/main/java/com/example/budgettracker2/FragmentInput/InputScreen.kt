@@ -13,11 +13,19 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
@@ -34,6 +42,7 @@ import com.example.budgettracker2.viewModels.ManageViewModel
 import com.example.budgettracker2.viewModels.TransactionViewModel
 import com.example.budgettracker2.warnaList
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun InputScreen(
     navController: NavController,
@@ -41,6 +50,7 @@ fun InputScreen(
     transactionViewModel: TransactionViewModel = hiltViewModel(),
 
     ){
+    transactionViewModel.setTransactionId(id)
     val namaKategori by transactionViewModel.namaKategori.collectAsState()
     val tipe by transactionViewModel.tipe.collectAsState()
     val note by transactionViewModel.note.collectAsState()
@@ -52,101 +62,120 @@ fun InputScreen(
     val navigateToHomeScreen by transactionViewModel.navigateToHomeScreen.collectAsState()
     val navigateToTransaction by transactionViewModel.navigateToTransaction.collectAsState()
     val showDatePicker by transactionViewModel.showDatePickerDialog.collectAsState()
+    val errorMessage by transactionViewModel.errorMessage.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
 
-
-    Box(
-        modifier = Modifier
-            .fillMaxSize() // Fill the whole screen
-            .padding(16.dp), // Respect Scaffold bars
-        contentAlignment = Alignment.Center // Center everything inside
-    ) {
-    Card(
-        modifier = Modifier
-            .padding(8.dp)
-           ,
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        shape = RoundedCornerShape(12.dp)
-        // Note: Card uses 'colors = CardDefaults.cardColors(...)' for background normally
-    ){
-        Column(
-            modifier = Modifier
-                .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-               text= DateTypeConverter.fromDate(date)?:"",
-                Modifier.clickable{
-                    transactionViewModel.onShowDatePicker()
-                }
+    LaunchedEffect(errorMessage) {
+        errorMessage?.let { message ->
+            snackbarHostState.showSnackbar(
+                message = message,
+                duration = SnackbarDuration.Short
             )
-            BudgetSpinner(
-                title = "Jenis Transaksi",
-                options = tipeList,
-                selectedOption = tipe,
-                onOptionSelected ={newvalue->transactionViewModel.onTipeSpinnerChange(newvalue)}
-
-            )
-            BudgetSpinner(
-                title = "Pilih Kategori",
-                options = namaKategoriList,
-                selectedOption = namaKategori,
-                onOptionSelected = {newvalue->transactionViewModel.onKategoriSpinnerChange(newvalue)}
-            )
-            BudgetSpinner(
-                title = "Pilih Tabungan",
-                options = namaTabunganList,
-                selectedOption = namaTabungan,
-                onOptionSelected = {newvalue->transactionViewModel.onTabunganSpinnerChange(newvalue)}
-            )
-            OutlinedTextField(
-                value = note,
-                onValueChange = {newvalue->transactionViewModel.onNoteChange(newvalue)},
-                label = { Text("Nama Kategori") },
-                modifier = Modifier.fillMaxWidth()
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            OutlinedTextField(
-                value = jumlah.toString(),
-                onValueChange = {newValue->
-                    val cleanString = newValue.replace(Regex("[^\\d]"), "")
-                    transactionViewModel.onJumlahChange(cleanString)},
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Number
-                ),
-                label = { Text("Saldo") },
-                modifier = Modifier.fillMaxWidth(),
-                visualTransformation = RupiahVisualTransformation()
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Button(
-                onClick = {
-                    navController.popBackStack()
-                },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Save")
-            }
-            if (showDatePicker) {
-                MyDatePickerDialog(
-                    initialDate = date,
-                    onDateSelected = { newDate ->
-                        // Send the Date object back to the ViewModel
-                        transactionViewModel.onDateChange(newDate)
-                    },
-                    onDismiss = { transactionViewModel.onDismissDatePicker() }
-                )
-            }
-
-            if (navigateToHomeScreen){
-                navController.popBackStack()
-                transactionViewModel.onNavigatedtoHomeScreen()
-            }
-            if (navigateToTransaction!=null){
-                navController.navigate(InputFragmentDirections.actionInputFragmentToTransactionFragment(-1))
-            }
+            transactionViewModel.onErrorDissmiss()
         }
     }
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Tabungan") }
+            )
+        },
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
+    ) { padding ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize() // Fill the whole screen
+                .padding(16.dp), // Respect Scaffold bars
+            contentAlignment = Alignment.Center // Center everything inside
+        ) {
+            Card(
+                modifier = Modifier
+                    .padding(8.dp)
+                ,
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+                shape = RoundedCornerShape(12.dp)
+                // Note: Card uses 'colors = CardDefaults.cardColors(...)' for background normally
+            ){
+                Column(
+                    modifier = Modifier
+                        .padding(16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text= DateTypeConverter.fromDate(date)?:"",
+                        Modifier.clickable{
+                            transactionViewModel.onShowDatePicker()
+                        }
+                    )
+                    BudgetSpinner(
+                        title = "Jenis Transaksi",
+                        options = tipeList,
+                        selectedOption = tipe,
+                        onOptionSelected ={newvalue->transactionViewModel.onTipeSpinnerChange(newvalue)}
+
+                    )
+                    BudgetSpinner(
+                        title = "Pilih Kategori",
+                        options = namaKategoriList,
+                        selectedOption = namaKategori,
+                        onOptionSelected = {newvalue->transactionViewModel.onKategoriSpinnerChange(newvalue)}
+                    )
+                    BudgetSpinner(
+                        title = "Pilih Tabungan",
+                        options = namaTabunganList,
+                        selectedOption = namaTabungan,
+                        onOptionSelected = {newvalue->transactionViewModel.onTabunganSpinnerChange(newvalue)}
+                    )
+                    OutlinedTextField(
+                        value = note,
+                        onValueChange = {newvalue->transactionViewModel.onNoteChange(newvalue)},
+                        label = { Text("Nama Kategori") },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    OutlinedTextField(
+                        value = jumlah?.toString() ?: "Rp",
+                        onValueChange = {newValue->
+                            val cleanString = newValue.replace(Regex("[^\\d]"), "")
+                            transactionViewModel.onJumlahChange(cleanString)},
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Number
+                        ),
+                        label = { Text("Saldo") },
+                        modifier = Modifier.fillMaxWidth(),
+                        visualTransformation = RupiahVisualTransformation()
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Button(
+                        onClick = {
+                            transactionViewModel.insertTransaction()
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text("Save")
+                    }
+                    if (showDatePicker) {
+                        MyDatePickerDialog(
+                            initialDate = date,
+                            onDateSelected = { newDate ->
+                                // Send the Date object back to the ViewModel
+                                transactionViewModel.onDateChange(newDate)
+                            },
+                            onDismiss = { transactionViewModel.onDismissDatePicker() }
+                        )
+                    }
+
+                    if (navigateToHomeScreen){
+                        navController.popBackStack()
+                        transactionViewModel.onNavigatedtoHomeScreen()
+                    }
+                    if (navigateToTransaction!=null){
+                        navController.navigate(InputFragmentDirections.actionInputFragmentToTransactionFragment(-1))
+                    }
+                }
+            }
     }
+}
 }

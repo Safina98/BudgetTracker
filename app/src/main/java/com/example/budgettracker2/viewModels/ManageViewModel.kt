@@ -19,7 +19,7 @@ class ManageViewModel @Inject constructor( private val repository: BudgetReposit
     ViewModel() {
 
     val namaTabungan=  MutableStateFlow<String>("")
-    val saldo=MutableStateFlow<Int>(0)
+    val saldo=MutableStateFlow<Int?>(null)
     val pocketId= MutableStateFlow<Int?>(null)
 
 
@@ -107,18 +107,18 @@ class ManageViewModel @Inject constructor( private val repository: BudgetReposit
 
     fun insertTabungan(){
         viewModelScope.launch {
-            repository.insertPocketWithInitialBalance(namaTabungan.value.uppercase().trim(), saldo.value)
+            repository.insertPocketWithInitialBalance(namaTabungan.value.uppercase().trim(), saldo.value?:0)
                 .onSuccess {
                     clearMutbale()
                 }
                 .onFailure { exception ->
-                    _errorMessage.value = "Insert failed due to "+exception.localizedMessage
+                    _errorMessage.value = "Insert failed. "+exception.localizedMessage
                 }
         }
     }
     fun updateTabungan(){
         viewModelScope.launch {
-            repository.updatePocketWithInitialBalance(pocketId.value!!,namaTabungan.value,saldo.value)
+            repository.updatePocketWithInitialBalance(pocketId.value!!,namaTabungan.value,saldo.value?:0)
                 .onSuccess {
                     clearMutbale()
                 }

@@ -2,6 +2,7 @@ package com.example.budgettracker2.viewModels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.budgettracker2.database.TransactionTable
 import com.example.budgettracker2.database.repository.BudgetRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -10,8 +11,10 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import java.util.Date
 import javax.inject.Inject
+import kotlin.onSuccess
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
@@ -31,11 +34,18 @@ class TransactionViewModel @Inject constructor( private val repository: BudgetRe
     private val _note= MutableStateFlow<String>("")
     val note:StateFlow<String> = _note
 
-    private val _jumlah= MutableStateFlow<Int>(0)
-    val jumlah:StateFlow<Int> = _jumlah
+    private val _jumlah= MutableStateFlow<Int?>(null)
+    val jumlah:StateFlow<Int?> = _jumlah
+
+    private val _transactionId= MutableStateFlow<Int?>(null)
+    val transId:StateFlow<Int?> = _transactionId
+
 
     private val _showDatePickerDialog= MutableStateFlow<Boolean>(false)
     val showDatePickerDialog:StateFlow<Boolean> = _showDatePickerDialog
+
+    val _errorMessage= MutableStateFlow<String?>(null)
+    val errorMessage:StateFlow<String?> = _errorMessage
 
 
     private val _navigateToHomeScreen= MutableStateFlow<Boolean>(false)
@@ -59,6 +69,12 @@ class TransactionViewModel @Inject constructor( private val repository: BudgetRe
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = emptyList()
     )
+
+    fun setTransactionId(id:Int?){
+        if (id!=-1){
+            _transactionId.value=id
+        }
+    }
     fun onTipeSpinnerChange(newTipe:String){
         _tipe.value=newTipe
     }
@@ -72,15 +88,10 @@ class TransactionViewModel @Inject constructor( private val repository: BudgetRe
         _note.value=newNote
     }
     fun onJumlahChange(newJumlah:String){
-        _jumlah.value=newJumlah.toInt()
+        _jumlah.value=newJumlah.toIntOrNull()
     }
     fun onDateChange(newDate:Date){
         _date.value=newDate
-
-
-    }
-    fun onSaveClick(){
-
     }
 
     fun onShowDatePicker(){
@@ -88,6 +99,42 @@ class TransactionViewModel @Inject constructor( private val repository: BudgetRe
     }
     fun onDismissDatePicker(){
         _showDatePickerDialog.value=false
+    }
+    fun onErrorDissmiss(){
+        _errorMessage.value=null
+    }
+
+    fun insertTransaction() {
+        viewModelScope.launch {
+            val transaction = TransactionTable().apply {
+                date = _date.value
+                tipe = _tipe.value
+                note = _note.value
+                nominal = _jumlah.value?:0
+            }
+            // Capture the Result returned from the repository
+            val result = repository.upsertTransaction(
+                _transactionId.value,
+                transaction,
+                _namaKategori.value,
+                _namaTabungan.value
+            )
+            result.onSuccess {
+                resetMutable()
+                onNavigatedtoHomeScreen()
+            }.onFailure { e ->
+                _errorMessage.value = "Insert failed. "+e.localizedMessage
+            }
+        }
+    }
+    fun resetMutable(){
+        _date.value=Date()
+        _tipe.value=""
+        _note.value=""
+        _jumlah.value=0
+        _namaKategori.value=""
+        _namaTabungan.value=""
+        _transactionId.value=-1
     }
 
     fun onNavigateToHomeScreen(){
@@ -100,12 +147,6 @@ class TransactionViewModel @Inject constructor( private val repository: BudgetRe
         _navigateToTransaction.value=id
     }
     fun onNavigatedToTransaction() {
-        _navigateToTransaction.value = null
+        _navigateToTransaction.value = -1
     }
-
-
-
-
-
-
 }
