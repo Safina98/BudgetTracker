@@ -122,6 +122,11 @@ class BudgetRepository @Inject constructor(
         }
     fun getAllCategory(): Flow<List<NewKategoriModel>> =
         categoryDao.getAllKategoriFlow()
+
+    fun getThisYearCategorySum(): Flow<List<NewKategoriModel>> =
+        categoryDao.getAllKategoriThisYearFlow()
+
+
     suspend fun getCategoryIdByName(name:String):Int{
         return withContext(Dispatchers.IO){
             categoryDao.getCategoryIdByName(name)

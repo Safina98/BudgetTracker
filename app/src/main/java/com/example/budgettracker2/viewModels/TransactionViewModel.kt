@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.budgettracker2.database.TransactionTable
 import com.example.budgettracker2.database.TransaksiModel
+import com.example.budgettracker2.database.model.NewKategoriModel
 import com.example.budgettracker2.database.repository.BudgetRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -22,6 +23,13 @@ import kotlin.onSuccess
 @HiltViewModel
 class TransactionViewModel @Inject constructor( private val repository: BudgetRepository):
     ViewModel() {
+
+    val thisYearCategorySum: StateFlow<List<NewKategoriModel>> = repository.getThisYearCategorySum()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000), // Grace period for configuration changes
+            initialValue = emptyList()
+        )
 
     private val _date= MutableStateFlow<Date>(Date())
     val date:StateFlow<Date> = _date
@@ -66,7 +74,6 @@ class TransactionViewModel @Inject constructor( private val repository: BudgetRe
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = emptyList()
     )
-
 
     val categoryNames: StateFlow<List<String>> = tipe
         .flatMapLatest { currentTipe ->

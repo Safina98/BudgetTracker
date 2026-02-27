@@ -81,6 +81,7 @@ dependencies {
     // Room
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
+    implementation(libs.androidx.material3)
     ksp(libs.androidx.room.compiler)
 
     implementation(libs.androidx.navigation.fragment)
@@ -97,6 +98,7 @@ dependencies {
     implementation(libs.jetbrains.kotlinx.coroutines)
 
     implementation(libs.google.material)
+    implementation(libs.material.icons.extended)
 
     implementation(libs.kotlinx.coroutines.core)
 

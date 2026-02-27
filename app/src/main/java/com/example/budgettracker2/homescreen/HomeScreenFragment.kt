@@ -18,6 +18,9 @@ import android.widget.ArrayAdapter
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
@@ -36,6 +39,7 @@ import java.io.BufferedReader
 import java.io.InputStreamReader
 import com.example.budgettracker2.backup.DriveBackupManager
 import com.example.budgettracker2.databinding.FragmentHomeScreenBinding
+import com.example.budgettracker2.transactions.TransactionScreen
 import com.google.android.gms.auth.api.signin.*
 import com.google.android.gms.common.api.Scope
 import com.google.api.services.drive.DriveScopes
@@ -77,7 +81,21 @@ class HomeScreenFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+
+        val navController= findNavController()
+
+        return ComposeView(requireContext()).apply {
+            setViewCompositionStrategy(
+                ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
+            )
+            setContent {
+                MaterialTheme {
+                    HomeScreen(navController)
+                }
+            }
+        }
         // Inflate the layout for this fragment
+        /*
         val binding: FragmentHomeScreenBinding = DataBindingUtil.inflate(inflater,
             R.layout.fragment_home_screen,container,false)
         binding.hsVmodel = viewModel
@@ -140,6 +158,8 @@ class HomeScreenFragment : Fragment() {
         }
 
         return binding.root
+
+         */
     }
 
     private fun showACDialog(code:Int) {
@@ -204,6 +224,7 @@ class HomeScreenFragment : Fragment() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)  // Indicates that this fragment has an options menu.
         val signInOptions = GoogleSignInOptions.Builder(

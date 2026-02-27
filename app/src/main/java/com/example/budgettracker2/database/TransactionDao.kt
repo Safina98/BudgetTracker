@@ -95,6 +95,12 @@ interface TransactionDao{
 
     @Query("SELECT SUM(nominal) FROM transaction_table WHERE strftime('%Y', date) = strftime('%Y', 'now') AND pocket_id=1")
     fun getSumTM(): LiveData<Int>
+
+    @Query("SELECT SUM(nominal) " +
+            "FROM transaction_table WHERE " +
+            "strftime('%Y', date) = strftime('%Y', 'now') " +
+            "AND pocket_id=:id")
+    fun getSumTMM(id:Int): LiveData<Int>
     @Query("SELECT SUM(nominal) FROM transaction_table WHERE  pocket_id=2")
     fun getSumLp(): LiveData<Int>
 

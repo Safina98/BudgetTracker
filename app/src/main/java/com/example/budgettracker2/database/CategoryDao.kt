@@ -53,6 +53,9 @@ interface CategoryDao{
             " GROUP BY category_table.category_id ")
     fun getAllKategori(): LiveData<List<KategoriModel>>
 
+
+
+
     @Query("""
         SELECT category_table.*, SUM(transaction_table.nominal) AS categoryCashSum 
         FROM category_table
@@ -60,6 +63,14 @@ interface CategoryDao{
         GROUP BY category_table.category_id
     """)
     fun getAllKategoriFlow(): Flow<List<NewKategoriModel>>
+    @Query("""
+        SELECT category_table.*, SUM(transaction_table.nominal) AS categoryCashSum 
+        FROM category_table
+        LEFT JOIN transaction_table ON category_table.category_id = transaction_table.category_id 
+        WHERE strftime('%Y', transaction_table.date) = strftime('%Y', 'now')
+        GROUP BY category_table.category_id
+    """)
+    fun getAllKategoriThisYearFlow(): Flow<List<NewKategoriModel>>
 
     @Query("SELECT category_name FROM category_table WHERE category_type = :tipe")
     fun getKategoriNameD(tipe:String):List<String>
