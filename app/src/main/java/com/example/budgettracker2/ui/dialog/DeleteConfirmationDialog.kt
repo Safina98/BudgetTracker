@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 fun DeleteConfirmationDialog(
     itemName: String = "",
     isChecked: Boolean=false,
+    showCheckbox:Boolean=true,
     onCheckChange: (Boolean) -> Unit,
     onConfirm: () -> Unit,
     onDismiss: () -> Unit
@@ -44,21 +45,23 @@ fun DeleteConfirmationDialog(
                     )
 
                     Spacer(modifier = Modifier.height(12.dp))
+                    if (showCheckbox){
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable { onCheckChange(!isChecked) },
+                            verticalAlignment = Alignment.CenterVertically
 
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { onCheckChange(!isChecked) },
-                        verticalAlignment = Alignment.CenterVertically
-
-                    ) {
-                        Checkbox(
-                            checked = isChecked,
-                            onCheckedChange =onCheckChange
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text("Also delete related transactions")
+                        ) {
+                            Checkbox(
+                                checked = isChecked,
+                                onCheckedChange =onCheckChange
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text("Also delete related transactions")
+                        }
                     }
+
                 }
             },
             confirmButton = {

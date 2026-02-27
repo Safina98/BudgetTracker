@@ -1,5 +1,6 @@
 package com.example.budgettracker2.viewModels
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.budgettracker2.database.TransactionTable
@@ -48,12 +49,17 @@ class TransactionViewModel @Inject constructor( private val repository: BudgetRe
     val _errorMessage= MutableStateFlow<String?>(null)
     val errorMessage:StateFlow<String?> = _errorMessage
 
+    private val _showDeleteDialog = MutableStateFlow<Int?>(null)
+    val showDeleteDialog: StateFlow<Int?> = _showDeleteDialog
 
     private val _navigateToHomeScreen= MutableStateFlow<Boolean>(false)
     val navigateToHomeScreen:StateFlow<Boolean> = _navigateToHomeScreen
 
     private val _navigateToTransaction= MutableStateFlow<Int?>(null)
     val navigateToTransaction:StateFlow<Int?> = _navigateToTransaction
+
+    private val _navigateToInput= MutableStateFlow<Int?>(null)
+    val navigateToInput:StateFlow<Int?> = _navigateToInput
 
     val transactionList: StateFlow<List<TransaksiModel>> = repository.getAllTransaction().stateIn(
         scope = viewModelScope,
@@ -77,9 +83,13 @@ class TransactionViewModel @Inject constructor( private val repository: BudgetRe
         initialValue = emptyList()
     )
 
-    fun setTransactionId(id:Int?){
+    fun setTransactionId(id:Int){
         if (id!=-1){
             _transactionId.value=id
+            loadTransaction(id)
+        }else
+        {
+            _transactionId.value=null
         }
     }
     fun onTipeSpinnerChange(newTipe:String){
@@ -100,7 +110,6 @@ class TransactionViewModel @Inject constructor( private val repository: BudgetRe
     fun onDateChange(newDate:Date){
         _date.value=newDate
     }
-
     fun onShowDatePicker(){
         _showDatePickerDialog.value=true
     }
@@ -110,7 +119,36 @@ class TransactionViewModel @Inject constructor( private val repository: BudgetRe
     fun onErrorDissmiss(){
         _errorMessage.value=null
     }
-
+    fun onEditTransactionCLick(transaction: TransaksiModel){
+        onNavigateToInput(transaction.id)
+    }
+    fun onDeleteClick(id:Int){
+        _showDeleteDialog.value = id
+    }
+    fun onDeleteDialogDismiss(){
+        _showDeleteDialog.value = null
+    }
+    fun loadTransaction(id: Int) {
+        viewModelScope.launch {
+            repository.getTransactionById(id)
+                .onSuccess { transaksi ->
+                    if (transaksi != null) {
+                        _transactionId.value=id
+                        _namaKategori.value = transaksi.category_name_model_ ?: ""
+                        _namaTabungan.value = transaksi.pocketName ?: ""
+                        _tipe.value = transaksi.tipe ?: ""
+                        _note.value = transaksi.ket ?: ""
+                        _jumlah.value = transaksi.nominal
+                        _date.value = transaksi.date
+                    } else {
+                        _errorMessage.value = "Transaction not found"
+                    }
+                }
+                .onFailure {
+                    _errorMessage.value = it.message
+                }
+        }
+    }
     fun insertTransaction() {
         viewModelScope.launch {
             val transaction = TransactionTable().apply {
@@ -119,7 +157,6 @@ class TransactionViewModel @Inject constructor( private val repository: BudgetRe
                 note = _note.value
                 nominal = _jumlah.value?:0
             }
-            // Capture the Result returned from the repository
             val result = repository.upsertTransaction(
                 _transactionId.value,
                 transaction,
@@ -127,11 +164,28 @@ class TransactionViewModel @Inject constructor( private val repository: BudgetRe
                 _namaTabungan.value
             )
             result.onSuccess {
+                if (_transactionId.value==null){
+                    onNavigatedtoHomeScreen()
+                }else{
+                    onNavigateToTransaction(_transactionId.value!!)
+                }
                 resetMutable()
-                onNavigatedtoHomeScreen()
+
             }.onFailure { e ->
                 _errorMessage.value = "Insert failed. "+e.localizedMessage
             }
+        }
+    }
+    fun deleteTransaction(){
+        viewModelScope.launch {
+            repository.deleteTransaction(_showDeleteDialog.value!!)
+                .onSuccess {
+                    resetMutable()
+                    onDeleteDialogDismiss()
+                }
+                .onFailure {e->
+                    _errorMessage.value = "Delete failed. "+e.localizedMessage
+                }
         }
     }
     fun resetMutable(){
@@ -155,5 +209,11 @@ class TransactionViewModel @Inject constructor( private val repository: BudgetRe
     }
     fun onNavigatedToTransaction() {
         _navigateToTransaction.value = -1
+    }
+    fun onNavigateToInput(id:Int){
+        _navigateToInput.value=id
+    }
+    fun onNavigatedToInput(){
+        _navigateToInput.value=null
     }
 }

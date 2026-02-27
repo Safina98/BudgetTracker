@@ -124,6 +124,7 @@ fun KategoriScreen(
                 DeleteConfirmationDialog(
                     "",
                     deleteAllTransaction,
+                    true,
                     onCheckChange = { checked ->
                         manageViewModel.toggleDeleteAllTransaction(checked)
                     },

@@ -48,7 +48,7 @@
                 style="@style/big_text_style"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@{transaksi.date}"
+
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/txt_trans_cath" />
             <TextView

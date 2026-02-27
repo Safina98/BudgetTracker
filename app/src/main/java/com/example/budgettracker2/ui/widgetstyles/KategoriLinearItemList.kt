@@ -41,7 +41,8 @@ fun KategoriLinearItemList(
         modifier = Modifier
             .fillMaxWidth()
             .height(100.dp)
-            .padding(2.dp),
+            .padding(2.dp)
+        .background(Color.Transparent),
 
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         shape = RoundedCornerShape(12.dp)

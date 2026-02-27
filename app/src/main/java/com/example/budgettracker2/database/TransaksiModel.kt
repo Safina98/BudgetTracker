@@ -5,8 +5,9 @@ import java.util.*
 data class TransaksiModel(
     var id:Int=0,
     var category_name_model_:String="",
-    var pocketName:String?="",
+    var pocketName:String?=null,
+    var tipe:String?=null,
     var ket:String ="",
-    var date: String="",
+    var date: Date=Date(),
     var nominal:Int=0
 )

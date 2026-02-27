@@ -23,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.budgettracker2.ui.dialog.DeleteConfirmationDialog
 import com.example.budgettracker2.ui.widgetstyles.TransactionItemList
 import com.example.budgettracker2.viewModels.TransactionViewModel
 
@@ -36,6 +37,11 @@ fun TransactionScreen(
     val tipe by transactionViewModel.tipe.collectAsState()
     val errorMessage by transactionViewModel.errorMessage.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
+    val navigateToInput by transactionViewModel.navigateToInput.collectAsState()
+    val showDeleteDialog by transactionViewModel.showDeleteDialog.collectAsState()
+
+
+
 
     LaunchedEffect(errorMessage) {
         errorMessage?.let { message ->
@@ -69,13 +75,40 @@ fun TransactionScreen(
                 ){ transaksi ->
                 TransactionItemList(
                     transaksi,
-                    {},
-                    {}
+                    {
+                        transactionViewModel.onDeleteClick(transaksi.id)
+                    },
+                    {
+                        transactionViewModel.onEditTransactionCLick(transaksi)
+                    }
+                )
+                }
+            }
+            if (showDeleteDialog!=null){
+                DeleteConfirmationDialog(
+                    "",
+                    false,
+                    false,
+                    onCheckChange = { checked ->
+
+                    },
+                    {
+                        transactionViewModel.deleteTransaction()
+                    },
+                    {
+                        transactionViewModel.onDeleteDialogDismiss()
+                    }
                 )
 
-                }
+            }
+
+            if (navigateToInput!=null){
+                navController.navigate(TransactionFragmentDirections.actionTransactionFragmentToInputFragment3(navigateToInput!!))
+
+                transactionViewModel.onNavigatedToInput()
 
             }
+
         }
     }
 }

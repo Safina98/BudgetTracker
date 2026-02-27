@@ -126,7 +126,6 @@ class BudgetRepository @Inject constructor(
         return withContext(Dispatchers.IO){
             categoryDao.getCategoryIdByName(name)
         }
-
     }
 
     fun getCategoryNamebyTipe(tipe:String): Flow<List<String>> =
@@ -158,6 +157,22 @@ class BudgetRepository @Inject constructor(
             }
         }
     }
+    suspend fun getTransactionById(id: Int): Result<TransaksiModel?> {
+        return runCatching {
+            withContext(Dispatchers.IO) {
+                transactionDao.getSelectedTransaction(id)
+            }
+        }
+    }
+    suspend fun deleteTransaction(
+        transactionId:Int
+    ): Result<Unit> =
+        runCatching {
+            withContext(Dispatchers.IO){
+                transactionDao.delete(transactionId)
+            }
+        }
+
     fun getAllTransaction(): Flow<List<TransaksiModel>> =
         transactionDao.getFilteredDataFlow(null,null,null,null)
 

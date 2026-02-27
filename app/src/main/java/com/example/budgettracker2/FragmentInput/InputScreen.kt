@@ -1,5 +1,6 @@
 package com.example.budgettracker2.FragmentInput
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -50,7 +51,9 @@ fun InputScreen(
     transactionViewModel: TransactionViewModel = hiltViewModel(),
 
     ){
-    transactionViewModel.setTransactionId(id)
+    LaunchedEffect(id) {
+        transactionViewModel.setTransactionId(id)
+    }
     val namaKategori by transactionViewModel.namaKategori.collectAsState()
     val tipe by transactionViewModel.tipe.collectAsState()
     val note by transactionViewModel.note.collectAsState()
@@ -64,7 +67,7 @@ fun InputScreen(
     val showDatePicker by transactionViewModel.showDatePickerDialog.collectAsState()
     val errorMessage by transactionViewModel.errorMessage.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
-
+    Log.i("UpdateProblem","inputScreen trans Id(parameter): ${id} kategoriName : ${namaKategori}, note ${note}")
     LaunchedEffect(errorMessage) {
         errorMessage?.let { message ->
             snackbarHostState.showSnackbar(
@@ -129,7 +132,7 @@ fun InputScreen(
                     OutlinedTextField(
                         value = note,
                         onValueChange = {newvalue->transactionViewModel.onNoteChange(newvalue)},
-                        label = { Text("Nama Kategori") },
+                        label = { Text("note") },
                         modifier = Modifier.fillMaxWidth()
                     )
                     Spacer(modifier = Modifier.height(16.dp))
@@ -172,7 +175,8 @@ fun InputScreen(
                         transactionViewModel.onNavigatedtoHomeScreen()
                     }
                     if (navigateToTransaction!=null){
-                        navController.navigate(InputFragmentDirections.actionInputFragmentToTransactionFragment(-1))
+                        navController.navigate(InputFragmentDirections.actionInputFragmentToTransactionFragment(navigateToTransaction!!))
+                        transactionViewModel.onNavigatedToTransaction()
                     }
                 }
             }

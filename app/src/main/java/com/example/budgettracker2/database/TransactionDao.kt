@@ -5,10 +5,13 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.TypeConverters
 import androidx.room.Update
+import com.example.budgettracker2.DateTypeConverter
 import kotlinx.coroutines.flow.Flow
 
 @Dao
+@TypeConverters(DateTypeConverter::class)
 interface TransactionDao{
     @Insert
     fun insert(TransactionTable: TransactionTable)
@@ -17,8 +20,24 @@ interface TransactionDao{
     @Delete
     fun delete2(t:TransactionTable)
 
+    @Query("DELETE FROM transaction_table WHERE transaction_id =:id ")
+    fun delete(id:Int)
+
     @Query("SELECT * FROM transaction_table WHERE transaction_id =:id ")
     fun getTransById(id:Int):TransactionTable
+
+
+    @Query("SELECT t.transaction_id AS id," +
+            "c.category_name AS category_name_model_, " +
+            "p.pocket_name AS pocketName, " +
+            "t.note AS ket," +
+            " t.date as date," +
+            "t.tipe as tipe," +
+            "t.nominal FROM transaction_table t " +
+            "INNER JOIN pocket_table p ON t.pocket_id = p.pocket_id     "+
+            "INNER JOIN category_table c ON t.category_id = c.category_id WHERE " +
+            "t.transaction_id =:id")
+    fun getSelectedTransaction(id:Int): TransaksiModel
 
     @Query("SELECT * FROM transaction_table")
     fun getAllTransactionTableCoba(): Flow<List<TransactionTable>>
@@ -28,14 +47,28 @@ interface TransactionDao{
     // // SELECT :brand_name_ as brand_name, (SELECT category_id FROM category_table WHERE category_name = :caht_name_ limit 1) as cath_code FROM brand_table WHERE NOT EXISTS(SELECT brand_name,cath_code FROM brand_table WHERE brand_name =:brand_name_ AND cath_code = (SELECT category_id FROM category_table WHERE category_name = :caht_name_ limit 1)) LIMIT 1 ")
 
 
-    @Query("SELECT t.transaction_id AS id, c.category_name AS category_name_model_, t.note AS ket, t.date, t.nominal FROM transaction_table t " +
+    @Query("SELECT t.transaction_id AS id," +
+            "c.category_name AS category_name_model_, " +
+            "p.pocket_name AS pocketName, " +
+            "t.note AS ket," +
+            " t.date as date," +
+            "t.tipe as tipe," +
+            "t.nominal FROM transaction_table t " +
+            "INNER JOIN pocket_table p ON t.pocket_id = p.pocket_id     "+
             "INNER JOIN category_table c ON t.category_id = c.category_id WHERE" +
             " (:type IS NULL OR c.category_type = :type OR :type = 'ALL') " +
             "AND (:categoryId IS NULL OR t.category_id = :categoryId) " +
             "AND (:startDate IS NULL OR t.date >= :startDate) " +
             "AND (:endDate IS NULL OR  t.date <= :endDate) ORDER BY t.date DESC")
     fun getFilteredData3(type: String?, categoryId: Int?, startDate: String?, endDate: String?): List<TransaksiModel>
-    @Query("SELECT t.transaction_id AS id, c.category_name AS category_name_model_, t.note AS ket, t.date, t.nominal FROM transaction_table t " +
+    @Query("SELECT t.transaction_id AS id," +
+            "c.category_name AS category_name_model_, " +
+            "p.pocket_name AS pocketName, " +
+            "t.note AS ket," +
+            " t.date AS date," +
+            "t.tipe as tipe," +
+            "t.nominal FROM transaction_table t " +
+            "INNER JOIN pocket_table p ON t.pocket_id = p.pocket_id     "+
             "INNER JOIN category_table c ON t.category_id = c.category_id WHERE" +
             " (:type IS NULL OR c.category_type = :type OR :type = 'ALL') " +
             "AND (:categoryId IS NULL OR t.category_id = :categoryId) " +

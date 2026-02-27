@@ -122,6 +122,7 @@ fun TabunganScreen(
                 DeleteConfirmationDialog(
                     "",
                     deleteAllTransaction,
+                    true,
                     onCheckChange = { checked ->
                         manageViewModel.toggleDeleteAllTransaction(checked)
                     },
