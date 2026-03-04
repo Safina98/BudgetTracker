@@ -8,6 +8,7 @@ import androidx.room.Query
 import androidx.room.TypeConverters
 import androidx.room.Update
 import com.example.budgettracker2.DateTypeConverter
+import com.example.budgettracker2.database.table.TransactionTable
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -18,13 +19,13 @@ interface TransactionDao{
     @Update
     fun update(TransactionTable: TransactionTable)
     @Delete
-    fun delete2(t:TransactionTable)
+    fun delete2(t: TransactionTable)
 
     @Query("DELETE FROM transaction_table WHERE transaction_id =:id ")
     fun delete(id:Int)
 
     @Query("SELECT * FROM transaction_table WHERE transaction_id =:id ")
-    fun getTransById(id:Int):TransactionTable
+    fun getTransById(id:Int): TransactionTable
 
 
     @Query("SELECT t.transaction_id AS id," +

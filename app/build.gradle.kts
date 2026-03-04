@@ -10,9 +10,7 @@ plugins {
 
 android {
     namespace = "com.example.budgettracker2"
-    compileSdk {
-        version = release(36)
-    }
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.example.budgettracker2"
@@ -43,8 +41,6 @@ android {
     }
     buildFeatures {
         compose = true
-    }
-    buildFeatures {
         dataBinding = true
     }
     packaging {
@@ -64,6 +60,7 @@ dependencies {
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
+    debugImplementation(libs.androidx.compose.ui.tooling)
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.runtime.livedata)
     implementation(libs.androidx.activity.compose)
@@ -87,9 +84,6 @@ dependencies {
     implementation(libs.androidx.navigation.fragment)
     implementation(libs.androidx.navigation.ui)
 
-
-
-
     // Hilt
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
@@ -101,9 +95,6 @@ dependencies {
     implementation(libs.material.icons.extended)
 
     implementation(libs.kotlinx.coroutines.core)
-
-
-
 
     // Google Drive
     implementation("com.google.android.gms:play-services-auth:21.0.0")

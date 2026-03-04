@@ -36,3 +36,11 @@ val darkGreen = Brush.linearGradient(
     end = Offset(Float.POSITIVE_INFINITY, 0f)    // Top-Right
 )
 
+val dustyRose =  Brush.linearGradient(
+0.0f to Color(0xFFc496a1),          // Start color
+0.6f to Color(0x85c496a1),          // Center color at 60%
+1.0f to Color(0xFFc496a1),          // End color (85 alpha)
+start = Offset(0f, Float.POSITIVE_INFINITY), // Bottom-Left
+end = Offset(Float.POSITIVE_INFINITY, 0f)    // Top-Right
+)
+

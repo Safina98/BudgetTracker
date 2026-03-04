@@ -12,6 +12,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.budgettracker2.TIPETRANSAKSI
 import com.example.budgettracker2.database.*
+import com.example.budgettracker2.database.dao.CategoryDao
+import com.example.budgettracker2.database.dao.PocketDao
+import com.example.budgettracker2.database.table.CategoryTable
+import com.example.budgettracker2.database.table.PocketTable
+import com.example.budgettracker2.database.table.TransactionTable
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -23,7 +28,7 @@ import java.time.format.DateTimeFormatter
 import java.util.*
 
 class MainViewModel(application: Application,
-                    val datasource1:CategoryDao,
+                    val datasource1: CategoryDao,
                     val datasource2:TransactionDao,
                     val pocketDao: PocketDao
                     ):AndroidViewModel (application){
@@ -412,7 +417,7 @@ class MainViewModel(application: Application,
         _selectedKategoriSpinner.value ="ALL"
         _selectedTipeSpinner.value = "PENGELUARAN"
         _clicked_transtab.value = TransactionTable()
-        _clicked_category.value=CategoryTable()
+        _clicked_category.value= CategoryTable()
 
     }
 
@@ -423,8 +428,8 @@ class MainViewModel(application: Application,
         _receivedCatId.value= id
     }
     private suspend fun insert(transaksi: TransactionTable){ withContext(Dispatchers.IO){datasource2.insert(transaksi)} }
-    private suspend fun delete_trans(t:TransactionTable){ withContext(Dispatchers.IO){datasource2.delete2(t)} }
-    private suspend fun update_trans(t:TransactionTable){ withContext(Dispatchers.IO){datasource2.update(t)} }
+    private suspend fun delete_trans(t: TransactionTable){ withContext(Dispatchers.IO){datasource2.delete2(t)} }
+    private suspend fun update_trans(t: TransactionTable){ withContext(Dispatchers.IO){datasource2.update(t)} }
 
     //*******************************************Tabungan************************************//
 

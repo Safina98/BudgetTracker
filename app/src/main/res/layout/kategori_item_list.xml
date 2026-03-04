@@ -6,7 +6,7 @@
     <data>
         <variable
             name="kategori"
-            type="com.example.budgettracker2.database.KategoriModel" />
+            type="com.example.budgettracker2.database.model.KategoriModel" />
         <variable
             name="click_listener"
             type="com.example.budgettracker2.adapterp.CategoryClickListener" />

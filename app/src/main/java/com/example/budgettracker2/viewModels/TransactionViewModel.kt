@@ -3,9 +3,11 @@ package com.example.budgettracker2.viewModels
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.budgettracker2.database.TransactionTable
+import com.example.budgettracker2.database.table.TransactionTable
 import com.example.budgettracker2.database.TransaksiModel
 import com.example.budgettracker2.database.model.NewKategoriModel
+import com.example.budgettracker2.database.model.TabunganHomeScreenModel
+import com.example.budgettracker2.database.model.TabunganModel
 import com.example.budgettracker2.database.repository.BudgetRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -30,6 +32,12 @@ class TransactionViewModel @Inject constructor( private val repository: BudgetRe
             started = SharingStarted.WhileSubscribed(5000), // Grace period for configuration changes
             initialValue = emptyList()
         )
+    val thisYearPocketSum: StateFlow<List<TabunganHomeScreenModel>> = repository.getThisYearPocketSum().stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000), // Grace period for configuration changes
+        initialValue = emptyList()
+    )
+
 
     private val _date= MutableStateFlow<Date>(Date())
     val date:StateFlow<Date> = _date

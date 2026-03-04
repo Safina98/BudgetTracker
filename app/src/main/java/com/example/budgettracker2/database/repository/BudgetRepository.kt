@@ -1,15 +1,16 @@
 package com.example.budgettracker2.database.repository
 
 import android.util.Log
-import com.example.budgettracker2.database.CategoryDao
-import com.example.budgettracker2.database.CategoryTable
-import com.example.budgettracker2.database.KategoriModel
-import com.example.budgettracker2.database.PocketDao
-import com.example.budgettracker2.database.PocketTable
+import com.example.budgettracker2.database.dao.CategoryDao
+import com.example.budgettracker2.database.table.CategoryTable
+import com.example.budgettracker2.database.model.KategoriModel
+import com.example.budgettracker2.database.dao.PocketDao
+import com.example.budgettracker2.database.table.PocketTable
 import com.example.budgettracker2.database.TransactionDao
-import com.example.budgettracker2.database.TransactionTable
+import com.example.budgettracker2.database.table.TransactionTable
 import com.example.budgettracker2.database.TransaksiModel
 import com.example.budgettracker2.database.model.NewKategoriModel
+import com.example.budgettracker2.database.model.TabunganHomeScreenModel
 import com.example.budgettracker2.database.model.TabunganModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -32,6 +33,8 @@ class BudgetRepository @Inject constructor(
             pocketDao.getIdByPocketName(name)
         }
     }
+    fun getThisYearPocketSum(): Flow<List<TabunganHomeScreenModel>> =
+        pocketDao.getPocketsThisYearWithSum()
 
 
     suspend fun insertPocketWithInitialBalance(

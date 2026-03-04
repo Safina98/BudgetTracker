@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.budgettracker2.R
-import com.example.budgettracker2.database.KategoriModel
+import com.example.budgettracker2.database.model.KategoriModel
 import com.example.budgettracker2.databinding.KategoriItemListBinding
 
 

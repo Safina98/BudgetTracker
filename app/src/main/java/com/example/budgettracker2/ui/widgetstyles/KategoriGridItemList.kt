@@ -46,7 +46,6 @@ fun KategoriGridItemList(item: NewKategoriModel){
                 Text(item.categoryTable.category_name)
                 Text(item.categoryCashSum.toString())
 
-
             }
         }
     }

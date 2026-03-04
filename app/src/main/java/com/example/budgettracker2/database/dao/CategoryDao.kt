@@ -1,4 +1,4 @@
-package com.example.budgettracker2.database
+package com.example.budgettracker2.database.dao
 
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
@@ -7,15 +7,16 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
+import com.example.budgettracker2.database.model.KategoriModel
 import com.example.budgettracker2.database.model.NewKategoriModel
-import com.example.budgettracker2.database.model.TabunganModel
+import com.example.budgettracker2.database.table.CategoryTable
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface CategoryDao{
 
     @Insert
-    fun insert(category:CategoryTable)
+    fun insert(category: CategoryTable)
 
     @Query("INSERT INTO category_table (category_name, category_type, category_color) "+
             "SELECT :category_name as category_name, :category_type as category_type, :category_color as category_color "+
@@ -27,10 +28,10 @@ interface CategoryDao{
     fun insertIfNotExist(category_name:String,category_type:String,category_color:String)
 
     @Update
-    fun update(category:CategoryTable)
+    fun update(category: CategoryTable)
 
     @Delete
-    fun delete1(c:CategoryTable)
+    fun delete1(c: CategoryTable)
 
     @Query("DELETE FROM category_table WHERE category_id = :id")
     fun delete(id:Int)
@@ -40,7 +41,7 @@ interface CategoryDao{
 
 
     @Query("SELECT * FROM category_table WHERE category_id =:id")
-    fun getCategory(id:Int):CategoryTable
+    fun getCategory(id:Int): CategoryTable
 
     @Query("SELECT category_table.category_id as id_, " +
             "category_table.category_name as category_name_, " +

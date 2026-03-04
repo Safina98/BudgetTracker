@@ -12,12 +12,12 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
 import com.example.budgettracker2.database.BudgetDB
-import com.example.budgettracker2.database.CategoryDao
-import com.example.budgettracker2.database.CategoryTable
-import com.example.budgettracker2.database.PocketDao
-import com.example.budgettracker2.database.PocketTable
+import com.example.budgettracker2.database.dao.CategoryDao
+import com.example.budgettracker2.database.table.CategoryTable
+import com.example.budgettracker2.database.dao.PocketDao
+import com.example.budgettracker2.database.table.PocketTable
 import com.example.budgettracker2.database.TransactionDao
-import com.example.budgettracker2.database.TransactionTable
+import com.example.budgettracker2.database.table.TransactionTable
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext

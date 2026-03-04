@@ -1,20 +1,30 @@
-package com.example.budgettracker2.database
+package com.example.budgettracker2.database.table
 
-import androidx.room.*
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.ForeignKey
+import androidx.room.Ignore
+import androidx.room.PrimaryKey
+import androidx.room.TypeConverters
 import com.example.budgettracker2.DateTypeConverter
-import java.util.*
+import com.example.budgettracker2.database.table.PocketTable
+import java.util.Date
 
 @Entity(tableName = "transaction_table",
-    foreignKeys = [ForeignKey(entity =CategoryTable::class,
+    foreignKeys = [ForeignKey(
+        entity = CategoryTable::class,
         parentColumns = ["category_id"],
         childColumns = ["category_id"],
-        onDelete = ForeignKey.CASCADE,
-        onUpdate = ForeignKey.CASCADE),
-   ForeignKey(entity =PocketTable::class,
-        parentColumns = ["pocket_id"],
-        childColumns = ["pocket_id"],
-        onDelete = ForeignKey.CASCADE,
-        onUpdate = ForeignKey.CASCADE)]
+        onDelete = ForeignKey.Companion.CASCADE,
+        onUpdate = ForeignKey.Companion.CASCADE
+    ),
+        ForeignKey(
+            entity = PocketTable::class,
+            parentColumns = ["pocket_id"],
+            childColumns = ["pocket_id"],
+            onDelete = ForeignKey.Companion.CASCADE,
+            onUpdate = ForeignKey.Companion.CASCADE
+        )]
     )
 @TypeConverters(DateTypeConverter::class)
 data class TransactionTable(
@@ -37,6 +47,3 @@ data class TransactionTable(
     @Ignore
     constructor() : this(0, 0,null, "empty", Date(),0)
 }
-
-
-

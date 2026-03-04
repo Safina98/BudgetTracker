@@ -1,15 +1,21 @@
 package com.example.budgettracker2.homescreen
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.MoreVert
@@ -37,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.budgettracker2.ui.widgetstyles.KategoriGridItemList
+import com.example.budgettracker2.ui.widgetstyles.PocketHomeScreenItemList
 import com.example.budgettracker2.ui.widgetstyles.beige
 import com.example.budgettracker2.ui.widgetstyles.midnightGreen
 import com.example.budgettracker2.ui.widgetstyles.roseBrown
@@ -51,6 +58,7 @@ fun HomeScreen(
 
     var expanded by remember { mutableStateOf(false) }
     val thisYearCategorySum by transactionViewModel.thisYearCategorySum.collectAsState()
+    val thisYearPocketSum by transactionViewModel.thisYearPocketSum.collectAsState()
 
     Scaffold(
         topBar = {
@@ -72,6 +80,7 @@ fun HomeScreen(
                         DropdownMenuItem(
                             text = { Text("Manage") },
                             onClick = {
+                                navController.navigate(HomeScreenFragmentDirections.actionCategoryFragmentToManageFragment())
                                 expanded = false
                             }
                         )
@@ -97,33 +106,21 @@ fun HomeScreen(
             modifier = Modifier.padding(padding).fillMaxSize()
         ) {
             Column(modifier=Modifier.padding(16.dp).fillMaxSize()) {
-                Card(
-                    modifier = Modifier.padding(8.dp)
-                        .width(300.dp)
-                        .height(100.dp)
-                        .background(Color.Transparent)
-                        .background(brush = midnightGreen)
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxHeight(0.4f)
+                        .fillMaxWidth()
+                        ,
+                    state = rememberLazyListState()
                 ) {
-                        Text("Pendapatan Tahun Ini \nRp. 100.000")
+                    items(
+                        items = thisYearPocketSum,
+                        key = { it.pocketTable.pocket_id }   // 🔥 Important for smooth performance
+                    ){ pocket ->
+                        PocketHomeScreenItemList(pocket)
+                    }
                 }
-                Card(
-                    modifier = Modifier.padding(8.dp)
-                        .width(300.dp)
-                        .height(100.dp)
-                        .background(Color.Transparent)
-                        .background(brush = roseBrown)
-                ) {
-                        Text("Tabungan Laptop \nRp. 100.000")
-                }
-                Card(
-                    modifier = Modifier.padding(8.dp)
-                        .width(300.dp)
-                        .height(100.dp)
-                        .background(Color.Transparent)
-                        .background(brush = beige)
-                ) {
-                        Text("Pengeluaran Tahun ini \nRp. 100.000")
-                }
+
                 Button(
                     modifier = Modifier.padding(8.dp),
                     onClick = {

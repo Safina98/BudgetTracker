@@ -28,7 +28,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.budgettracker2.database.PocketTable
+import com.example.budgettracker2.database.table.PocketTable
 import com.example.budgettracker2.database.model.TabunganModel
 import com.example.budgettracker2.rupiahFormatter
 import androidx.compose.foundation.layout.size

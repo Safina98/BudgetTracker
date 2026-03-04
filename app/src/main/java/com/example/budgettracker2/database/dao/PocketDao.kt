@@ -1,12 +1,14 @@
-package com.example.budgettracker2.database
+package com.example.budgettracker2.database.dao
 
-import android.util.Log
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
+import com.example.budgettracker2.database.model.TabunganHomeScreenModel
+import com.example.budgettracker2.database.table.PocketTable
 import com.example.budgettracker2.database.model.TabunganModel
+import com.example.budgettracker2.database.table.TransactionTable
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -48,7 +50,7 @@ interface PocketDao {
     fun getIdByPocketName(name:String):Int
 
     @Query("SELECT * FROM pocket_table WHERE pocket_id =:id")
-    fun getPocketById(id:Int):PocketTable?
+    fun getPocketById(id:Int): PocketTable?
 
     @Query("SELECT * FROM pocket_table")
     fun getAllPocket(): Flow<List<PocketTable>>
@@ -60,6 +62,17 @@ interface PocketDao {
         GROUP BY pocket_table.pocket_id
     """)
     fun getPocketsWithSum(): Flow<List<TabunganModel>>
+
+    @Query("""
+        SELECT pocket_table.*,
+    (SELECT SUM(transaction_table.nominal) WHERE tipe = 'PENGELUARAN') AS thisYearOutcome,
+    (SELECT SUM(transaction_table.nominal) WHERE tipe = 'PEMASUKAN') AS thisYearIncome
+        FROM pocket_table 
+        LEFT JOIN transaction_table ON pocket_table.pocket_id = transaction_table.pocket_id
+         WHERE strftime('%Y', transaction_table.date) = strftime('%Y', 'now')
+        GROUP BY pocket_table.pocket_id
+    """)
+    fun getPocketsThisYearWithSum(): Flow<List<TabunganHomeScreenModel>>
 
     @Query("SELECT pocket_name FROM pocket_table ")
     fun getAllPocketNameFlow(): Flow<List<String>>

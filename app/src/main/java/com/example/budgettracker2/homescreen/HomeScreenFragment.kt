@@ -55,7 +55,6 @@ class HomeScreenFragment : Fragment() {
         BACKUP, RESTORE
     }
 
-    // Modern Activity Result API
     private val signInLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
 

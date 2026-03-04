@@ -1,6 +1,4 @@
-package com.example.budgettracker2.database
-
-
+package com.example.budgettracker2.database.model
 
 data class KategoriModel (
     var id_: Int,

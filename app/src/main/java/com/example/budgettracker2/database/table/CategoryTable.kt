@@ -1,11 +1,9 @@
-package com.example.budgettracker2.database
+package com.example.budgettracker2.database.table
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
-import com.example.budgettracker2.tipe
-
 
 @Entity(tableName = "category_table")
 
@@ -23,5 +21,3 @@ data class  CategoryTable (
     @Ignore
     constructor() : this(0, "empty", "empty", "BLUE")
 }
-
-

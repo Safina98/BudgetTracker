@@ -1,6 +1,8 @@
 package com.example.budgettracker2.database
 
 import android.content.Context
+import com.example.budgettracker2.database.dao.CategoryDao
+import com.example.budgettracker2.database.dao.PocketDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

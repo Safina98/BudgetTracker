@@ -1,10 +1,8 @@
-package com.example.budgettracker2.database
+package com.example.budgettracker2.database.table
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
-import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
-
 
 @Entity(tableName = "pocket_table")
 data class PocketTable (
@@ -13,5 +11,11 @@ data class PocketTable (
     @ColumnInfo(name = "pocket_name")
     var pocketName:String="",
     @ColumnInfo(name = "saldo")
-    var saldo:Int=0
+    var saldo:Int=0,
+    @ColumnInfo(name = "index")
+    var index:Int=0,
+    @ColumnInfo(name="color")
+    var color:String="",
+    @ColumnInfo(name="main_pocket")
+    var mainPocket: Boolean=false,
 )
