@@ -1,4 +1,4 @@
-package com.example.budgettracker2.kategori
+package com.example.budgettracker2.ui.screen
 
 import android.util.Log
 import androidx.compose.foundation.layout.Box
@@ -28,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.budgettracker2.ui.dialog.UpsertKategoriDialog
 import com.example.budgettracker2.ui.dialog.DeleteConfirmationDialog
 import com.example.budgettracker2.ui.widgetstyles.KategoriLinearItemList
 import com.example.budgettracker2.viewModels.ManageViewModel
@@ -35,7 +36,8 @@ import com.example.budgettracker2.viewModels.ManageViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun KategoriScreen(
-    manageViewModel: ManageViewModel = hiltViewModel())
+    manageViewModel: ManageViewModel = hiltViewModel()
+)
 {
     val namaKategori by manageViewModel.namaKategori.collectAsState()
     val tipeKategori by manageViewModel.tipeKategori.collectAsState()
@@ -66,11 +68,11 @@ fun KategoriScreen(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
     ) { padding ->
         Box(
-            modifier = Modifier.fillMaxSize().padding(padding),
-            contentAlignment = Alignment.TopStart
+            modifier = Modifier.Companion.fillMaxSize().padding(padding),
+            contentAlignment = Alignment.Companion.TopStart
         ) {
             LazyColumn(
-                modifier = Modifier
+                modifier = Modifier.Companion
                     .fillMaxSize()
                     .padding(8.dp),
                 state = rememberLazyListState()
@@ -78,7 +80,7 @@ fun KategoriScreen(
                 items(
                     items = kategoriList,
                     key = { it.categoryTable.category_id }   /// 🔥 Important for smooth performance
-                ){ kategori ->
+                ) { kategori ->
                     KategoriLinearItemList(
                         kategori,
                         {
@@ -93,26 +95,26 @@ fun KategoriScreen(
             }
             ExtendedFloatingActionButton(
                 onClick = { manageViewModel.onShowUpsertDialog() },
-                modifier = Modifier
-                    .align(Alignment.BottomEnd),
+                modifier = Modifier.Companion
+                    .align(Alignment.Companion.BottomEnd),
                 icon = { Icon(Icons.Filled.Edit, "Edit") },
                 text = { Text(text = "Tambah Kategori") },
             )
 
             if (showSheet) {
                 ModalBottomSheet(
-                    onDismissRequest = { manageViewModel.clearMutbale()}
+                    onDismissRequest = { manageViewModel.clearMutbale() }
                 ) {
-                    UpsertKategoriDialog (
-                        namaKategori=namaKategori,
-                        tipeKategori=tipeKategori,
-                        warnaKategori=warnaKategori,
-                        onNamaChange = { manageViewModel.namaKategori.value = it },
+                    UpsertKategoriDialog(
+                        namaKategori = namaKategori,
+                        tipeKategori = tipeKategori,
+                        warnaKategori = warnaKategori,
+                        onNamaChange = { manageViewModel.onKategoriNamaChange(it) },
                         onTipeChange = {
-                            manageViewModel.tipeKategori.value = it
+                            manageViewModel.onKategoriTipeChange(it)
                         },
                         onWarnaChange = {
-                            manageViewModel.warnaKategori.value = it
+                            manageViewModel.onWarnaCategoryChange(it)
                         },
                         onSave = {
                             manageViewModel.onKategoriSaveClick()
@@ -120,7 +122,7 @@ fun KategoriScreen(
                     )
                 }
             }
-            if (showDeleteDialog!=null){
+            if (showDeleteDialog != null) {
                 DeleteConfirmationDialog(
                     "",
                     deleteAllTransaction,

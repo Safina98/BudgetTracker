@@ -1,6 +1,5 @@
-package com.example.budgettracker2.FragmentTabungan
+package com.example.budgettracker2.ui.screen
 
-import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -14,7 +13,6 @@ import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -29,17 +27,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.budgettracker2.ui.dialog.UpsertTabunganDialog
 import com.example.budgettracker2.ui.dialog.DeleteConfirmationDialog
 import com.example.budgettracker2.ui.widgetstyles.TabunganItemList
 import com.example.budgettracker2.viewModels.ManageViewModel
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TabunganScreen(
-    manageViewModel: ManageViewModel = hiltViewModel())
+    manageViewModel: ManageViewModel = hiltViewModel()
+)
 {
     val namaTabungan by manageViewModel.namaTabungan.collectAsState()
+    val warnaTabungan by manageViewModel.warnaTabungan.collectAsState()
     val saldo by manageViewModel.saldo.collectAsState()
     val pockets by manageViewModel.allPockets.collectAsState()
     val showSheet by manageViewModel.showUpsertDialog.collectAsState()
@@ -68,11 +68,11 @@ fun TabunganScreen(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
     ) { padding ->
         Box(
-            modifier = Modifier.fillMaxSize().padding(padding),
-            contentAlignment = Alignment.TopStart
+            modifier = Modifier.Companion.fillMaxSize().padding(padding),
+            contentAlignment = Alignment.Companion.TopStart
         ) {
             LazyColumn(
-                modifier = Modifier
+                modifier = Modifier.Companion
                     .fillMaxSize()
                     .padding(8.dp),
                 state = rememberLazyListState()
@@ -80,7 +80,7 @@ fun TabunganScreen(
                 items(
                     items = pockets,
                     key = { it.pocketTable.pocket_id }   // 🔥 Important for smooth performance
-                ){ pocket ->
+                ) { pocket ->
                     TabunganItemList(
                         pocket,
                         {
@@ -94,23 +94,27 @@ fun TabunganScreen(
             }
 
             ExtendedFloatingActionButton(
-            onClick = { manageViewModel.onShowUpsertDialog() },
-                modifier = Modifier
-                    .align(Alignment.BottomEnd),
-            icon = { Icon(Icons.Filled.Edit, "Edit") },
-            text = { Text(text = "Add Tabungan") },
-        )
+                onClick = { manageViewModel.onShowUpsertDialog() },
+                modifier = Modifier.Companion
+                    .align(Alignment.Companion.BottomEnd),
+                icon = { Icon(Icons.Filled.Edit, "Edit") },
+                text = { Text(text = "Add Tabungan") },
+            )
             if (showSheet) {
                 ModalBottomSheet(
-                    onDismissRequest = { manageViewModel.clearMutbale()}
+                    onDismissRequest = { manageViewModel.clearMutbale() }
                 ) {
-                    UpsertTabunganDialog (
+                    UpsertTabunganDialog(
                         namaTabungan = namaTabungan,
                         saldo = saldo,
-                        onNamaChange = { manageViewModel.namaTabungan.value = it },
+                        warnaTabungan = warnaTabungan,
+                        onNamaChange = { manageViewModel.onTabunganNamaChange(it) },
                         onSaldoChange = { input ->
                             val cleanString = input.replace(Regex("[^\\d]"), "")
-                            manageViewModel.saldo.value = cleanString.toIntOrNull() ?: 0
+                            manageViewModel.onSaldoChange(cleanString.toIntOrNull() ?: 0)
+                        },
+                        onWarnaChange = {
+                            manageViewModel.onWarnaTabunganChange(it)
                         },
                         onSave = {
                             manageViewModel.onSaveTabunganClick()
@@ -118,7 +122,7 @@ fun TabunganScreen(
                     )
                 }
             }
-            if (showDeleteDialog!=null){
+            if (showDeleteDialog != null) {
                 DeleteConfirmationDialog(
                     "",
                     deleteAllTransaction,
@@ -139,5 +143,3 @@ fun TabunganScreen(
         }
     }
 }
-
-

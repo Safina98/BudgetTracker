@@ -1,5 +1,10 @@
 package com.example.budgettracker2
 
+import com.example.budgettracker2.ui.widgetstyles.cream
+import com.example.budgettracker2.ui.widgetstyles.dustyRose
+import com.example.budgettracker2.ui.widgetstyles.lavenderPurple
+import com.example.budgettracker2.ui.widgetstyles.mutedSageGreen
+import com.example.budgettracker2.ui.widgetstyles.olive
 import java.text.NumberFormat
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -13,10 +18,19 @@ object TIPETRANSAKSI {
 }
 
 val tipeList = listOf("PEMASUKAN", "PENGELUARAN", "TRANSFER")
-val warnaList = listOf("Pink","Yellow","Blue","Green","Purple")
+val warnaList = listOf("Dusty Rose","Muted Sage Green","Lavender Purple","Cream","Olive")
+val warnaListOld = listOf("Pink","Yellow","Blue","Green","Purple")
+val pocketColors = mapOf(
+    "Dusty Rose" to dustyRose,
+    "Muted Sage Green" to mutedSageGreen,
+    "Lavender Purple" to lavenderPurple,
+    "Cream" to cream,
+    "Olive" to olive
+)
+
 
 object WARNA {
-    const val PINK = 0
+    const val PINK = "cream"
     const val YELLOW = 1
     const val BLUE = 2
     const val GREEN = 2
@@ -29,4 +43,6 @@ val rupiahFormatter = NumberFormat
         maximumFractionDigits = 0
         minimumFractionDigits = 0
     }
+
+
 

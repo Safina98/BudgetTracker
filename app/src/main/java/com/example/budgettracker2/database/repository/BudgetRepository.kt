@@ -39,12 +39,18 @@ class BudgetRepository @Inject constructor(
 
     suspend fun insertPocketWithInitialBalance(
         name: String,
+        color:String,
+        index:Int,
+        mainPocket: Boolean,
         saldo: Int
     ): Result<Unit> =
         runCatching {
             val pocket = PocketTable().apply {
                 pocketName = name
                 this.saldo = saldo
+                this.mainPocket =mainPocket
+                this.index=index
+                this.color=color
             }
             val transaction = TransactionTable().apply {
                 nominal = saldo
@@ -62,14 +68,21 @@ class BudgetRepository @Inject constructor(
     suspend fun updatePocketWithInitialBalance(
         pocketId:Int,
         name: String,
+        color:String,
+        index:Int,
+        mainPocket: Boolean,
         saldo: Int
     ): Result<Unit> =
         runCatching {
             val pocket = PocketTable().apply {
-                pocket_id = pocketId
+                pocket_id=pocketId
                 pocketName = name
                 this.saldo = saldo
+                this.mainPocket =mainPocket
+                this.index=index
+                this.color=color
             }
+            Log.i("PocketColor","repo update: ${pocket.color}")
 
             pocketDao.updatePocketWithInitialBallace(pocket)
         }

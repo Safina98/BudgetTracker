@@ -39,7 +39,8 @@ import java.io.BufferedReader
 import java.io.InputStreamReader
 import com.example.budgettracker2.backup.DriveBackupManager
 import com.example.budgettracker2.databinding.FragmentHomeScreenBinding
-import com.example.budgettracker2.transactions.TransactionScreen
+import com.example.budgettracker2.ui.screen.TransactionScreen
+import com.example.budgettracker2.ui.screen.HomeScreen
 import com.google.android.gms.auth.api.signin.*
 import com.google.android.gms.common.api.Scope
 import com.google.api.services.drive.DriveScopes
@@ -89,7 +90,7 @@ class HomeScreenFragment : Fragment() {
             )
             setContent {
                 MaterialTheme {
-                    HomeScreen(navController)
+                    //HomeScreen(navController)
                 }
             }
         }
@@ -306,11 +307,7 @@ class HomeScreenFragment : Fragment() {
                     viewModel.insertCsvTrans(tokens)
                 }
             }
-
             i+=1
         }
     }
-
-
-
-     }
+}

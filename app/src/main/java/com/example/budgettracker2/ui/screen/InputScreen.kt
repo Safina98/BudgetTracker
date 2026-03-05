@@ -1,4 +1,4 @@
-package com.example.budgettracker2.FragmentInput
+package com.example.budgettracker2.ui.screen
 
 import android.util.Log
 import androidx.compose.foundation.clickable
@@ -34,22 +34,19 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.budgettracker2.DateTypeConverter
-import com.example.budgettracker2.R
+import com.example.budgettracker2.FragmentInput.InputFragmentDirections
 import com.example.budgettracker2.RupiahVisualTransformation
 import com.example.budgettracker2.tipeList
 import com.example.budgettracker2.ui.dialog.MyDatePickerDialog
 import com.example.budgettracker2.ui.widgetstyles.BudgetSpinner
-import com.example.budgettracker2.viewModels.ManageViewModel
 import com.example.budgettracker2.viewModels.TransactionViewModel
-import com.example.budgettracker2.warnaList
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun InputScreen(
-    navController: NavController,
     id: Int,
+    onNavigateBack: () -> Unit,
     transactionViewModel: TransactionViewModel = hiltViewModel(),
-
     ){
     LaunchedEffect(id) {
         transactionViewModel.setTransactionId(id)
@@ -86,27 +83,26 @@ fun InputScreen(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
     ) { padding ->
         Box(
-            modifier = Modifier
+            modifier = Modifier.Companion
                 .fillMaxSize() // Fill the whole screen
                 .padding(16.dp), // Respect Scaffold bars
-            contentAlignment = Alignment.Center // Center everything inside
+            contentAlignment = Alignment.Companion.Center // Center everything inside
         ) {
             Card(
-                modifier = Modifier
-                    .padding(8.dp)
-                ,
+                modifier = Modifier.Companion
+                    .padding(8.dp),
                 elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
                 shape = RoundedCornerShape(12.dp)
                 // Note: Card uses 'colors = CardDefaults.cardColors(...)' for background normally
-            ){
+            ) {
                 Column(
-                    modifier = Modifier
+                    modifier = Modifier.Companion
                         .padding(16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                    horizontalAlignment = Alignment.Companion.CenterHorizontally
                 ) {
                     Text(
-                        text= DateTypeConverter.fromDate(date)?:"",
-                        Modifier.clickable{
+                        text = DateTypeConverter.Companion.fromDate(date) ?: "",
+                        Modifier.Companion.clickable {
                             transactionViewModel.onShowDatePicker()
                         }
                     )
@@ -114,48 +110,61 @@ fun InputScreen(
                         title = "Jenis Transaksi",
                         options = tipeList,
                         selectedOption = tipe,
-                        onOptionSelected ={newvalue->transactionViewModel.onTipeSpinnerChange(newvalue)}
+                        onOptionSelected = { newvalue ->
+                            transactionViewModel.onTipeSpinnerChange(
+                                newvalue
+                            )
+                        }
 
                     )
                     BudgetSpinner(
                         title = "Pilih Kategori",
                         options = namaKategoriList,
                         selectedOption = namaKategori,
-                        onOptionSelected = {newvalue->transactionViewModel.onKategoriSpinnerChange(newvalue)}
+                        onOptionSelected = { newvalue ->
+                            transactionViewModel.onKategoriSpinnerChange(
+                                newvalue
+                            )
+                        }
                     )
                     BudgetSpinner(
                         title = "Pilih Tabungan",
                         options = namaTabunganList,
                         selectedOption = namaTabungan,
-                        onOptionSelected = {newvalue->transactionViewModel.onTabunganSpinnerChange(newvalue)}
+                        onOptionSelected = { newvalue ->
+                            transactionViewModel.onTabunganSpinnerChange(
+                                newvalue
+                            )
+                        }
                     )
                     OutlinedTextField(
                         value = note,
-                        onValueChange = {newvalue->transactionViewModel.onNoteChange(newvalue)},
+                        onValueChange = { newvalue -> transactionViewModel.onNoteChange(newvalue) },
                         label = { Text("note") },
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.Companion.fillMaxWidth()
                     )
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.Companion.height(16.dp))
                     OutlinedTextField(
                         value = jumlah?.toString() ?: "Rp",
-                        onValueChange = {newValue->
+                        onValueChange = { newValue ->
                             val cleanString = newValue.replace(Regex("[^\\d]"), "")
-                            transactionViewModel.onJumlahChange(cleanString)},
+                            transactionViewModel.onJumlahChange(cleanString)
+                        },
                         keyboardOptions = KeyboardOptions(
-                            keyboardType = KeyboardType.Number
+                            keyboardType = KeyboardType.Companion.Number
                         ),
                         label = { Text("Saldo") },
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.Companion.fillMaxWidth(),
                         visualTransformation = RupiahVisualTransformation()
                     )
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.Companion.height(16.dp))
 
                     Button(
                         onClick = {
                             transactionViewModel.insertTransaction()
                         },
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.Companion.fillMaxWidth()
                     ) {
                         Text("Save")
                     }
@@ -170,16 +179,22 @@ fun InputScreen(
                         )
                     }
 
-                    if (navigateToHomeScreen){
-                        navController.popBackStack()
-                        transactionViewModel.onNavigatedtoHomeScreen()
+                    LaunchedEffect(navigateToHomeScreen) {
+                        if (navigateToHomeScreen) {
+                            onNavigateBack()
+                            transactionViewModel.onNavigatedtoHomeScreen()
+                        }
                     }
-                    if (navigateToTransaction!=null){
-                        navController.navigate(InputFragmentDirections.actionInputFragmentToTransactionFragment(navigateToTransaction!!))
-                        transactionViewModel.onNavigatedToTransaction()
-                    }
+//                    if (navigateToTransaction != null) {
+//                        navController.navigate(
+//                            InputFragmentDirections.actionInputFragmentToTransactionFragment(
+//                                navigateToTransaction!!
+//                            )
+//                        )
+//                        transactionViewModel.onNavigatedToTransaction()
+//                    }
                 }
             }
+        }
     }
-}
 }

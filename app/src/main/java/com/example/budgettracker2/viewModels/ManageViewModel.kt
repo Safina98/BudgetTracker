@@ -18,9 +18,16 @@ import javax.inject.Inject
 class ManageViewModel @Inject constructor( private val repository: BudgetRepository) :
     ViewModel() {
 
-    val namaTabungan=  MutableStateFlow<String>("")
-    val saldo=MutableStateFlow<Int?>(null)
-    val pocketId= MutableStateFlow<Int?>(null)
+    private val _namaTabungan=  MutableStateFlow<String>("")
+    val namaTabungan: StateFlow<String> = _namaTabungan
+    private val _warnaTabungan=  MutableStateFlow<String>("")
+    val warnaTabungan: StateFlow<String> = _warnaTabungan
+    private val _index= MutableStateFlow<Int?>(null)
+    val index: StateFlow<Int?> = _index
+    private val _saldo=MutableStateFlow<Int?>(null)
+    val saldo: StateFlow<Int?> = _saldo
+    private val _pocketId= MutableStateFlow<Int?>(null)
+    val pocketId: StateFlow<Int?> = _pocketId
 
 
     private val _showUpsertDialog = MutableStateFlow<Boolean>(false)
@@ -35,10 +42,15 @@ class ManageViewModel @Inject constructor( private val repository: BudgetReposit
     val errorMessage:StateFlow<String?> = _errorMessage
 
 
-    val namaKategori=  MutableStateFlow<String>("")
-    val tipeKategori=  MutableStateFlow<String>("")
-    val warnaKategori=  MutableStateFlow<String>("")
-    val kategoriId= MutableStateFlow<Int?>(null)
+    private val _namaKategori=  MutableStateFlow<String>("")
+    val namaKategori: StateFlow<String> = _namaKategori
+    private val _tipeKategori=  MutableStateFlow<String>("")
+    val tipeKategori: StateFlow<String> = _tipeKategori
+    private val _warnaKategori=  MutableStateFlow<String>("")
+    val warnaKategori: StateFlow<String> = _warnaKategori
+    private val _kategoriId = MutableStateFlow<Int?>(null)
+    val kategoriId: StateFlow<Int?> = _kategoriId
+
 
 
 
@@ -69,11 +81,29 @@ class ManageViewModel @Inject constructor( private val repository: BudgetReposit
     fun toggleDeleteAllTransaction(boolean: Boolean){
         _deleteAllTransaction.value = boolean
     }
+    fun onWarnaCategoryChange(warna:String){
+        _warnaKategori.value = warna
+    }
+    fun onKategoriTipeChange(tipe:String){
+        _tipeKategori.value = tipe
+    }
+    fun onKategoriNamaChange(nama:String){
+        _namaKategori.value = nama
+    }
+    fun onTabunganNamaChange(nama:String){
+        _namaTabungan.value = nama
+    }
+    fun onWarnaTabunganChange(warna:String){
+        _warnaTabungan.value = warna
+    }
+    fun onSaldoChange(saldo:Int){
+        _saldo.value = saldo
+    }
     fun onEditKategoriClick(nkm: NewKategoriModel){
-        namaKategori.value=nkm.categoryTable.category_name
-        tipeKategori.value=nkm.categoryTable.category_type
-        warnaKategori.value=nkm.categoryTable.category_color
-        kategoriId.value=nkm.categoryTable.category_id
+        _namaKategori.value=nkm.categoryTable.category_name
+        _tipeKategori.value=nkm.categoryTable.category_type
+        _warnaKategori.value=nkm.categoryTable.category_color
+        _kategoriId.value=nkm.categoryTable.category_id
         onShowUpsertDialog()
 
     }
@@ -84,19 +114,23 @@ class ManageViewModel @Inject constructor( private val repository: BudgetReposit
 
     fun clearMutbale(){
         _showUpsertDialog.value=false
-        namaTabungan.value=""
-        saldo.value=0
-        namaKategori.value=""
-        tipeKategori.value=""
-        warnaKategori.value=""
-        kategoriId.value=null
-        pocketId.value=null
+        _namaTabungan.value=""
+        _warnaTabungan.value=""
+        _saldo.value=0
+        _namaKategori.value=""
+        _tipeKategori.value=""
+        _warnaKategori.value=""
+        _kategoriId.value=null
+        _pocketId.value=null
+        _index.value=null
         _deleteAllTransaction.value=false
     }
     fun onEditTabunganClick(pocket: TabunganModel){
-        namaTabungan.value=pocket.pocketTable.pocketName
-        saldo.value=pocket.pocketTable.saldo
-        pocketId.value=pocket.pocketTable.pocket_id
+        _namaTabungan.value=pocket.pocketTable.pocketName
+        _saldo.value=pocket.pocketTable.saldo
+        _pocketId.value=pocket.pocketTable.pocket_id
+        _warnaTabungan.value=pocket.pocketTable.color
+        _index.value=pocket.pocketTable.index
         onShowUpsertDialog()
     }
 
@@ -107,7 +141,7 @@ class ManageViewModel @Inject constructor( private val repository: BudgetReposit
 
     fun insertTabungan(){
         viewModelScope.launch {
-            repository.insertPocketWithInitialBalance(namaTabungan.value.uppercase().trim(), saldo.value?:0)
+            repository.insertPocketWithInitialBalance(namaTabungan.value.uppercase().trim(), warnaTabungan.value,index.value?:0,false,saldo.value?:0)
                 .onSuccess {
                     clearMutbale()
                 }
@@ -118,7 +152,7 @@ class ManageViewModel @Inject constructor( private val repository: BudgetReposit
     }
     fun updateTabungan(){
         viewModelScope.launch {
-            repository.updatePocketWithInitialBalance(pocketId.value!!,namaTabungan.value,saldo.value?:0)
+            repository.updatePocketWithInitialBalance(pocketId.value!!,namaTabungan.value.uppercase().trim(), warnaTabungan.value.trim(),index.value?:0,false,saldo.value?:0)
                 .onSuccess {
                     clearMutbale()
                 }

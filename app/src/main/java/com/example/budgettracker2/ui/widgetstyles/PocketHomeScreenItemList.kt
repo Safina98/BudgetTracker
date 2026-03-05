@@ -18,10 +18,12 @@ import androidx.compose.ui.unit.dp
 import com.example.budgettracker2.database.model.TabunganHomeScreenModel
 import com.example.budgettracker2.database.model.TabunganModel
 import com.example.budgettracker2.database.table.PocketTable
+import com.example.budgettracker2.pocketColors
 
 @Composable
 fun PocketHomeScreenItemList(
     tabunganModel: TabunganHomeScreenModel
+
 ){
     Card(
         modifier = Modifier.padding(2.dp)
@@ -31,13 +33,7 @@ fun PocketHomeScreenItemList(
     ) {
         Column(
             modifier = Modifier.fillMaxSize()
-                .background(brush = Brush.linearGradient(
-                    0.0f to Color(0xFFc496a1),          // Start color
-                    0.6f to Color(0x85c496a1),          // Center color at 60%
-                    1.0f to Color(0xFFc496a1),          // End color (85 alpha)
-                    start = Offset(0f, Float.POSITIVE_INFINITY), // Bottom-Left
-                    end = Offset(Float.POSITIVE_INFINITY, 0f)    // Top-Right
-                ))
+                .background(pocketColors[tabunganModel.pocketTable.color] ?: cream)
                 .padding(8.dp)) {
             Text(tabunganModel.pocketTable.pocketName)
             Text("Pemasukan tahun ini: "+formatRupiah(tabunganModel.thisYearIncome))

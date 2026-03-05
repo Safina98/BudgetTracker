@@ -1,4 +1,4 @@
-package com.example.budgettracker2.transactions
+package com.example.budgettracker2.ui.screen
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -23,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.budgettracker2.transactions.TransactionFragmentDirections
 import com.example.budgettracker2.ui.dialog.DeleteConfirmationDialog
 import com.example.budgettracker2.ui.widgetstyles.TransactionItemList
 import com.example.budgettracker2.viewModels.TransactionViewModel
@@ -31,17 +32,15 @@ import com.example.budgettracker2.viewModels.TransactionViewModel
 @Composable
 fun TransactionScreen(
     id:Int?,
-    navController: NavController,
-    transactionViewModel: TransactionViewModel = hiltViewModel()) {
+   onEditTransactionClick: (Int) -> Unit,
+    transactionViewModel: TransactionViewModel = hiltViewModel()
+) {
     val transactionList by transactionViewModel.transactionList.collectAsState()
     val tipe by transactionViewModel.tipe.collectAsState()
     val errorMessage by transactionViewModel.errorMessage.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
     val navigateToInput by transactionViewModel.navigateToInput.collectAsState()
     val showDeleteDialog by transactionViewModel.showDeleteDialog.collectAsState()
-
-
-
 
     LaunchedEffect(errorMessage) {
         errorMessage?.let { message ->
@@ -61,30 +60,31 @@ fun TransactionScreen(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
     ) { padding ->
         Box(
-            modifier = Modifier.fillMaxSize().padding(padding),
-            contentAlignment = Alignment.TopStart
+            modifier = Modifier.Companion.fillMaxSize().padding(padding),
+            contentAlignment = Alignment.Companion.TopStart
         ) {
             LazyColumn(
-                modifier = Modifier
+                modifier = Modifier.Companion
                     .fillMaxSize()
                     .padding(8.dp),
                 state = rememberLazyListState()
-            ) { items(
-                items = transactionList,
-                key = { it.id }
-                ){ transaksi ->
-                TransactionItemList(
-                    transaksi,
-                    {
-                        transactionViewModel.onDeleteClick(transaksi.id)
-                    },
-                    {
-                        transactionViewModel.onEditTransactionCLick(transaksi)
-                    }
-                )
+            ) {
+                items(
+                    items = transactionList,
+                    key = { it.id }
+                ) { transaksi ->
+                    TransactionItemList(
+                        transaksi,
+                        {
+                            transactionViewModel.onDeleteClick(transaksi.id)
+                        },
+                        {
+                            transactionViewModel.onEditTransactionCLick(transaksi)
+                        }
+                    )
                 }
             }
-            if (showDeleteDialog!=null){
+            if (showDeleteDialog != null) {
                 DeleteConfirmationDialog(
                     "",
                     false,
@@ -101,13 +101,13 @@ fun TransactionScreen(
                 )
 
             }
-
-            if (navigateToInput!=null){
-                navController.navigate(TransactionFragmentDirections.actionTransactionFragmentToInputFragment3(navigateToInput!!))
-
-                transactionViewModel.onNavigatedToInput()
-
+            LaunchedEffect(navigateToInput) {
+                if (navigateToInput!=null) {
+                    onEditTransactionClick(navigateToInput!!)
+                    transactionViewModel.onNavigatedToInput()
+                }
             }
+
 
         }
     }

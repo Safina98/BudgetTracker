@@ -1,4 +1,4 @@
-package com.example.budgettracker2.kategori
+package com.example.budgettracker2.ui.dialog
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -11,54 +11,57 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import com.example.budgettracker2.tipeList
+import com.example.budgettracker2.RupiahVisualTransformation
 import com.example.budgettracker2.ui.widgetstyles.BudgetSpinner
 import com.example.budgettracker2.warnaList
 
 @Composable
-fun UpsertKategoriDialog(
-    namaKategori: String,
-    tipeKategori:String,
-    warnaKategori:String,
+fun UpsertTabunganDialog(
+    namaTabungan: String,
+    saldo: Int?,
+    warnaTabungan:String,
     onNamaChange: (String) -> Unit,
-    onTipeChange: (String) -> Unit,
+    onSaldoChange: (String) -> Unit,
     onWarnaChange: (String) -> Unit,
-
     onSave: () -> Unit
-){
+) {
     Column(
-        modifier = Modifier
+        modifier = Modifier.Companion
             .fillMaxWidth()
             .padding(16.dp)
     ) {
         OutlinedTextField(
-            value = namaKategori,
+            value = namaTabungan,
             onValueChange = onNamaChange,
-            label = { Text("Nama Kategori") },
-            modifier = Modifier.fillMaxWidth()
+            label = { Text("Nama Tabungan") },
+            modifier = Modifier.Companion.fillMaxWidth()
         )
-        BudgetSpinner(
-            title = "Pilih Tipe",
-            options = tipeList,
-            selectedOption = tipeKategori,
-            onOptionSelected = onTipeChange
+        OutlinedTextField(
+            value = saldo?.toString() ?: "Rp",
+            onValueChange = onSaldoChange,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Companion.Number
+            ),
+            label = { Text("Saldo") },
+            modifier = Modifier.Companion.fillMaxWidth(),
+            visualTransformation = RupiahVisualTransformation()
         )
         BudgetSpinner(
             title = "Pilih Warna",
             options = warnaList,
-            selectedOption = warnaKategori,
+            selectedOption = warnaTabungan,
             onOptionSelected = onWarnaChange
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.Companion.height(16.dp))
 
         Button(
             onClick = onSave,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.Companion.fillMaxWidth()
         ) {
             Text("Save")
         }
-
     }
 }

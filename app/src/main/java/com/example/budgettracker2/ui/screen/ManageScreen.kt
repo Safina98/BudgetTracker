@@ -1,4 +1,4 @@
-package com.example.budgettracker2.FragmentManage
+package com.example.budgettracker2.ui.screen
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -10,36 +10,35 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.budgettracker2.ui.widgetstyles.PrimaryButtonStyle
 import com.example.budgettracker2.R
+import com.example.budgettracker2.ui.widgetstyles.PrimaryButtonStyle
+
 @Composable
-fun ManageScreen(navController: NavController){
+fun ManageScreen(
+    onNavigateToTabungan: () -> Unit,
+    onNavigateToKategori: () -> Unit,
+){
     Column(
-        modifier = Modifier
+        modifier = Modifier.Companion
             .fillMaxSize()
             .padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.Companion.CenterHorizontally
     ) {
         PrimaryButtonStyle(
             "Manage Pocket",
-            onClick = {
-                navController.navigate(R.id.action_manageFragment_to_fragmentTabungan)
-            },
-            modifier = Modifier.fillMaxWidth()
+            onClick = onNavigateToKategori,
+            modifier = Modifier.Companion.fillMaxWidth()
         )
         PrimaryButtonStyle(
             "Manage Kategori",
-            onClick = {
-                navController.navigate(R.id.action_manageFragment_to_kategoriFragment)
-            },
-            modifier = Modifier.fillMaxWidth()
+            onClick = onNavigateToTabungan,
+            modifier = Modifier.Companion.fillMaxWidth()
         )
         PrimaryButtonStyle(
             "Manage Data",
             onClick = {},
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.Companion.fillMaxWidth()
         )
     }
 }
-

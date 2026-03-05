@@ -43,4 +43,34 @@ val dustyRose =  Brush.linearGradient(
 start = Offset(0f, Float.POSITIVE_INFINITY), // Bottom-Left
 end = Offset(Float.POSITIVE_INFINITY, 0f)    // Top-Right
 )
+val mutedSageGreen=Brush.linearGradient(
+    0.0f to Color(0xFF919D85),          // Start color
+    0.6f to Color(0x85919D85),          // Center color at 60%
+    1.0f to Color(0xFF919D85),          // End color (85 alpha)
+    start = Offset(0f, Float.POSITIVE_INFINITY), // Bottom-Left
+    end = Offset(Float.POSITIVE_INFINITY, 0f)    // Top-Right
+)
+val lavenderPurple=Brush.linearGradient(
+    0.0f to Color(0xFF9288A3),          // Start color
+    0.6f to Color(0x859288A3),          // Center color at 60%
+    1.0f to Color(0xFF9288A3),          // End color (85 alpha)
+    start = Offset(0f, Float.POSITIVE_INFINITY), // Bottom-Left
+    end = Offset(Float.POSITIVE_INFINITY, 0f)    // Top-Right
+)
+val cream=Brush.linearGradient(
+    0.0f to Color(0x99fffdd0),          // Start color
+    0.6f to Color(0x5Cfefefa),          // Center color at 60%
+    1.0f to Color(0x8Dfffdd0),          // End color (85 alpha)
+    start = Offset(0f, Float.POSITIVE_INFINITY), // Bottom-Left
+    end = Offset(Float.POSITIVE_INFINITY, 0f)    // Top-Right
+)
+val olive=Brush.linearGradient(
+    0.0f to Color(0xFF81785a),          // Start color
+    0.6f to Color(0x8581785a),          // Center color at 60%
+    1.0f to Color(0xFF81785a),          // End color (85 alpha)
+    start = Offset(0f, Float.POSITIVE_INFINITY), // Bottom-Left
+    end = Offset(Float.POSITIVE_INFINITY, 0f)    // Top-Right
+)
+
+
 

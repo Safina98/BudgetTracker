@@ -182,7 +182,8 @@ class TransactionViewModel @Inject constructor( private val repository: BudgetRe
                 if (_transactionId.value==null){
                     onNavigatedtoHomeScreen()
                 }else{
-                    onNavigateToTransaction(_transactionId.value!!)
+                    onNavigatedtoHomeScreen()
+                //onNavigateToTransaction(_transactionId.value!!)
                 }
                 resetMutable()
 

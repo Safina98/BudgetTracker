@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.budgettracker2.database.model.NewKategoriModel
+import com.example.budgettracker2.pocketColors
 
 
 @Composable
@@ -31,11 +32,10 @@ fun KategoriGridItemList(item: NewKategoriModel){
         shape = RoundedCornerShape(12.dp)
 
     ) {
-
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(brush = beige)
+                .background(pocketColors[item.categoryTable.category_color] ?: cream)
         ) {
             Column(
                 modifier = Modifier
@@ -45,7 +45,6 @@ fun KategoriGridItemList(item: NewKategoriModel){
             ) {
                 Text(item.categoryTable.category_name)
                 Text(item.categoryCashSum.toString())
-
             }
         }
     }
