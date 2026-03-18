@@ -31,7 +31,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.budgettracker2.DateTypeConverter
 import com.example.budgettracker2.database.TransaksiModel
-import com.example.budgettracker2.ui.theme.Typography
+import com.example.budgettracker2.ui.theme.AppTypography
+import com.example.budgettracker2.ui.theme.getPocketBrush
 import java.text.NumberFormat
 import java.util.Locale
 
@@ -54,7 +55,7 @@ fun TransactionItemList(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(brush = beige)
+                .background(getPocketBrush("Cream"))
         ) {
             Row(
                 modifier = Modifier
@@ -69,7 +70,7 @@ fun TransactionItemList(
                     Icon(
                         imageVector = Icons.Default.Edit,
                         contentDescription = "Edit",
-                        tint = Color.DarkGray,
+                        tint = Color.Gray,
                         modifier = Modifier.size(25.dp) // Scales the icon appropriately
                     )
                 }
@@ -81,7 +82,7 @@ fun TransactionItemList(
                     Icon(
                         imageVector = Icons.Default.Delete,
                         contentDescription = "Delete",
-                        tint = Color.Red,
+                        tint = Color.Gray,
                         modifier = Modifier.size(25.dp)
                     )
                 }
@@ -100,18 +101,17 @@ fun TransactionItemList(
                 ) {
                     Text(
                         text = transaksi.category_name_model_ ?: "",
-                        style = MaterialTheme.typography.titleMedium, // Replace with your big_text_style
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
                     Text(
                         text = DateTypeConverter.fromDate(transaksi.date) ?: "",
-                        style = MaterialTheme.typography.bodyMedium,
+                        style = AppTypography.bodyMedium,
                         color = Color.Gray
                     )
                     Text(
                         text = transaksi.ket ?: "",
-                        style = MaterialTheme.typography.bodySmall,
+
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -120,7 +120,6 @@ fun TransactionItemList(
                 // Right Side: Nominal (Formatted as Rupiah)
                 Text(
                     text = formatRupiah(transaksi.nominal),
-                    style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
             }

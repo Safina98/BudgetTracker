@@ -51,11 +51,9 @@ class HomeScreenFragment : Fragment() {
     private val REQUEST_CODE_FILE_PICKER = 123
     private lateinit var signInClient: GoogleSignInClient
     private var pendingAction: Action? = null
-
     private enum class Action {
         BACKUP, RESTORE
     }
-
     private val signInLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
 

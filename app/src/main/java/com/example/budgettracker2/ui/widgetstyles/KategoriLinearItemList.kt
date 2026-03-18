@@ -29,7 +29,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.budgettracker2.database.model.NewKategoriModel
-import com.example.budgettracker2.ui.theme.CormorantMedium
+import com.example.budgettracker2.ui.theme.getPocketBrush
+
 
 @Composable
 fun KategoriLinearItemList(
@@ -52,7 +53,7 @@ fun KategoriLinearItemList(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(brush = beige)
+                .background(getPocketBrush(newKategoriModel.categoryTable.category_color))
         ) {
             Column(
                 modifier = Modifier
@@ -64,19 +65,15 @@ fun KategoriLinearItemList(
                 Text(
                     modifier = Modifier,
                     text = "${newKategoriModel.categoryTable.category_name}",
-                    style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     fontSize = 20.sp,
-                    fontFamily = CormorantMedium
+
 
                 )
                 Spacer(modifier = Modifier.height(10.dp))
                 Text(
                     modifier = Modifier,
                     text = "${newKategoriModel.categoryTable.category_type}",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontFamily = CormorantMedium
-
                 )
 
             }
@@ -96,7 +93,7 @@ fun KategoriLinearItemList(
                     Icon(
                         imageVector = Icons.Default.Edit,
                         contentDescription = "Edit",
-                        tint = Color.DarkGray,
+                        tint = Color.Gray,
                         modifier = Modifier.size(25.dp) // Scales the icon appropriately
                     )
                 }
@@ -108,7 +105,7 @@ fun KategoriLinearItemList(
                     Icon(
                         imageVector = Icons.Default.Delete,
                         contentDescription = "Delete",
-                        tint = Color.Red,
+                        tint = Color.Gray,
                         modifier = Modifier.size(25.dp)
                     )
                 }

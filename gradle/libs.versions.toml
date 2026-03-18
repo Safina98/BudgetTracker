@@ -24,6 +24,8 @@ material = "1.12.0"
 compose-fonts = "1.7.0"
 material3 = "1.4.0"
 
+uiTextGoogleFonts = "1.7.8"
+
 # -------------------------------
 # Libraries
 # -------------------------------
@@ -95,6 +97,7 @@ androidx-material3 = { group = "androidx.compose.material3", name = "material3",
 # Material Icons Extended (for Icons.Default.MoreVert)
 material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended" }
 
+androidx-ui-text-google-fonts = { group = "androidx.compose.ui", name = "ui-text-google-fonts", version.ref = "uiTextGoogleFonts" }
 # -------------------------------
 # Plugins
 # -------------------------------

@@ -102,6 +102,8 @@ dependencies {
     implementation("com.google.http-client:google-http-client-gson:1.43.3")
     implementation("com.google.apis:google-api-services-drive:v3-rev20230822-2.0.0")
     implementation(libs.androidx.compose.ui.text.google.fonts)
+    implementation(libs.androidx.ui.text.google.fonts)
+
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

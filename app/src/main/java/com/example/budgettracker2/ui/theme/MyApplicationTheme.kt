@@ -8,7 +8,7 @@ fun MyApplicationTheme(
     content: @Composable () -> Unit
 ) {
     MaterialTheme(
-        typography = Typography, // This is your custom Typography object
+        typography = AppTypography, // This is your custom Typography object
         content = content
     )
 }

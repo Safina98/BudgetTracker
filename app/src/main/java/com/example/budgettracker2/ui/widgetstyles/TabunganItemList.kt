@@ -33,8 +33,8 @@ import com.example.budgettracker2.database.model.TabunganModel
 import com.example.budgettracker2.rupiahFormatter
 import androidx.compose.foundation.layout.size
 import androidx.compose.ui.unit.sp
-import com.example.budgettracker2.ui.theme.AnticSlabFamily
-import com.example.budgettracker2.ui.theme.CormorantMedium
+import com.example.budgettracker2.ui.theme.getPocketBrush
+
 
 @Composable
 fun TabunganItemList(
@@ -56,7 +56,7 @@ fun TabunganItemList(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(brush = beige)
+                .background(brush = getPocketBrush(tabunganModel.pocketTable.color))
         ) {
             Column(
                 modifier = Modifier
@@ -71,7 +71,7 @@ fun TabunganItemList(
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     fontSize = 20.sp,
-                    fontFamily = CormorantMedium
+
 
                 )
                 Spacer(modifier = Modifier.height(10.dp))
@@ -79,8 +79,6 @@ fun TabunganItemList(
                     modifier = Modifier,
                     text = "Saldo saat ini : ${rupiahFormatter.format(tabunganModel.currentBallance)}",
                     style = MaterialTheme.typography.titleMedium,
-                    fontFamily = CormorantMedium
-
                 )
 
             }
@@ -100,7 +98,7 @@ fun TabunganItemList(
                             Icon(
                                 imageVector = Icons.Default.Edit,
                                 contentDescription = "Edit",
-                                tint = Color.DarkGray,
+                                tint = Color.Gray,
                                 modifier = Modifier.size(25.dp) // Scales the icon appropriately
                             )
                         }
@@ -112,7 +110,7 @@ fun TabunganItemList(
                             Icon(
                                 imageVector = Icons.Default.Delete,
                                 contentDescription = "Delete",
-                                tint = Color.Red,
+                                tint = Color.Gray,
                                 modifier = Modifier.size(25.dp)
                             )
                         }
@@ -121,10 +119,4 @@ fun TabunganItemList(
     }
 
 }
-@Preview
-@Composable
-fun TabunganItemListPreview(){
- TabunganItemList(TabunganModel(PocketTable(),0),
-     onUpdateClicked = {},
-     onDeleteClicked = {})
-}
+

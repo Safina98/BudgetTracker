@@ -40,10 +40,17 @@ fun MainScreen(){
                 onNavigateBack = {
                     navController.popBackStack()
                 },
+                onManageMenuClick = {
+                    navController.navigate(Screen.Manage.route)
+                }
             )
         }
         composable(Screen.Kategori.route) {
-            KategoriScreen()
+            KategoriScreen(
+                onManageMenuClick = {
+                    navController.navigate(Screen.Manage.route)
+                }
+            )
         }
         composable(Screen.Manage.route) {
             ManageScreen(
@@ -56,11 +63,16 @@ fun MainScreen(){
             )
         }
         composable(Screen.Tabungan.route) {
-            TabunganScreen()
+            TabunganScreen(
+                onManageMenuClick = {
+                    navController.navigate(Screen.Manage.route)
+                }
+            )
         }
 
         composable(
             route = Screen.Transaction.route,
+
             arguments = listOf(navArgument("id") { type = NavType.Companion.IntType })
         ) { backStackEntry ->
             val id = backStackEntry.arguments?.getInt("id") ?: 0
@@ -68,6 +80,9 @@ fun MainScreen(){
                 id = id,
                 onEditTransactionClick = { transId ->
                     navController.navigate(Screen.Input.createRoute(id))
+                },
+                onManageMenuClick = {
+                    navController.navigate(Screen.Manage.route)
                 }
             )
         }
