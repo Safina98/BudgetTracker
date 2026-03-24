@@ -5,13 +5,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
@@ -20,30 +17,28 @@ import androidx.compose.ui.unit.dp
 import com.example.budgettracker2.monthList
 import com.example.budgettracker2.tipeListFilter
 import com.example.budgettracker2.ui.theme.AppTypography
-import com.example.budgettracker2.ui.theme.getPocketBrush
 import com.example.budgettracker2.ui.widgetstyles.BudgetSpinner
 import com.example.budgettracker2.ui.widgetstyles.PrimaryButtonStyle
 import com.example.budgettracker2.yearList
-import java.util.Date
 
 @Composable
 fun FilterDialog (
-    pocketList:List<String>,
+    pocketList: List<String>,
     categoryList: List<String>,
-    selectedYear:String,
-    selectedMonth:String,
-    selectedTipe:String,
-    selectedPocket:String,
-    selectedCategory:String,
-    selectedDate: Date?,
+    selectedYear: String,
+    selectedMonth: String,
+    selectedTipe: String,
+    selectedPocket: String,
+    selectedCategory: String,
     onYearChange: (String) -> Unit,
     onMonthChange: (String) -> Unit,
     onTipeChange: (String) -> Unit,
     onPocketChange: (String) -> Unit,
     onCategoryChange: (String) -> Unit,
-    onDateClick:()->Unit,
-    onResetClick:()->Unit,
-    onDismissClick:()->Unit
+    onDateClick: () -> Unit,
+    onResetClick: () -> Unit,
+    onDismissClick: () -> Unit,
+    dateString: String?=null
 ){
     Column(
         modifier = Modifier.Companion
@@ -92,8 +87,9 @@ fun FilterDialog (
                 modifier = Modifier.weight(1f),
             )
         }
+
         Text(
-            "Pilih Tanggal",
+            text=dateString?: "Pilih Tanggal",
             style = AppTypography.titleMedium,
             color = Color.Gray,
             textAlign = TextAlign.End,
@@ -136,7 +132,6 @@ fun FilterDialogPreview(){
         selectedTipe = "Expense",
         selectedPocket = "Wallet",
         selectedCategory = "Food",
-        selectedDate = null,
         onYearChange = {},
         onMonthChange = {},
         onTipeChange = {},
@@ -145,5 +140,6 @@ fun FilterDialogPreview(){
         onDateClick = {},
         onResetClick = {},
         onDismissClick = {},
+        dateString = null,
     )
 }

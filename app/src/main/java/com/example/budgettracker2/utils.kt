@@ -6,6 +6,8 @@ import com.example.budgettracker2.ui.widgetstyles.lavenderPurpleBrushLight
 import com.example.budgettracker2.ui.widgetstyles.mutedSageGreenBrushLight
 import com.example.budgettracker2.ui.widgetstyles.oliveBrushLight
 import java.text.NumberFormat
+import java.text.SimpleDateFormat
+import java.util.Date
 import java.util.Locale
 
 object TIPETRANSAKSI {
@@ -39,3 +41,14 @@ val rupiahFormatter = NumberFormat
         maximumFractionDigits = 0
         minimumFractionDigits = 0
     }
+object DateFormatter {
+    private val defaultFormatter = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
+
+    fun format(date: Date?): String? {
+        return date?.let { defaultFormatter.format(it) }
+    }
+
+    fun parse(dateString: String?): Date? {
+        return dateString?.let { defaultFormatter.parse(it) }
+    }
+}

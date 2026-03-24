@@ -7,7 +7,6 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -26,15 +25,12 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Tune
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
@@ -42,7 +38,6 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -53,12 +48,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.budgettracker2.ui.dialog.DateRangePickerDialog
 import com.example.budgettracker2.ui.dialog.DeleteConfirmationDialog
 import com.example.budgettracker2.ui.dialog.FilterDialog
 import com.example.budgettracker2.ui.theme.AppTypography
@@ -75,16 +70,18 @@ fun TransactionScreen(
     onManageMenuClick: () -> Unit,
     transactionViewModel: TransactionViewModel = hiltViewModel()
 ) {
-    val transactionList by transactionViewModel.transactionList.collectAsState()
+    val transactionList by transactionViewModel.filteredTransactions.collectAsState()
     val selectedTipe by transactionViewModel.selectedTipe.collectAsState()
     val selectedPocket by transactionViewModel.selectedPocket.collectAsState()
     val selectedCategory by transactionViewModel.selectedCategory.collectAsState()
     val selectedYear by transactionViewModel.selectedYear.collectAsState()
     val selectedMonth by transactionViewModel.selectedMonth.collectAsState()
-    val selectedDate by transactionViewModel.selectedDate.collectAsState()
+    val selectedDate by transactionViewModel.startDate.collectAsState()
     val showFilter by transactionViewModel.showFilter.collectAsState()
     val pocktetListFilter by transactionViewModel.pocktetListFilter.collectAsState()
     val categoryListFilter by transactionViewModel.categoryListFilter.collectAsState()
+    val showDatePicker by transactionViewModel.showDatePickerDialog.collectAsState()
+    val dateString by transactionViewModel.dateString.collectAsState()
 
     val errorMessage by transactionViewModel.errorMessage.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -245,7 +242,6 @@ fun TransactionScreen(
                             selectedTipe = selectedTipe,
                             selectedPocket = selectedPocket,
                             selectedCategory = selectedCategory,
-                            selectedDate = selectedDate,
                             onYearChange = { transactionViewModel.onYearChange(it) },
                             onMonthChange = { transactionViewModel.onMonthChange(it) },
                             onTipeChange = { transactionViewModel.onTipeChange(it) },
@@ -253,10 +249,22 @@ fun TransactionScreen(
                             onCategoryChange = { transactionViewModel.onCategoryChange(it) },
                             onDateClick = { transactionViewModel.onShowDatePicker() },
                             onResetClick = {transactionViewModel.resetFilter()},
-                            onDismissClick = {transactionViewModel.onFilterDismiss()}
+                            onDismissClick = {transactionViewModel.onFilterDismiss()},
+                            dateString = dateString
                         )
                     }
                 }
+            }
+            if (showDatePicker) {
+                DateRangePickerDialog (
+                    onDateRangeSelected = { start, end ->
+                        transactionViewModel.setStartDate(start)
+                        transactionViewModel.setEndDate(end)
+                        transactionViewModel.updateDateString()
+                        transactionViewModel.onDismissDatePicker()
+                    },
+                    onDismiss = { transactionViewModel.onDismissDatePicker() }
+                )
             }
             ExtendedFloatingActionButton(
                 onClick = { onEditTransactionClick(-1) },
@@ -284,6 +292,7 @@ fun TransactionScreen(
                 )
 
             }
+
             LaunchedEffect(navigateToInput) {
                 if (navigateToInput!=null) {
                     onEditTransactionClick(navigateToInput!!)

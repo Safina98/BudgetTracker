@@ -10,6 +10,7 @@ import androidx.room.Update
 import com.example.budgettracker2.DateTypeConverter
 import com.example.budgettracker2.database.table.TransactionTable
 import kotlinx.coroutines.flow.Flow
+import java.util.Date
 
 @Dao
 @TypeConverters(DateTypeConverter::class)
@@ -76,6 +77,32 @@ interface TransactionDao{
             "AND (:startDate IS NULL OR t.date >= :startDate) " +
             "AND (:endDate IS NULL OR  t.date <= :endDate) ORDER BY t.date DESC")
     fun getFilteredDataFlow(type: String?, categoryId: Int?, startDate: String?, endDate: String?): Flow<List<TransaksiModel>>
+
+    @Query("""
+    SELECT 
+        t.transaction_id as id,
+        c.category_name as category_name_model_,
+        p.pocket_name as pocketName,
+        t.tipe as tipe,
+        t.note as ket,
+        t.date as date,
+        t.nominal as nominal
+    FROM transaction_table t
+    LEFT JOIN category_table c ON t.category_id = c.category_id
+    LEFT JOIN pocket_table p ON t.pocket_id = p.pocket_id
+    WHERE (:tipe IS NULL OR t.tipe = :tipe)
+    AND (:pocketId IS NULL OR t.pocket_id = :pocketId)
+    AND (:categoryId IS NULL OR t.category_id = :categoryId)
+    AND (:startDate IS NULL OR t.date >= :startDate)
+    AND (:endDate IS NULL OR t.date <= :endDate)
+""")
+    fun getFilteredTransactions(
+        tipe: String?,
+        pocketId: Int?,
+        categoryId: Int?,
+        startDate: Date?,
+        endDate: Date?
+    ): Flow<List<TransaksiModel>>
 
     @Query("SELECT SUM(t.nominal)  FROM transaction_table t " +
             "INNER JOIN category_table c ON t.category_id = c.category_id WHERE" +

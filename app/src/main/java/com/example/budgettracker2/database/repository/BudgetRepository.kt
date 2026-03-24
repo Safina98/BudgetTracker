@@ -208,5 +208,16 @@ class BudgetRepository @Inject constructor(
     fun getAllTransaction(): Flow<List<TransaksiModel>> =
         transactionDao.getFilteredDataFlow(null,null,null,null)
 
+    fun getFilteredTransactions(
+        tipe: String?,
+        pocketId: Int?,
+        categoryId: Int?,
+        startDate:Date?,
+        endDate:Date?
+    ): Flow<List<TransaksiModel>> =
+        transactionDao.getFilteredTransactions(tipe, pocketId, categoryId, startDate, endDate)
+
+
+
 }
 

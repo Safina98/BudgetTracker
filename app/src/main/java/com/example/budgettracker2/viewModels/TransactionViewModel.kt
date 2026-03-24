@@ -1,17 +1,22 @@
 package com.example.budgettracker2.viewModels
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.budgettracker2.DateFormatter
 import com.example.budgettracker2.database.table.TransactionTable
 import com.example.budgettracker2.database.TransaksiModel
+import com.example.budgettracker2.database.model.FilterParams
 import com.example.budgettracker2.database.model.NewKategoriModel
 import com.example.budgettracker2.database.model.TabunganHomeScreenModel
 import com.example.budgettracker2.database.repository.BudgetRepository
+import com.google.gson.internal.bind.DefaultDateTypeAdapter
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -83,12 +88,16 @@ class TransactionViewModel @Inject constructor( private val repository: BudgetRe
     val selectedPocket: StateFlow<String> = _selectedPocket
     private val _selectedCategory = MutableStateFlow<String>("Semua")
     val selectedCategory: StateFlow<String> = _selectedCategory
+    private val _startDate = MutableStateFlow<Date?>(null)
+    val startDate: StateFlow<Date?> = _startDate
+    private val _endDate = MutableStateFlow<Date?>(null)
+    val endDate: StateFlow<Date?> = _endDate
+    private val _dateString = MutableStateFlow<String?>(null)
+    val dateString: StateFlow<String?> = _dateString
     private val _selectedYear = MutableStateFlow<String>("Semua")
     val selectedYear: StateFlow<String> = _selectedYear
     private val _selectedMonth = MutableStateFlow<String>("Semua")
     val selectedMonth: StateFlow<String> = _selectedMonth
-    private val _selectedDate = MutableStateFlow<Date?>(null)
-    val selectedDate: StateFlow<Date?> = _selectedDate
     var _showFilter =MutableStateFlow(false)
     val showFilter:StateFlow<Boolean> = _showFilter
 
@@ -107,6 +116,26 @@ class TransactionViewModel @Inject constructor( private val repository: BudgetRe
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = emptyList()
         )
+    val filteredTransactions = combine(
+        _selectedTipe,
+        _selectedPocket,
+        _selectedCategory,
+        _startDate,
+        _endDate
+    ) { tipe, pocket, category, startDate, endDate ->
+
+        val pocketId = if (pocket == "Semua") null else repository.getPocketIdByName(pocket)
+        val categoryId = if (category == "Semua") null else repository.getCategoryIdByName(category)
+        FilterParams(tipe, pocketId, categoryId, startDate, endDate)
+    }.flatMapLatest { params ->
+        repository.getFilteredTransactions(
+            tipe = if (params.tipe == "Semua") null else params.tipe,
+            pocketId = params.pocketId,
+            categoryId = params.categoryId,
+            startDate = params.startDate,
+            endDate = params.endDate
+        )
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
 
     fun onTipeChange(newTipe: String) {
@@ -125,7 +154,7 @@ class TransactionViewModel @Inject constructor( private val repository: BudgetRe
         _selectedMonth.value = newMonth
     }
     fun onDateRangeChange(newDate: Date?) {
-        _selectedDate.value = newDate
+        _startDate.value = newDate
     }
     fun onFilterClick() {
         _showFilter.value = !_showFilter.value
@@ -133,13 +162,25 @@ class TransactionViewModel @Inject constructor( private val repository: BudgetRe
     fun onFilterDismiss() {
         _showFilter.value = false
     }
+    fun setStartDate(newDate: Date?) {
+        _startDate.value = newDate
+    }
+    fun setEndDate(newDate: Date?) {
+        _endDate.value = newDate
+    }
+    fun updateDateString(){
+        _dateString.value = DateFormatter.format(startDate.value) + " - " + DateFormatter.format(endDate.value)
+
+    }
     fun resetFilter(){
         _selectedTipe.value = "Semua"
         _selectedPocket.value = "Semua"
         _selectedCategory.value = "Semua"
         _selectedYear.value = "Semua"
         _selectedMonth.value = "Semua"
-        _selectedDate.value = null
+        _startDate.value = null
+        _endDate.value=null
+        _dateString.value=null
     }
 
     val transactionList: StateFlow<List<TransaksiModel>> = repository.getAllTransaction().stateIn(
@@ -208,6 +249,7 @@ class TransactionViewModel @Inject constructor( private val repository: BudgetRe
     fun onDeleteDialogDismiss(){
         _showDeleteDialog.value = null
     }
+
     fun loadTransaction(id: Int) {
         viewModelScope.launch {
             repository.getTransactionById(id)
