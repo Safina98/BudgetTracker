@@ -40,13 +40,15 @@ fun UpsertKategoriDialog(
             title = "Pilih Tipe",
             options = tipeList,
             selectedOption = tipeKategori,
-            onOptionSelected = onTipeChange
+            onOptionSelected = onTipeChange,
+            modifier = Modifier
         )
         BudgetSpinner(
             title = "Pilih Warna",
             options = warnaList,
             selectedOption = warnaKategori,
-            onOptionSelected = onWarnaChange
+            onOptionSelected = onWarnaChange,
+            modifier = Modifier
         )
 
         Spacer(modifier = Modifier.Companion.height(16.dp))

@@ -3,7 +3,6 @@ package com.example.budgettracker2.database.repository
 import android.util.Log
 import com.example.budgettracker2.database.dao.CategoryDao
 import com.example.budgettracker2.database.table.CategoryTable
-import com.example.budgettracker2.database.model.KategoriModel
 import com.example.budgettracker2.database.dao.PocketDao
 import com.example.budgettracker2.database.table.PocketTable
 import com.example.budgettracker2.database.TransactionDao
@@ -14,6 +13,7 @@ import com.example.budgettracker2.database.model.TabunganHomeScreenModel
 import com.example.budgettracker2.database.model.TabunganModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import java.util.Date
 import javax.inject.Inject
@@ -26,6 +26,12 @@ class BudgetRepository @Inject constructor(
 
     fun getAllPocket(): Flow<List<TabunganModel>> =
         pocketDao.getPocketsWithSum()
+
+    fun getPocketNameListFilter(): Flow<List<String>> {
+        return pocketDao.getAllPocketNameFlow().map { list ->
+            listOf("Semua") + list
+        }
+    }
     fun getAllPocketName(): Flow<List<String>> =
         pocketDao.getAllPocketNameFlow()
     suspend fun getPocketIdByName(name:String): Int? {
@@ -146,6 +152,11 @@ class BudgetRepository @Inject constructor(
     suspend fun getCategoryIdByName(name:String):Int{
         return withContext(Dispatchers.IO){
             categoryDao.getCategoryIdByName(name)
+        }
+    }
+    fun getCategoryNameListFilter(tipe:String): Flow<List<String>> {
+        return categoryDao.getKategoriNameByTipe(tipe).map { list ->
+            listOf("Semua") + list
         }
     }
 

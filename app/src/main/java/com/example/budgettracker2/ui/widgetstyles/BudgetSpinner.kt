@@ -14,17 +14,16 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.budgettracker2.tipeList
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BudgetSpinner(
-    title:String,
+    title: String,
     options: List<String>,
     selectedOption: String,
-    onOptionSelected: (String) -> Unit
+    onOptionSelected: (String) -> Unit,
+    modifier: Modifier= Modifier
 ) {
     var expanded by remember { mutableStateOf(false) }
 
@@ -32,7 +31,7 @@ fun BudgetSpinner(
     ExposedDropdownMenuBox(
         expanded = expanded,
         onExpandedChange = { expanded = !expanded },
-        modifier = Modifier.fillMaxWidth().padding(16.dp)
+        modifier = modifier.padding(16.dp)
     ) {
         OutlinedTextField(
             value = selectedOption,

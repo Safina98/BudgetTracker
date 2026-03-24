@@ -6,6 +6,7 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import com.example.budgettracker2.ui.theme.PocketBrushes.newColor
+import com.example.budgettracker2.ui.theme.PocketBrushes.opaqueDustyRose
 
 
 // Pocket Colors & Brushes
@@ -25,6 +26,11 @@ object PocketPalette {
     val dustyRoseCenterLight= Color(0x9CC496A1)
     val dustyRoseEndDark=Color(0xFF151515)
     val dustyRoseCenterDark= Color(0xFF391214)
+
+    val oDustyRoseEndLight=Color(0xFFD3969C)
+    val oDustyRoseCenterLight= Color(0xFFC496A1)
+    val oDustyRoseEndDark=Color(0xFF151515)
+    val oDustyRoseCenterDark= Color(0xFF391214)
 
     val oliveEndLight=Color(0xFF81785a)
     val oliveCenterLight= Color(0x8581785a)
@@ -90,6 +96,10 @@ object PocketBrushes {
         light = createGradient(PocketPalette.dustyRoseEndLight, PocketPalette.dustyRoseCenterLight),
         dark = createGradient(PocketPalette.dustyRoseEndDark, PocketPalette.dustyRoseCenterDark)
     )
+    val opaqueDustyRose = BrushPair(
+        light = createGradient(PocketPalette.oDustyRoseEndLight, PocketPalette.oDustyRoseCenterLight),
+        dark = createGradient(PocketPalette.oDustyRoseEndDark, PocketPalette.oDustyRoseCenterDark)
+    )
 
     val mutedSageGreen = BrushPair(
         light = createGradient(PocketPalette.mutedSageEndLight, PocketPalette.mutedSageCenterLight),
@@ -125,6 +135,7 @@ object PocketBrushes {
         "New Color" ->newColor
         "Top Bar Color"->topBar
         "Secondary Button"->secondaryButton
+        "O Dusty Rose" -> opaqueDustyRose
         else -> dustyRose
     }
 }
@@ -138,7 +149,8 @@ val LocalPocketBrushes = staticCompositionLocalOf {
         "Olive" to PocketBrushes.olive,
         "New Color" to newColor,
         "Top Bar Color" to PocketBrushes.topBar,
-        "Secondary Button" to PocketBrushes.secondaryButton
+        "Secondary Button" to PocketBrushes.secondaryButton,
+        "O Dusty Rose" to opaqueDustyRose
     )
 }
 

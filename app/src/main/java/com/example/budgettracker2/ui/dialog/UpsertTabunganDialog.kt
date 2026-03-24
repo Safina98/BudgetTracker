@@ -52,7 +52,8 @@ fun UpsertTabunganDialog(
             title = "Pilih Warna",
             options = warnaList,
             selectedOption = warnaTabungan,
-            onOptionSelected = onWarnaChange
+            onOptionSelected = onWarnaChange,
+            modifier = Modifier
         )
 
         Spacer(modifier = Modifier.Companion.height(16.dp))

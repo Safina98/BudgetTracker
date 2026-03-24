@@ -15,6 +15,9 @@ object TIPETRANSAKSI {
 }
 val tipeList = listOf("PEMASUKAN", "PENGELUARAN", "TRANSFER")
 val warnaList = listOf("Dusty Rose","Muted Sage Green","Lavender Purple","Cream","Olive","New Color")
+val yearList = listOf("Semua","2024","2025","2026","2027","2028")
+val monthList = listOf("Semua","Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember")
+val tipeListFilter=listOf("Semua","PEMASUKAN", "PENGELUARAN", "TRANSFER")
 val warnaListOld = listOf("Pink","Yellow","Blue","Green","Purple")
 val pocketColors = mapOf(
     "Dusty Rose" to dustyRoseBrushLight,

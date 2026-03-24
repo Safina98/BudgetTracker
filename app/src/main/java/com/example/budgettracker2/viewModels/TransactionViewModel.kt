@@ -1,13 +1,11 @@
 package com.example.budgettracker2.viewModels
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.budgettracker2.database.table.TransactionTable
 import com.example.budgettracker2.database.TransaksiModel
 import com.example.budgettracker2.database.model.NewKategoriModel
 import com.example.budgettracker2.database.model.TabunganHomeScreenModel
-import com.example.budgettracker2.database.model.TabunganModel
 import com.example.budgettracker2.database.repository.BudgetRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -76,6 +74,73 @@ class TransactionViewModel @Inject constructor( private val repository: BudgetRe
 
     private val _navigateToInput= MutableStateFlow<Int?>(null)
     val navigateToInput:StateFlow<Int?> = _navigateToInput
+
+
+    /****-FILTER-********-FILTER-********-FILTER-********-FILTER-********-FILTER-********-FILTER-****/
+    private val _selectedTipe = MutableStateFlow<String>("Semua")
+    val selectedTipe: StateFlow<String> = _selectedTipe
+    private val _selectedPocket = MutableStateFlow<String>("Semua")
+    val selectedPocket: StateFlow<String> = _selectedPocket
+    private val _selectedCategory = MutableStateFlow<String>("Semua")
+    val selectedCategory: StateFlow<String> = _selectedCategory
+    private val _selectedYear = MutableStateFlow<String>("Semua")
+    val selectedYear: StateFlow<String> = _selectedYear
+    private val _selectedMonth = MutableStateFlow<String>("Semua")
+    val selectedMonth: StateFlow<String> = _selectedMonth
+    private val _selectedDate = MutableStateFlow<Date?>(null)
+    val selectedDate: StateFlow<Date?> = _selectedDate
+    var _showFilter =MutableStateFlow(false)
+    val showFilter:StateFlow<Boolean> = _showFilter
+
+
+    val pocktetListFilter: StateFlow<List<String>> = repository.getPocketNameListFilter().stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = emptyList()
+    )
+    val categoryListFilter: StateFlow<List<String>> = _selectedTipe
+        .flatMapLatest { tipe ->
+            repository.getCategoryNamebyTipe(tipe)
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
+
+
+    fun onTipeChange(newTipe: String) {
+        _selectedTipe.value = newTipe
+    }
+    fun onPocketChange(newPocket: String) {
+        _selectedPocket.value = newPocket
+    }
+    fun onCategoryChange(newCategory: String) {
+        _selectedCategory.value = newCategory
+    }
+    fun onYearChange(newYear: String) {
+        _selectedYear.value = newYear
+    }
+    fun onMonthChange(newMonth: String) {
+        _selectedMonth.value = newMonth
+    }
+    fun onDateRangeChange(newDate: Date?) {
+        _selectedDate.value = newDate
+    }
+    fun onFilterClick() {
+        _showFilter.value = !_showFilter.value
+    }
+    fun onFilterDismiss() {
+        _showFilter.value = false
+    }
+    fun resetFilter(){
+        _selectedTipe.value = "Semua"
+        _selectedPocket.value = "Semua"
+        _selectedCategory.value = "Semua"
+        _selectedYear.value = "Semua"
+        _selectedMonth.value = "Semua"
+        _selectedDate.value = null
+    }
 
     val transactionList: StateFlow<List<TransaksiModel>> = repository.getAllTransaction().stateIn(
         scope = viewModelScope,

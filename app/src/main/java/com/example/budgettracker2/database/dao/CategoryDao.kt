@@ -54,9 +54,6 @@ interface CategoryDao{
             " GROUP BY category_table.category_id ")
     fun getAllKategori(): LiveData<List<KategoriModel>>
 
-
-
-
     @Query("""
         SELECT category_table.*, SUM(transaction_table.nominal) AS categoryCashSum 
         FROM category_table

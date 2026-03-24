@@ -15,6 +15,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import com.example.budgettracker2.ui.theme.PocketBrushes.opaqueDustyRose
 import com.example.budgettracker2.ui.theme.values.fonts.MyFontFamily
 @Composable
 fun BudgetTrackerTheme(
@@ -42,7 +43,8 @@ fun BudgetTrackerTheme(
             "Olive" to PocketBrushes.olive,
             "New Color" to PocketBrushes.newColor,
             "Top Bar Color" to PocketBrushes.topBar,
-            "Secondary Button" to PocketBrushes.secondaryButton
+            "Secondary Button" to PocketBrushes.secondaryButton,
+            "O Dusty Rose" to opaqueDustyRose
         )
     ) {
         MaterialTheme(
