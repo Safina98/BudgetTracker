@@ -20,9 +20,11 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.util.Calendar
 import java.util.Date
 import javax.inject.Inject
 import kotlin.onSuccess
+
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
@@ -92,6 +94,8 @@ class TransactionViewModel @Inject constructor( private val repository: BudgetRe
     val startDate: StateFlow<Date?> = _startDate
     private val _endDate = MutableStateFlow<Date?>(null)
     val endDate: StateFlow<Date?> = _endDate
+    private val _monthOnly= MutableStateFlow<Int?>(null)
+    val monthOnly: StateFlow<Int?> = _monthOnly
     private val _dateString = MutableStateFlow<String?>(null)
     val dateString: StateFlow<String?> = _dateString
     private val _selectedYear = MutableStateFlow<String>("Semua")
@@ -100,8 +104,8 @@ class TransactionViewModel @Inject constructor( private val repository: BudgetRe
     val selectedMonth: StateFlow<String> = _selectedMonth
     var _showFilter =MutableStateFlow(false)
     val showFilter:StateFlow<Boolean> = _showFilter
-
-
+    private val _searchQuery = MutableStateFlow<String>("")
+    val searchQuery: StateFlow<String> = _searchQuery
     val pocktetListFilter: StateFlow<List<String>> = repository.getPocketNameListFilter().stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
@@ -117,26 +121,32 @@ class TransactionViewModel @Inject constructor( private val repository: BudgetRe
             initialValue = emptyList()
         )
     val filteredTransactions = combine(
-        _selectedTipe,
-        _selectedPocket,
-        _selectedCategory,
-        _startDate,
-        _endDate
-    ) { tipe, pocket, category, startDate, endDate ->
-
+        combine(_selectedTipe, _selectedPocket, _selectedCategory) { tipe, pocket, category ->
+            Triple(tipe, pocket, category)
+        },
+        combine(_startDate, _endDate, _searchQuery) { startDate, endDate, searchQuery ->
+            Triple(startDate, endDate, searchQuery)
+        },
+        _monthOnly
+    ) { (tipe, pocket, category), (startDate, endDate, searchQuery), monthOnly ->
         val pocketId = if (pocket == "Semua") null else repository.getPocketIdByName(pocket)
         val categoryId = if (category == "Semua") null else repository.getCategoryIdByName(category)
-        FilterParams(tipe, pocketId, categoryId, startDate, endDate)
+        FilterParams(tipe, pocketId, categoryId, startDate, endDate, searchQuery, monthOnly)
     }.flatMapLatest { params ->
         repository.getFilteredTransactions(
             tipe = if (params.tipe == "Semua") null else params.tipe,
             pocketId = params.pocketId,
             categoryId = params.categoryId,
             startDate = params.startDate,
-            endDate = params.endDate
+            endDate = params.endDate,
+            searchQuery = params.searchQuery,
+            monthOnly = params.monthOnly
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
+    fun onSearchQueryChange(query: String) {
+        _searchQuery.value = query
+    }
 
     fun onTipeChange(newTipe: String) {
         _selectedTipe.value = newTipe
@@ -149,9 +159,11 @@ class TransactionViewModel @Inject constructor( private val repository: BudgetRe
     }
     fun onYearChange(newYear: String) {
         _selectedYear.value = newYear
+        updateDateRangeFromYearMonth()
     }
     fun onMonthChange(newMonth: String) {
         _selectedMonth.value = newMonth
+        updateDateRangeFromYearMonth()
     }
     fun onDateRangeChange(newDate: Date?) {
         _startDate.value = newDate
@@ -171,6 +183,74 @@ class TransactionViewModel @Inject constructor( private val repository: BudgetRe
     fun updateDateString(){
         _dateString.value = DateFormatter.format(startDate.value) + " - " + DateFormatter.format(endDate.value)
 
+    }
+    private fun updateDateRangeFromYearMonth() {
+        val year = _selectedYear.value
+        val month = _selectedMonth.value
+
+        if (year == "Semua" && month == "Semua") {
+            _startDate.value = null
+            _endDate.value = null
+            _monthOnly.value = null
+            return
+        }
+
+        if (year == "Semua" && month != "Semua") {
+            // No date range — use monthOnly flag instead
+            _startDate.value = null
+            _endDate.value = null
+            _monthOnly.value = monthNameToIndex(month)
+            return
+        }
+
+        // Year is set — proceed with date range as before
+        _monthOnly.value = null
+        val resolvedYear = year.toInt()
+        val resolvedMonth = if (month == "Semua") null else monthNameToIndex(month)
+        val calendar = Calendar.getInstance()
+
+        calendar.set(Calendar.YEAR, resolvedYear)
+        calendar.set(Calendar.DAY_OF_MONTH, 1)
+        calendar.set(Calendar.HOUR_OF_DAY, 0)
+        calendar.set(Calendar.MINUTE, 0)
+        calendar.set(Calendar.SECOND, 0)
+        calendar.set(Calendar.MILLISECOND, 0)
+
+        if (resolvedMonth != null) {
+            calendar.set(Calendar.MONTH, resolvedMonth)
+            _startDate.value = calendar.time
+            calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH))
+            calendar.set(Calendar.HOUR_OF_DAY, 23)
+            calendar.set(Calendar.MINUTE, 59)
+            calendar.set(Calendar.SECOND, 59)
+            _endDate.value = calendar.time
+        } else {
+            calendar.set(Calendar.MONTH, Calendar.JANUARY)
+            _startDate.value = calendar.time
+            calendar.set(Calendar.MONTH, Calendar.DECEMBER)
+            calendar.set(Calendar.DAY_OF_MONTH, 31)
+            calendar.set(Calendar.HOUR_OF_DAY, 23)
+            calendar.set(Calendar.MINUTE, 59)
+            calendar.set(Calendar.SECOND, 59)
+            _endDate.value = calendar.time
+        }
+    }
+    private fun monthNameToIndex(month: String): Int {
+        return when (month) {
+            "Januari" -> Calendar.JANUARY
+            "Februari" -> Calendar.FEBRUARY
+            "Maret" -> Calendar.MARCH
+            "April" -> Calendar.APRIL
+            "Mei" -> Calendar.MAY
+            "Juni" -> Calendar.JUNE
+            "Juli" -> Calendar.JULY
+            "Agustus" -> Calendar.AUGUST
+            "September" -> Calendar.SEPTEMBER
+            "Oktober" -> Calendar.OCTOBER
+            "November" -> Calendar.NOVEMBER
+            "Desember" -> Calendar.DECEMBER
+            else -> Calendar.JANUARY
+        }
     }
     fun resetFilter(){
         _selectedTipe.value = "Semua"

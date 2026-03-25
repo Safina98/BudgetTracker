@@ -213,9 +213,11 @@ class BudgetRepository @Inject constructor(
         pocketId: Int?,
         categoryId: Int?,
         startDate:Date?,
-        endDate:Date?
+        endDate:Date?,
+        searchQuery:String?,
+        monthOnly:Int?
     ): Flow<List<TransaksiModel>> =
-        transactionDao.getFilteredTransactions(tipe, pocketId, categoryId, startDate, endDate)
+        transactionDao.getFilteredTransactions(tipe, pocketId, categoryId, startDate, endDate,searchQuery,monthOnly)
 
 
 

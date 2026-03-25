@@ -95,15 +95,18 @@ interface TransactionDao{
     AND (:categoryId IS NULL OR t.category_id = :categoryId)
     AND (:startDate IS NULL OR t.date >= :startDate)
     AND (:endDate IS NULL OR t.date <= :endDate)
+    AND (:searchQuery IS NULL OR t.note Like '%' || :searchQuery || '%')
+    AND (:monthOnly IS NULL OR strftime('%m', date/1000, 'unixepoch') = printf('%02d', :monthOnly))
 """)
     fun getFilteredTransactions(
         tipe: String?,
         pocketId: Int?,
         categoryId: Int?,
         startDate: Date?,
-        endDate: Date?
+        endDate: Date?,
+        searchQuery:String?,
+        monthOnly:Int?
     ): Flow<List<TransaksiModel>>
-
     @Query("SELECT SUM(t.nominal)  FROM transaction_table t " +
             "INNER JOIN category_table c ON t.category_id = c.category_id WHERE" +
             " (:type IS NULL OR c.category_type = :type OR :type = 'ALL') " +
@@ -111,10 +114,8 @@ interface TransactionDao{
             "AND (:startDate IS NULL OR t.date >= :startDate) " +
             "AND (:endDate IS NULL OR  t.date <= :endDate) ORDER BY t.date DESC")
     fun getFilteredDataSum(type: String?, categoryId: Int?, startDate: String?, endDate: String?):Int
-
     @Query("SELECT ifnull(SUM(nominal),0) from transaction_table")
     fun getBuget():LiveData<Int>
-
     @Query("SELECT ifnull(SUM(nominal),0)  from transaction_table WHERE nominal < 0")
     fun getBugetTM():LiveData<Int>
 

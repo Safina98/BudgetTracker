@@ -1,5 +1,6 @@
 package com.example.budgettracker2.ui.screen
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -7,6 +8,7 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -49,10 +51,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.budgettracker2.ui.dialog.DateRangePickerDialog
 import com.example.budgettracker2.ui.dialog.DeleteConfirmationDialog
 import com.example.budgettracker2.ui.dialog.FilterDialog
@@ -61,6 +65,7 @@ import com.example.budgettracker2.ui.theme.getPocketBrush
 import com.example.budgettracker2.ui.widgetstyles.PocketTopAppBar
 import com.example.budgettracker2.ui.widgetstyles.TransactionItemList
 import com.example.budgettracker2.viewModels.TransactionViewModel
+import androidx.compose.ui.platform.LocalFocusManager
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -90,9 +95,10 @@ fun TransactionScreen(
 
     var cardHeightPx by remember { mutableStateOf(0) }
     val density = LocalDensity.current
+    val focusManager = LocalFocusManager.current
 
 
-    var searchQuery by remember { mutableStateOf("") }
+    val searchQuery by transactionViewModel.searchQuery.collectAsState()
     var isActive by remember { mutableStateOf(false) }
 
     LaunchedEffect(errorMessage) {
@@ -118,7 +124,12 @@ fun TransactionScreen(
     ) { padding ->
 
         Box(
-            modifier = Modifier.Companion.fillMaxSize().padding(padding),
+            modifier = Modifier.Companion.fillMaxSize().padding(padding)
+                .pointerInput(Unit) {
+                    detectTapGestures(onTap = {
+                        focusManager.clearFocus()
+                    })
+                },
             contentAlignment = Alignment.TopEnd
         ) {
 
@@ -142,27 +153,31 @@ fun TransactionScreen(
                    {
                        TextField(
                            value = searchQuery,
-                           onValueChange = { newvalue->searchQuery = newvalue },
+                           onValueChange = {
+                               newvalue->transactionViewModel.onSearchQueryChange(newvalue)
+                               Log.d("DEBUG", "typed: $newvalue")
+                                           },
                            placeholder = { Text("Search...") },
                            modifier = Modifier
                                .weight(1f)
-                               .padding(16.dp)
+                               .padding(4.dp)
                                .clip(RoundedCornerShape(8.dp)),
                            singleLine = true,
                            leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Search") },
                            trailingIcon = {
                                if (searchQuery.isNotEmpty()) {
-                                   IconButton(onClick = { searchQuery = "" }) {
+                                   IconButton(onClick = { transactionViewModel.onSearchQueryChange("")}
+                                   ) {
                                        Icon(Icons.Default.Close, contentDescription = "Clear")
                                    }
                                }
                            },
                            colors = TextFieldDefaults.colors(
+                               unfocusedTextColor = Color.Black,
                                focusedContainerColor = Color.Transparent,
                                unfocusedContainerColor = Color.Transparent,
-                               focusedIndicatorColor = Color.White,
-                               unfocusedIndicatorColor = Color.Transparent
-                           )
+                               focusedIndicatorColor = Color.Transparent,
+                               unfocusedIndicatorColor = Color.Transparent,)
                        )
                        Text(
                            text = "FILTER",
@@ -187,7 +202,7 @@ fun TransactionScreen(
                 }
 
                LazyColumn(
-                   modifier = Modifier.Companion
+                   modifier = Modifier
                        .fillMaxWidth()
                    .padding(4.dp),
                    state = rememberLazyListState()
@@ -222,11 +237,9 @@ fun TransactionScreen(
             ) {
                 Card(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 8.dp)
-                        ,
+                        .fillMaxWidth(),
                     elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
-                    shape = RoundedCornerShape(12.dp),
+                    shape = RoundedCornerShape(1.dp),
 
                 ) {
                     Box(
@@ -281,7 +294,6 @@ fun TransactionScreen(
                     false,
                     false,
                     onCheckChange = { checked ->
-
                     },
                     {
                         transactionViewModel.deleteTransaction()
@@ -290,7 +302,6 @@ fun TransactionScreen(
                         transactionViewModel.onDeleteDialogDismiss()
                     }
                 )
-
             }
 
             LaunchedEffect(navigateToInput) {
