@@ -2,6 +2,7 @@ package com.example.budgettracker2.database.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
@@ -20,6 +21,13 @@ interface PocketDao {
     fun updatePocket(pocket: PocketTable)
     @Query("DELETE FROM pocket_table WHERE pocket_id = :id")
     fun deletePocket(id:Int)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertAll(pockets: List<PocketTable>)
+    @Query("DELETE FROM pocket_table")
+    fun deleteAll()
+    @Query("SELECT * FROM pocket_table")
+    fun getAllPockets(): List<PocketTable>
 
 
     @Insert

@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
@@ -27,6 +28,13 @@ interface CategoryDao{
     ")")
     fun insertIfNotExist(category_name:String,category_type:String,category_color:String)
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+     fun insertAll(categories: List<CategoryTable>)
+
+    @Query("SELECT * FROM category_table")
+     fun getAllCategories(): List<CategoryTable>
+
+
     @Update
     fun update(category: CategoryTable)
 
@@ -35,6 +43,9 @@ interface CategoryDao{
 
     @Query("DELETE FROM category_table WHERE category_id = :id")
     fun delete(id:Int)
+
+    @Query("DELETE FROM category_table")
+    fun deleteAll()
 
     @Query("DELETE FROM transaction_table WHERE category_id = :id")
     fun deleteTransactions(id:Int)

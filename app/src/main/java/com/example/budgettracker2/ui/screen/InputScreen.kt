@@ -35,9 +35,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.budgettracker2.DateTypeConverter
 import com.example.budgettracker2.RupiahVisualTransformation
 import com.example.budgettracker2.tipeList
+import com.example.budgettracker2.ui.backup.DriveBackupHandler
 import com.example.budgettracker2.ui.dialog.MyDatePickerDialog
 import com.example.budgettracker2.ui.widgetstyles.BudgetSpinner
 import com.example.budgettracker2.ui.widgetstyles.PocketTopAppBar
+import com.example.budgettracker2.viewModels.BackupViewModel
 import com.example.budgettracker2.viewModels.TransactionViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -47,7 +49,10 @@ fun InputScreen(
     onNavigateBack: () -> Unit,
     onManageMenuClick:()->Unit,
     transactionViewModel: TransactionViewModel = hiltViewModel(),
+    backupViewModel: BackupViewModel=hiltViewModel()
     ){
+    DriveBackupHandler(backupViewModel = backupViewModel)
+
     LaunchedEffect(id) {
         transactionViewModel.setTransactionId(id)
     }
@@ -79,8 +84,8 @@ fun InputScreen(
             PocketTopAppBar(
                 title = "Input Transaksi",
                 onManageClick = { onManageMenuClick() },
-                onExportClick = { /* handle export */ },
-                onImportClick = { /* handle import */ }
+                onExportClick = { backupViewModel.onExportClick() },
+                onImportClick = { backupViewModel.onImportClick() }
             )
         },
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },

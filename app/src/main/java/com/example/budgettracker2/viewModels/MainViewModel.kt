@@ -14,6 +14,7 @@ import com.example.budgettracker2.TIPETRANSAKSI
 import com.example.budgettracker2.database.*
 import com.example.budgettracker2.database.dao.CategoryDao
 import com.example.budgettracker2.database.dao.PocketDao
+import com.example.budgettracker2.database.dao.TransactionDao
 import com.example.budgettracker2.database.table.CategoryTable
 import com.example.budgettracker2.database.table.PocketTable
 import com.example.budgettracker2.database.table.TransactionTable
@@ -29,7 +30,7 @@ import java.util.*
 
 class MainViewModel(application: Application,
                     val datasource1: CategoryDao,
-                    val datasource2:TransactionDao,
+                    val datasource2: TransactionDao,
                     val pocketDao: PocketDao
                     ):AndroidViewModel (application){
 /*************************************************************************************************************/

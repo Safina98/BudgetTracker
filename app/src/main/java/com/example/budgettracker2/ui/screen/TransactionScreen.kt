@@ -66,6 +66,8 @@ import com.example.budgettracker2.ui.widgetstyles.PocketTopAppBar
 import com.example.budgettracker2.ui.widgetstyles.TransactionItemList
 import com.example.budgettracker2.viewModels.TransactionViewModel
 import androidx.compose.ui.platform.LocalFocusManager
+import com.example.budgettracker2.ui.backup.DriveBackupHandler
+import com.example.budgettracker2.viewModels.BackupViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -73,8 +75,10 @@ fun TransactionScreen(
     id:Int?,
    onEditTransactionClick: (Int) -> Unit,
     onManageMenuClick: () -> Unit,
-    transactionViewModel: TransactionViewModel = hiltViewModel()
+    transactionViewModel: TransactionViewModel = hiltViewModel(),
+    backupViewModel: BackupViewModel=hiltViewModel()
 ) {
+    DriveBackupHandler(backupViewModel = backupViewModel)
     val transactionList by transactionViewModel.filteredTransactions.collectAsState()
     val selectedTipe by transactionViewModel.selectedTipe.collectAsState()
     val selectedPocket by transactionViewModel.selectedPocket.collectAsState()
@@ -114,8 +118,8 @@ fun TransactionScreen(
         topBar = {PocketTopAppBar(
             title = "TRANSAKSI",
             onManageClick = { onManageMenuClick() },
-            onExportClick = { /* handle export */ },
-            onImportClick = { /* handle import */ }
+            onExportClick = { backupViewModel.onExportClick() },
+            onImportClick = { backupViewModel.onImportClick() }
         )
         },
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
@@ -217,7 +221,9 @@ fun TransactionScreen(
                                transactionViewModel.onDeleteClick(transaksi.id)
                            },
                            {
-                               transactionViewModel.onEditTransactionCLick(transaksi)
+                               Log.d("LoadTransactionProbs","TransactionFragment id ${transaksi.id}")
+                               onEditTransactionClick(transaksi.id)
+                               //transactionViewModel.onNavigateToInput(transaksi.id)
                            }
                        )
                    }
@@ -306,6 +312,7 @@ fun TransactionScreen(
 
             LaunchedEffect(navigateToInput) {
                 if (navigateToInput!=null) {
+                    Log.d("LoadTransactionProbs","TransactionFragment id $navigateToInput")
                     onEditTransactionClick(navigateToInput!!)
                     transactionViewModel.onNavigatedToInput()
                 }

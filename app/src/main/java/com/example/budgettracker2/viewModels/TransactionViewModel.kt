@@ -43,7 +43,6 @@ class TransactionViewModel @Inject constructor( private val repository: BudgetRe
         initialValue = emptyList()
     )
 
-
     private val _date= MutableStateFlow<Date>(Date())
     val date:StateFlow<Date> = _date
     private val _tipe= MutableStateFlow<String>("")
@@ -287,6 +286,7 @@ class TransactionViewModel @Inject constructor( private val repository: BudgetRe
     fun setTransactionId(id:Int){
         if (id!=-1){
             _transactionId.value=id
+            Log.d("LoadTransactionProbs","Viewmodel transactionId: ${_transactionId.value}")
             loadTransaction(id)
         }else
         {
@@ -345,9 +345,14 @@ class TransactionViewModel @Inject constructor( private val repository: BudgetRe
                     } else {
                         _errorMessage.value = "Transaction not found"
                     }
+                    Log.d("LoadTransactionProbs","View model Load transaction Succsess")
+                    Log.d("LoadTransactionProbs","Viewmodel transactionId: ${_transactionId.value}")
+                    Log.d("LoadTransactionProbs","Viewmodel nama kategori: ${_namaKategori.value}")
+                    Log.d("LoadTransactionProbs","Viewmodel transaksi: ${transaksi}")
                 }
                 .onFailure {
                     _errorMessage.value = it.message
+                    Log.d("LoadTransactionProbs","View model Load transaction Failed")
                 }
         }
     }
@@ -398,7 +403,7 @@ class TransactionViewModel @Inject constructor( private val repository: BudgetRe
         _jumlah.value=0
         _namaKategori.value=""
         _namaTabungan.value=""
-        _transactionId.value=-1
+        _transactionId.value=null
     }
 
     fun onNavigateToHomeScreen(){

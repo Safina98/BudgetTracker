@@ -1,13 +1,19 @@
-package com.example.budgettracker2.database
+package com.example.budgettracker2.database.dao
 
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.RawQuery
+import androidx.room.Transaction
 import androidx.room.TypeConverters
 import androidx.room.Update
+import androidx.sqlite.db.SimpleSQLiteQuery
+import androidx.sqlite.db.SupportSQLiteQuery
 import com.example.budgettracker2.DateTypeConverter
+import com.example.budgettracker2.database.TransaksiModel
 import com.example.budgettracker2.database.table.TransactionTable
 import kotlinx.coroutines.flow.Flow
 import java.util.Date
@@ -17,10 +23,17 @@ import java.util.Date
 interface TransactionDao{
     @Insert
     fun insert(TransactionTable: TransactionTable)
+
+
     @Update
     fun update(TransactionTable: TransactionTable)
     @Delete
     fun delete2(t: TransactionTable)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertAll(transactions: List<TransactionTable>)
+    @Query("DELETE FROM transaction_table")
+    fun deleteAll()
 
     @Query("DELETE FROM transaction_table WHERE transaction_id =:id ")
     fun delete(id:Int)
@@ -115,9 +128,9 @@ interface TransactionDao{
             "AND (:endDate IS NULL OR  t.date <= :endDate) ORDER BY t.date DESC")
     fun getFilteredDataSum(type: String?, categoryId: Int?, startDate: String?, endDate: String?):Int
     @Query("SELECT ifnull(SUM(nominal),0) from transaction_table")
-    fun getBuget():LiveData<Int>
+    fun getBuget(): LiveData<Int>
     @Query("SELECT ifnull(SUM(nominal),0)  from transaction_table WHERE nominal < 0")
-    fun getBugetTM():LiveData<Int>
+    fun getBugetTM(): LiveData<Int>
 
     @Query("SELECT SUM(nominal) FROM transaction_table t JOIN category_table c ON t.category_id = c.category_id WHERE c.category_type = :categoryType AND strftime('%Y', date) = strftime('%Y', 'now')")
     fun getSumByCategoryType(categoryType: String): LiveData<Int>
@@ -132,5 +145,14 @@ interface TransactionDao{
     fun getSumTMM(id:Int): LiveData<Int>
     @Query("SELECT SUM(nominal) FROM transaction_table WHERE  pocket_id=2")
     fun getSumLp(): LiveData<Int>
+
+    @RawQuery
+    fun execRaw(query: SupportSQLiteQuery): Int
+    fun disableForeignKeys() = execRaw(SimpleSQLiteQuery("PRAGMA foreign_keys = OFF"))
+    fun enableForeignKeys() = execRaw(SimpleSQLiteQuery("PRAGMA foreign_keys = ON"))
+
+    @Transaction
+    fun runInTransaction(block: () -> Unit) = block()
+
 
 }

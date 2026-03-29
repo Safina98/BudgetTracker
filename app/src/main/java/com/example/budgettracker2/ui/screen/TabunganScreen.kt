@@ -30,20 +30,24 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.budgettracker2.ui.backup.DriveBackupHandler
 import com.example.budgettracker2.ui.dialog.UpsertTabunganDialog
 import com.example.budgettracker2.ui.dialog.DeleteConfirmationDialog
 import com.example.budgettracker2.ui.theme.getPocketBrush
 import com.example.budgettracker2.ui.widgetstyles.PocketTopAppBar
 import com.example.budgettracker2.ui.widgetstyles.TabunganItemList
+import com.example.budgettracker2.viewModels.BackupViewModel
 import com.example.budgettracker2.viewModels.ManageViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TabunganScreen(
     onManageMenuClick:()->Unit,
-    manageViewModel: ManageViewModel = hiltViewModel()
+    manageViewModel: ManageViewModel = hiltViewModel(),
+    backupViewModel: BackupViewModel=hiltViewModel()
 )
 {
+    DriveBackupHandler(backupViewModel = backupViewModel)
     val namaTabungan by manageViewModel.namaTabungan.collectAsState()
     val warnaTabungan by manageViewModel.warnaTabungan.collectAsState()
     val saldo by manageViewModel.saldo.collectAsState()
@@ -69,8 +73,8 @@ fun TabunganScreen(
             PocketTopAppBar(
                 title = "Input Transaksi",
                 onManageClick = { onManageMenuClick() },
-                onExportClick = { /* handle export */ },
-                onImportClick = { /* handle import */ }
+                onExportClick = { backupViewModel.onExportClick() },
+                onImportClick = { backupViewModel.onImportClick() }
             )
         },
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },

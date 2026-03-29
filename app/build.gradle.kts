@@ -97,13 +97,18 @@ dependencies {
     implementation(libs.kotlinx.coroutines.core)
 
     // Google Drive
-    implementation("com.google.android.gms:play-services-auth:21.0.0")
-    implementation("com.google.api-client:google-api-client-android:2.2.0")
-    implementation("com.google.http-client:google-http-client-gson:1.43.3")
-    implementation("com.google.apis:google-api-services-drive:v3-rev20230822-2.0.0")
+    implementation(libs.play.services.auth)
+    implementation(libs.google.api.client.android)
+    implementation(libs.google.api.services.drive)
+    implementation(libs.google.http.client.gson)
+    implementation(libs.gson)
     implementation(libs.androidx.compose.ui.text.google.fonts)
     implementation(libs.androidx.ui.text.google.fonts)
-
+    implementation(libs.androidx.credentials)
+    implementation(libs.androidx.credentials.play)
+    implementation(libs.google.identity.googleid)
+    implementation(libs.okhttp)
+    implementation(libs.kotlinx.coroutines.play.services)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

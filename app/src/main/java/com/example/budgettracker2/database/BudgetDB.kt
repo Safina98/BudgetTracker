@@ -9,6 +9,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.budgettracker2.database.Migrations.MIGRATION_2_3
 import com.example.budgettracker2.database.dao.CategoryDao
 import com.example.budgettracker2.database.dao.PocketDao
+import com.example.budgettracker2.database.dao.TransactionDao
 import com.example.budgettracker2.database.table.CategoryTable
 import com.example.budgettracker2.database.table.PocketTable
 import com.example.budgettracker2.database.table.TransactionTable
@@ -18,7 +19,7 @@ import java.util.concurrent.Executors
 abstract class BudgetDB : RoomDatabase() {
 
     abstract val category_dao: CategoryDao
-    abstract val transaction_dao:TransactionDao
+    abstract val transaction_dao: TransactionDao
     abstract val pocket_dao: PocketDao
     companion object{
         @Volatile
@@ -32,12 +33,12 @@ abstract class BudgetDB : RoomDatabase() {
 
                 val rdc: Callback = object : Callback() {
                     override fun onCreate(db: SupportSQLiteDatabase) {
-                        db.execSQL("INSERT INTO category_table (category_id,category_name,category_type,category_color) VALUES( 0,'BEAUTY','PENGELUARAN','BLUE');")
-                        db.execSQL("INSERT INTO category_table (category_id,category_name,category_type,category_color) VALUES( 1,'FOOD','PENGELUARAN','PURPLE');")
-                        db.execSQL("INSERT INTO category_table (category_id,category_name,category_type,category_color) VALUES( 2,'TRANSPORTATION','PENGELUARAN','YELLOW');")
-                        db.execSQL("INSERT INTO category_table (category_id,category_name,category_type,category_color) VALUES( 3,'FASHION','PENGELUARAN','BLUE');")
-                        db.execSQL("INSERT INTO category_table (category_id,category_name,category_type,category_color) VALUES( 4,'SALARY','PEMASUKAN','GREEN');")
-                        db.execSQL("INSERT INTO category_table (category_id,category_name,category_type,category_color) VALUES( 5,'INITIAL SAVING','PEMASUKAN','GREEN');")
+                        db.execSQL("INSERT INTO category_table (category_id,category_name,category_type,category_color) VALUES( 1,'BEAUTY','PENGELUARAN','BLUE');")
+                        db.execSQL("INSERT INTO category_table (category_id,category_name,category_type,category_color) VALUES( 2,'FOOD','PENGELUARAN','PURPLE');")
+                        db.execSQL("INSERT INTO category_table (category_id,category_name,category_type,category_color) VALUES( 3,'TRANSPORTATION','PENGELUARAN','YELLOW');")
+                        db.execSQL("INSERT INTO category_table (category_id,category_name,category_type,category_color) VALUES( 4,'FASHION','PENGELUARAN','BLUE');")
+                        db.execSQL("INSERT INTO category_table (category_id,category_name,category_type,category_color) VALUES( 5,'SALARY','PEMASUKAN','GREEN');")
+                        db.execSQL("INSERT INTO category_table (category_id,category_name,category_type,category_color) VALUES( 6,'INITIAL SAVING','PEMASUKAN','GREEN');")
                     }
 
                     override fun onOpen(db: SupportSQLiteDatabase) {

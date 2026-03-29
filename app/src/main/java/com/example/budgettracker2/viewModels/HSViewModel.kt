@@ -16,7 +16,7 @@ import com.example.budgettracker2.database.dao.CategoryDao
 import com.example.budgettracker2.database.table.CategoryTable
 import com.example.budgettracker2.database.dao.PocketDao
 import com.example.budgettracker2.database.table.PocketTable
-import com.example.budgettracker2.database.TransactionDao
+import com.example.budgettracker2.database.dao.TransactionDao
 import com.example.budgettracker2.database.table.TransactionTable
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

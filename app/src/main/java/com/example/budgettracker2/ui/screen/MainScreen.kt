@@ -79,7 +79,7 @@ fun MainScreen(){
             TransactionScreen(
                 id = id,
                 onEditTransactionClick = { transId ->
-                    navController.navigate(Screen.Input.createRoute(id))
+                    navController.navigate(Screen.Input.createRoute(transId))
                 },
                 onManageMenuClick = {
                     navController.navigate(Screen.Manage.route)

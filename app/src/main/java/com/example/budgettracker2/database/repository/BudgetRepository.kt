@@ -5,17 +5,29 @@ import com.example.budgettracker2.database.dao.CategoryDao
 import com.example.budgettracker2.database.table.CategoryTable
 import com.example.budgettracker2.database.dao.PocketDao
 import com.example.budgettracker2.database.table.PocketTable
-import com.example.budgettracker2.database.TransactionDao
+import com.example.budgettracker2.database.dao.TransactionDao
 import com.example.budgettracker2.database.table.TransactionTable
 import com.example.budgettracker2.database.TransaksiModel
+import com.example.budgettracker2.database.model.BackupData
 import com.example.budgettracker2.database.model.NewKategoriModel
 import com.example.budgettracker2.database.model.TabunganHomeScreenModel
 import com.example.budgettracker2.database.model.TabunganModel
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
+import com.google.gson.JsonDeserializationContext
+import com.google.gson.JsonDeserializer
+import com.google.gson.JsonElement
+import com.google.gson.JsonPrimitive
+import com.google.gson.JsonSerializationContext
+import com.google.gson.JsonSerializer
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
+import java.lang.reflect.Type
+import java.text.SimpleDateFormat
 import java.util.Date
+import java.util.Locale
 import javax.inject.Inject
 
 class BudgetRepository @Inject constructor(
@@ -23,6 +35,68 @@ class BudgetRepository @Inject constructor(
     private val transactionDao: TransactionDao,
     private val categoryDao: CategoryDao
 ){
+    // Custom Gson instance that handles Date serialization
+// Room stores Date as String ("yyyy-MM-dd"), Gson needs to know how to convert it
+    private val gson = GsonBuilder()
+        .registerTypeAdapter(Date::class.java, object : JsonSerializer<Date>, JsonDeserializer<Date> {
+            private val format = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+
+            // Convert Date object → JSON string e.g. "2024-03-27"
+            override fun serialize(src: Date?, typeOfSrc: Type?, context: JsonSerializationContext?) =
+                JsonPrimitive(src?.let { format.format(it) })
+
+            // Convert JSON string "2024-03-27" → Date object
+            override fun deserialize(json: JsonElement?, typeOfT: Type?, context: JsonDeserializationContext?) =
+                json?.asString?.let { format.parse(it) }
+        })
+        .create()
+
+    // Reads all data from Room and converts it to a JSON string
+// Called by BackupViewModel before uploading to Drive
+    suspend fun exportToJson(): String = withContext(Dispatchers.IO) {
+        val backup = BackupData(
+            categories = categoryDao.getAllCategories(),
+            pockets = pocketDao.getAllPockets(),
+            transactions = transactionDao.getAllTransactionTable()
+        )
+        gson.toJson(backup) // converts BackupData → JSON string
+    }
+
+    // Parses JSON string and restores all data into Room
+// Called by BackupViewModel after downloading from Drive
+    suspend fun importFromJson(json: String) = withContext(Dispatchers.IO) {
+        val backup = gson.fromJson(json, BackupData::class.java)
+
+
+        backup.pockets.forEach {
+            Log.i("backupGson","${it}")
+        }
+       backup.categories.forEach {
+           Log.i("backupGson","${it}")
+       }
+        backup.transactions.forEach {
+          //  Log.i("backupGson","${it}")
+        }
+        // Run everything in one transaction so all operations share the same connection
+        // This ensures PRAGMA foreign_keys = OFF applies to the same connection as inserts
+        transactionDao.runInTransaction {
+            //transactionDao.disableForeignKeys()
+
+            transactionDao.deleteAll()
+            categoryDao.deleteAll()
+            pocketDao.deleteAll()
+
+            categoryDao.insertAll(backup.categories)
+            pocketDao.insertAll(backup.pockets)
+            transactionDao.insertAll(backup.transactions)
+
+
+            //transactionDao.enableForeignKeys()
+        }
+    }
+
+    // Helper to run a block inside a Room transaction
+
 
     fun getAllPocket(): Flow<List<TabunganModel>> =
         pocketDao.getPocketsWithSum()
@@ -219,6 +293,8 @@ class BudgetRepository @Inject constructor(
     ): Flow<List<TransaksiModel>> =
         transactionDao.getFilteredTransactions(tipe, pocketId, categoryId, startDate, endDate,searchQuery,monthOnly)
 
+
+// In BudgetRepository
 
 
 }

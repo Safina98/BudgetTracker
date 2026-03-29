@@ -9,14 +9,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.budgettracker2.R
 import com.example.budgettracker2.ui.widgetstyles.PrimaryButtonStyle
+import com.example.budgettracker2.viewModels.BackupViewModel
 
 @Composable
 fun ManageScreen(
     onNavigateToTabungan: () -> Unit,
     onNavigateToKategori: () -> Unit,
+
 ){
     Column(
         modifier = Modifier.Companion
@@ -35,10 +38,10 @@ fun ManageScreen(
             onClick = onNavigateToTabungan,
             modifier = Modifier.Companion.fillMaxWidth()
         )
-        PrimaryButtonStyle(
-            "Manage Data",
-            onClick = {},
-            modifier = Modifier.Companion.fillMaxWidth()
-        )
+//        PrimaryButtonStyle(
+//            "Manage Data",
+//            onClick = {},
+//            modifier = Modifier.Companion.fillMaxWidth()
+//        )
     }
 }
