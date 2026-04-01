@@ -25,12 +25,16 @@ fun BudgetTrackerTheme(
     val colorScheme = if (darkTheme) {
         darkColorScheme(
             primary = Color(0xFF887d77),  // Same as light mode for consistency
-            secondary = Color(0xFFFFFFFF)
+            secondary = Color(0xFFFFFFFF),
+            background = Color.Transparent,  // 👈
+            surface = Color.Transparent
         )
     } else {
         lightColorScheme(
             primary = Color(0xFF887d77),
-            secondary = Color(0xFF887d77)
+            secondary = Color(0xFF887d77),
+            background = Color.Transparent,  // 👈
+            surface = Color.Transparent
         )
     }
 
