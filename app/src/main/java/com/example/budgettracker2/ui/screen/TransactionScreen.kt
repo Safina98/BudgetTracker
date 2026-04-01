@@ -12,6 +12,7 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -23,6 +24,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Search
@@ -52,6 +54,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.AlignmentLine
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
@@ -66,7 +69,10 @@ import com.example.budgettracker2.ui.widgetstyles.PocketTopAppBar
 import com.example.budgettracker2.ui.widgetstyles.TransactionItemList
 import com.example.budgettracker2.viewModels.TransactionViewModel
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
 import com.example.budgettracker2.ui.backup.DriveBackupHandler
+import com.example.budgettracker2.ui.widgetstyles.formatRupiah
 import com.example.budgettracker2.viewModels.BackupViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -91,6 +97,7 @@ fun TransactionScreen(
     val categoryListFilter by transactionViewModel.categoryListFilter.collectAsState()
     val showDatePicker by transactionViewModel.showDatePickerDialog.collectAsState()
     val dateString by transactionViewModel.dateString.collectAsState()
+    val totalNominal by transactionViewModel.totalNominal.collectAsState()
 
     val errorMessage by transactionViewModel.errorMessage.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -208,7 +215,8 @@ fun TransactionScreen(
                LazyColumn(
                    modifier = Modifier
                        .fillMaxWidth()
-                   .padding(4.dp),
+                   .padding(4.dp)
+                   .padding(bottom = 70.dp),
                    state = rememberLazyListState()
                ) {
                    items(
@@ -285,11 +293,32 @@ fun TransactionScreen(
                     onDismiss = { transactionViewModel.onDismissDatePicker() }
                 )
             }
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(70.dp)
+                    .align(Alignment.BottomStart)
+                    .padding(horizontal = 8.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+                shape = RoundedCornerShape(1.dp),
+            ) {
+                Box(
+                    modifier = Modifier.fillMaxSize()
+                        .background(getPocketBrush("Dusty Rose")),
+                    contentAlignment = Alignment.CenterStart  // 👈 centers the Text
+                ) {
+                    Text(
+                        text = formatRupiah(totalNominal),
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 22.sp,
+                    )
+                }
+            }
             ExtendedFloatingActionButton(
                 onClick = { onEditTransactionClick(-1) },
                 modifier = Modifier.align(Alignment.Companion.BottomEnd),
                 // .background(brush = getPocketBrush("Top Bar Color"), shape = RoundedCornerShape(16.dp)),
-                icon = { Icon(Icons.Filled.Edit, "Edit") },
+                icon = { Icon(Icons.Filled.Add, "Edit") },
                 text = { Text(text = "Tambah Transaksi") },
                 containerColor = Color(0xFF887d77),
                 contentColor = Color.White

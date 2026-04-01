@@ -120,6 +120,8 @@ interface TransactionDao{
         searchQuery:String?,
         monthOnly:Int?
     ): Flow<List<TransaksiModel>>
+
+
     @Query("SELECT SUM(t.nominal)  FROM transaction_table t " +
             "INNER JOIN category_table c ON t.category_id = c.category_id WHERE" +
             " (:type IS NULL OR c.category_type = :type OR :type = 'ALL') " +

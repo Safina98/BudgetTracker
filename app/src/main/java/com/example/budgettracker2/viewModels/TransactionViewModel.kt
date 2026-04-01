@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.budgettracker2.DateFormatter
+import com.example.budgettracker2.TIPETRANSAKSI
 import com.example.budgettracker2.database.table.TransactionTable
 import com.example.budgettracker2.database.TransaksiModel
 import com.example.budgettracker2.database.model.FilterParams
@@ -18,6 +19,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.util.Calendar
@@ -142,6 +144,17 @@ class TransactionViewModel @Inject constructor( private val repository: BudgetRe
             monthOnly = params.monthOnly
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+    val totalNominal = filteredTransactions
+        .map { transactions ->
+            val pemasukan = transactions
+                .filter { it.tipe == TIPETRANSAKSI.masuk }
+                .sumOf { it.nominal }
+            val pengeluaran = transactions
+                .filter { it.tipe == TIPETRANSAKSI.keluar }
+                .sumOf { it.nominal }
+            pemasukan - pengeluaran
+        }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0)
 
     fun onSearchQueryChange(query: String) {
         _searchQuery.value = query
