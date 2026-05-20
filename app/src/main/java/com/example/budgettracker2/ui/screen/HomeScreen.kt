@@ -1,5 +1,6 @@
 package com.example.budgettracker2.ui.screen
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -61,6 +62,9 @@ fun HomeScreen(
     var expanded by remember { mutableStateOf(false) }
     val thisYearCategorySum by transactionViewModel.thisYearCategorySum.collectAsState()
     val thisYearPocketSum by transactionViewModel.thisYearPocketSum.collectAsState()
+    thisYearPocketSum.forEach {
+        Log.i("PocketModel","${it.thisYearOutcome}")
+    }
     Scaffold(
         topBar = {PocketTopAppBar(
             title = "LAPORAN TAHUN INI",
@@ -125,7 +129,6 @@ fun HomeScreen(
                 onClick = { onNavigateToInput(-1) },
                 modifier = Modifier.Companion
                     .align(Alignment.Companion.BottomEnd),
-                   // .background(brush = getPocketBrush("Top Bar Color"), shape = RoundedCornerShape(16.dp)),
                 icon = { Icon(Icons.Filled.Edit, "Edit") },
                 text = { Text(text = "Tambah Transaksi") },
                 containerColor = Color(0xFF887d77),

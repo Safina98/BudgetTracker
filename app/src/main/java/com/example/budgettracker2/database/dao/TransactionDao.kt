@@ -109,7 +109,8 @@ interface TransactionDao{
     AND (:startDate IS NULL OR t.date >= :startDate)
     AND (:endDate IS NULL OR t.date <= :endDate)
     AND (:searchQuery IS NULL OR t.note Like '%' || :searchQuery || '%')
-    AND (:monthOnly IS NULL OR strftime('%m', date/1000, 'unixepoch') = printf('%02d', :monthOnly))
+    AND (:monthOnly IS NULL OR strftime('%m', date/1000, 'unixepoch') = printf('%02d', :monthOnly))  
+        ORDER BY t.date DESC
 """)
     fun getFilteredTransactions(
         tipe: String?,
@@ -147,6 +148,8 @@ interface TransactionDao{
     fun getSumTMM(id:Int): LiveData<Int>
     @Query("SELECT SUM(nominal) FROM transaction_table WHERE  pocket_id=2")
     fun getSumLp(): LiveData<Int>
+
+
 
     @RawQuery
     fun execRaw(query: SupportSQLiteQuery): Int

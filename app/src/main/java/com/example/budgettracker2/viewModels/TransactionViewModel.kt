@@ -146,13 +146,8 @@ class TransactionViewModel @Inject constructor( private val repository: BudgetRe
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
     val totalNominal = filteredTransactions
         .map { transactions ->
-            val pemasukan = transactions
-                .filter { it.tipe == TIPETRANSAKSI.masuk }
+           transactions
                 .sumOf { it.nominal }
-            val pengeluaran = transactions
-                .filter { it.tipe == TIPETRANSAKSI.keluar }
-                .sumOf { it.nominal }
-            pemasukan - pengeluaran
         }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0)
 
@@ -409,6 +404,7 @@ class TransactionViewModel @Inject constructor( private val repository: BudgetRe
                 }
         }
     }
+
     fun resetMutable(){
         _date.value=Date()
         _tipe.value=""
