@@ -370,8 +370,9 @@ class TransactionViewModel @Inject constructor( private val repository: BudgetRe
                 date = _date.value
                 tipe = _tipe.value
                 note = _note.value
-                nominal = _jumlah.value?:0
+                nominal = if(_tipe.value?:""== TIPETRANSAKSI.keluar){ (_jumlah.value?:0) *-1}else _jumlah.value?:0
             }
+            Log.i("InsertProbs","${_tipe.value} ${_tipe.value?:""== TIPETRANSAKSI.keluar} ${transaction.nominal}")
             val result = repository.upsertTransaction(
                 _transactionId.value,
                 transaction,
